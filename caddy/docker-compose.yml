@@ -1,0 +1,38 @@
+blog:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            proxy / control.gros.test:2368 {
+                transparent
+            }
+        }
+
+discourse:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            proxy / control.gros.test:3000 {
+                transparent
+            }
+        }
+
+visualization:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            proxy / control.gros.test:2368 {
+                transparent
+            }
+        }
