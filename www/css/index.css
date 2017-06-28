@@ -11,10 +11,20 @@
     margin-top: 2rem;
 }
 
-.visualizations .card {
+/* Keep the cards at the same height */
+.card {
+    display:flex;
+    flex-direction: column;
     height: 100%;
 }
+.card-footer {
+    margin-top: auto;
+}
 
-.visualizations .card-header-title img {
+.card-header-title img {
     margin-right: .5rem;
+}
+
+.card .card-footer-item.is-wider {
+    flex-grow: 6; /* Default flex grow is 1 */
 }
