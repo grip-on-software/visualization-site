@@ -11,6 +11,10 @@
     margin-top: 2rem;
 }
 
+.visualizations .card {
+    height: 100%;
+}
+
 .visualizations .card-header-title img {
     margin-right: .5rem;
 }
