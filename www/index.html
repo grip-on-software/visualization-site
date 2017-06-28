@@ -3,50 +3,89 @@
     <head>
         <meta charset="utf-8">
         <title>Visualizations from GROS</title>
-        <style type="text/css">
-body {
-  font-family: sans-serif, helvetica;
-}
-h1 {
-  margin: 2rem 1rem 2rem 3rem;
-}
-ul.nav {
-  
-}
-ul.nav li {
-  display:inline-block;
-  position: relative;
-  border: 0;
-  background-color: #eee;
-  border-radius: 1rem;
-  margin: 0 1rem 0 1rem;
-  transition: background-color 0.5s linear;
-}
-ul.nav li a {
-  text-decoration: none;
-  display: block;
-  padding: 1rem;
-}
-ul.nav li:hover {
-  background-color: gold;
-}
-ul.nav li.external:hover {
-  background-color: lightblue;
-}
-        </style>
+
+        <link rel="shortcut icon" href="favicon.ico">
+
+        <link rel="stylesheet" href="css/bulma.css">
+        <link rel="stylesheet" href="css/index.css">
     </head>
 
     <body>
-        <h1>Welcome to Visualizations from GROS</h1>
+        <div class="section">
+            <div class="container">
+                <h1 class="title">Welcome to Visualizations from GROS</h1>
 
-        <div class="content">
-            <ul class="nav">
-                <li class="external"><a href="http://blog.gros.example/">Blog</a></li>
-                <li class="external"><a href="http://discussion.gros.example/">Discussion</a></li>
-                <li><a href="/timeline">Timeline</a></li>
-                <li><a href="/heatmap">Heatmap</a></li>
-                <li><a href="/collaboration-graph">Collaboration Graph</a></li>
-            </ul>
+                <div class="links">
+                    <a href="http://blog.gros.example/" class="button is-primary is-outlined is-medium">
+                    Blog
+                    <img src="images/external-link.svg">
+                </a>
+                    <a href="http://discussion.gros.example/" class="button is-primary is-outlined is-medium">
+                    Discussion
+                    <img src="images/external-link.svg">
+                </a>
+                </div>
+
+                <div class="container visualizations">
+                    <h2 class="title is-6">Visualizations</h2>
+
+                    <div class="columns is-multiline">
+                        <div class="column is-3">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <img src="images/timeline.svg"> Timeline
+                                    </p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content">
+                                        A timeline of sprints for each project, with events that happened during that sprint. Several sprints can be selected to
+                                        compare them.
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="/timeline" class="card-footer-item">Open Timeline</a>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <img src="images/heatmap.svg"> Heatmap
+                                    </p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content">
+                                        Project activity over time in a calendar view. Additionally files which are changed after a long time are displayed.
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="/heatmap" class="card-footer-item">Open Heatmap</a>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <img src="images/collaboration-graph.svg"> Collaboration Graph
+                                    </p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content">
+                                        Collaboration between ICTU team members on projects, displayed in a graph. With a timelapse mode the growth over time can
+                                        be displayed.
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="/collaboration-graph" class="card-footer-item">Open Collaboration Graph</a>
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>

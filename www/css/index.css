@@ -1,0 +1,16 @@
+.links .button:not(:last-child) {
+    margin-right: 1rem;
+}
+
+.links .button img {
+    width: .8em;
+    margin-left: .5rem;
+}
+
+.container.visualizations {
+    margin-top: 2rem;
+}
+
+.visualizations .card-header-title img {
+    margin-right: .5rem;
+}
