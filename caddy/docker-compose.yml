@@ -36,3 +36,16 @@ visualization:
                 transparent
             }
         }
+
+prediction:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            proxy / control.gros.test:2368 {
+                transparent
+            }
+        }
