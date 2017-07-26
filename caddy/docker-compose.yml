@@ -19,7 +19,7 @@ discourse:
             tls off
             errors stdout
             gzip
-            proxy / control.gros.test:3000 {
+            proxy / control.gros.test:2368 {
                 transparent
             }
         }
