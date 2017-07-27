@@ -49,3 +49,21 @@ prediction:
                 transparent
             }
         }
+
+ws:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            timeouts none
+            proxy / control.gros.test:3000 {
+                websocket
+                header_upstream Host {host}
+                header_upstream X-Real-IP {remote}
+                header_upstream X-Forwarded-For {remote}
+                header_upstream X-Forwarded-Proto {scheme}
+            }
+        }

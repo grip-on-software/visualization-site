@@ -15,6 +15,11 @@ provide access to the GROS VLAN. The reverse proxies are as follows:
   a central server listening on specific ports as well as using Host-based 
   proxying.
 
+Additionally, this repository contains a Shell script `goaccess-report.sh` that 
+can be run periodically to generate a server statistics report. It requires 
+installation of [GoAccess](https://goaccess.io/) which analyzes logs and 
+creates an analytics dashboard.
+
 See the 
 [Wiki](http://www.wiki.gros.test/index.php/Upload-server_specifications) 
 for more details on how the second proxy layer works.
