@@ -1,0 +1,58 @@
+nginx:
+  image: nginx:1.10.2
+  hostname: www
+  domainname: gros.example
+  volumes:
+    - ../www:/srv/visualization-site/www
+    - ../nginx.conf:/etc/nginx/nginx.conf:ro
+  expose:
+    - "2368"
+    - "3000"
+
+selenium:
+  image: selenium/standalone-firefox:3.4.0
+  domainname: gros.test
+  shm_size: "2g"
+  ports:
+    - "4444:4444"
+  links:
+    - "blog:blog.gros.example"
+    - "discourse:discussion.gros.example"
+    - "visualization:visualization.gros.example"
+    - "prediction:prediction.gros.example"
+    - "ws:ws.gros.example"
+
+blog:
+  domainname: gros.test
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:www.gros.example"
+
+discourse:
+  domainname: gros.test
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:www.gros.example"
+
+visualization:
+  domainname: gros.test
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:www.gros.example"
+
+prediction:
+  domainname: gros.test
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:www.gros.example"
+
+ws:
+  domainname: gros.test
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:www.gros.example"

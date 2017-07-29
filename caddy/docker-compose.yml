@@ -6,7 +6,7 @@ blog:
             tls off
             errors stdout
             gzip
-            proxy / control.gros.test:2368 {
+            proxy / www.gros.example:2368 {
                 transparent
             }
         }
@@ -19,7 +19,7 @@ discourse:
             tls off
             errors stdout
             gzip
-            proxy / control.gros.test:2368 {
+            proxy / www.gros.example:2368 {
                 transparent
             }
         }
@@ -32,7 +32,7 @@ visualization:
             tls off
             errors stdout
             gzip
-            proxy / control.gros.test:2368 {
+            proxy / www.gros.example:2368 {
                 transparent
             }
         }
@@ -45,7 +45,7 @@ prediction:
             tls off
             errors stdout
             gzip
-            proxy / control.gros.test:2368 {
+            proxy / www.gros.example:2368 {
                 transparent
             }
         }
@@ -59,7 +59,7 @@ ws:
             errors stdout
             gzip
             timeouts none
-            proxy / control.gros.test:3000 {
+            proxy / www.gros.example:3000 {
                 websocket
                 header_upstream Host {host}
                 header_upstream X-Real-IP {remote}
