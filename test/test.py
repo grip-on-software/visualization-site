@@ -47,6 +47,12 @@ class IntegrationTest(unittest.TestCase):
         driver.get("http://visualization.gros.example")
         self.assertIn("Visualizations from GROS", driver.title)
 
+        driver.get("http://blog.gros.example")
+        self.assertIn("GROS project update", driver.title)
+
+        driver.get("http://discussion.gros.example")
+        self.assertIn("GROS Discussion", driver.title)
+
     def tearDown(self):
         self._driver.close()
 
