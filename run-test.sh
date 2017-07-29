@@ -26,7 +26,7 @@ python test/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
-	docker-compose $COMPOSE_FILES logs
+	docker-compose $COMPOSE_FILES logs --no-color
 fi
 
 docker-compose $COMPOSE_FILES down
