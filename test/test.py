@@ -53,6 +53,9 @@ class IntegrationTest(unittest.TestCase):
         driver.get("http://discussion.gros.example")
         self.assertIn("GROS Discussion", driver.title)
 
+        driver.get("http://prediction.gros.example/api/v1/predict/jira/TEST/sprint/latest")
+        self.assertIn("Error 404 Not found", driver.title)
+
     def tearDown(self):
         self._driver.close()
 
