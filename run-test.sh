@@ -18,7 +18,7 @@ pip install selenium
 
 PROXY_HOST=nginx
 
-docker-compose $COMPOSE_FILES up -d
+docker-compose $COMPOSE_FILES up -d --force-recreate
 
 echo "Up"
 
@@ -26,7 +26,7 @@ python test/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
-	docker-compose $COMPOSE_FILES logs --no-color
+	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 docker logs
 fi
 
 docker-compose $COMPOSE_FILES down
