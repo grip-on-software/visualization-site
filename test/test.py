@@ -2,6 +2,8 @@
 Integration tests for the visualization hub proxies.
 """
 
+import errno
+from socket import error as SocketError
 import time
 import unittest
 from selenium.webdriver import Remote
@@ -21,10 +23,17 @@ class IntegrationTest(unittest.TestCase):
 
     @staticmethod
     def _setup_driver():
+        # Connect to the remote executor. Exceptions may be thrown when the
+        # Selenium server is not yet set up.
         try:
             return Remote(command_executor='http://127.0.0.1:4444/wd/hub',
                           desired_capabilities=DesiredCapabilities.FIREFOX)
         except BadStatusLine:
+            return None
+        except SocketError as socket_error:
+            if socket_error.errno != errno.ECONNRESET:
+                raise
+
             return None
 
     def setUp(self):
