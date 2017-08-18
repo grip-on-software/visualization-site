@@ -1,0 +1,16 @@
+[Unit]
+Description=GoAccess: Server statistics and analytics dashboard
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/goaccess-report.sh
+WorkingDirectory=/srv/goaccess-report
+Type=simple
+User=goaccess
+Group=nginx
+Environment=GOACCESS_DAEMON=1
+Restart=always
+RestartSec=60s
+
+[Install]
+WantedBy=multi-user.target
