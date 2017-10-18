@@ -9,12 +9,22 @@ nginx:
     - "2368"
     - "3000"
 
+test:
+  image: python:3.6-alpine
+  domainname: gros.test
+  command: "python -c 'import signal;signal.pause()'"
+  volumes:
+    - "../test:/work"
+  working_dir: "/work"
+  links:
+    - "selenium:selenium.gros.test"
+
 selenium:
   image: selenium/standalone-firefox:3.4.0
   domainname: gros.test
   shm_size: "2g"
-  ports:
-    - "4444:4444"
+  expose:
+    - "4444"
   links:
     - "blog:blog.gros.example"
     - "discourse:discussion.gros.example"

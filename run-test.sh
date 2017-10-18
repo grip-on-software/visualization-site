@@ -14,15 +14,14 @@ else
 	COMPOSE_FILES="$COMPOSE_FILES -f test/docker-compose.yml"
 fi
 
-pip install selenium
-
 PROXY_HOST=nginx
 
 docker-compose $COMPOSE_FILES up -d --force-recreate
 
 echo "Up"
 
-python test/test.py
+docker-compose $COMPOSE_FILES exec "test" pip install selenium
+docker-compose $COMPOSE_FILES exec "test" python /work/test.py
 status=$?
 
 if [ $status -ne 0 ]; then

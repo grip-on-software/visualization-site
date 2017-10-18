@@ -26,7 +26,8 @@ class IntegrationTest(unittest.TestCase):
         # Connect to the remote executor. Exceptions may be thrown when the
         # Selenium server is not yet set up.
         try:
-            return Remote(command_executor='http://127.0.0.1:4444/wd/hub',
+            url = 'http://selenium.gros.test:4444/wd/hub'
+            return Remote(command_executor=url,
                           desired_capabilities=DesiredCapabilities.FIREFOX)
         except BadStatusLine:
             return None
