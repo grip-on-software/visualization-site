@@ -20,8 +20,9 @@ docker-compose $COMPOSE_FILES up -d --force-recreate
 
 echo "Up"
 
-docker-compose $COMPOSE_FILES exec "test" pip install selenium
-docker-compose $COMPOSE_FILES exec "test" python /work/test.py
+TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q test)
+docker exec $TEST_CONTAINER pip install selenium
+docker exec $TEST_CONTAINER python /work/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
