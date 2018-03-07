@@ -10,6 +10,7 @@ ARG NPM_REGISTRY
 RUN npm config set @gros:registry $NPM_REGISTRY
 COPY package.json webpack.mix.js /usr/src/app/
 RUN npm install && npm cache clean --force
+COPY navbar.json navbar.*.js [c]onfig.json /usr/src/app/
 COPY lib/ /usr/src/app/lib/
 COPY res/ /usr/src/app/res/
 COPY www/ /usr/src/app/www/
