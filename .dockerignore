@@ -1,0 +1,14 @@
+bundle.js
+bundle.js.map
+node_modules
+.dockerignore
+.gitignore
+Jenkinsfile
+caddy
+test
+*.sh
+*.conf
+goaccess-report.*
+*~
+*.bak
+*.log
