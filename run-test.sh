@@ -18,9 +18,14 @@ PROXY_HOST=nginx
 
 docker-compose $COMPOSE_FILES up -d --force-recreate
 
-echo "Up"
-
 TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q test)
+if [ -z "$TEST_CONTAINER" ]; then
+	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 docker logs
+	echo "Could not bring up the test instances."
+	exit 1
+fi
+
+echo "Up"
 docker exec $TEST_CONTAINER pip install selenium
 docker exec $TEST_CONTAINER python /work/test.py
 status=$?

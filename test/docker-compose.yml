@@ -1,13 +1,16 @@
 nginx:
-  image: nginx:1.10.2
+  image: bradjonesllc/nginx-dnsmasq:latest
   hostname: www
   domainname: gros.example
+  dns: 192.168.0.1
   volumes:
-    - ../www:/srv/visualization-site/www
-    - ../nginx.conf:/etc/nginx/nginx.conf:ro
+    - "../www:/srv/visualization-site/www"
+    - "../nginx.conf:/etc/nginx/nginx.conf:ro"
   expose:
     - "2368"
     - "3000"
+  links:
+    - "jenkins:www.jenkins.gros.test"
 
 test:
   image: python:3.6-alpine
@@ -31,6 +34,22 @@ selenium:
     - "visualization:visualization.gros.example"
     - "prediction:prediction.gros.example"
     - "ws:ws.gros.example"
+
+jenkins:
+  image: greyarch/caddy
+  domainname: gros.test
+  expose:
+    - "8080"
+  environment:
+      CONFIG: |
+          :8080 {
+              tls off
+              errors stdout
+              gzip
+              root /srv/www
+          }
+  volumes:
+    - "../www:/srv/www/job/build-visualization-site/job/master/Visualization"
 
 blog:
   domainname: gros.test

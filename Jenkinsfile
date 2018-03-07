@@ -11,6 +11,7 @@ pipeline {
 
     post {
         success {
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'success'
         }
         failure {
@@ -22,10 +23,34 @@ pipeline {
     }
 
     stages {
+        stage('Build') {
+            steps {
+                updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
+                sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
+            }
+        }
+        stage('Extract') {
+            agent {
+                docker {
+                    image '$DOCKER_REGISTRY/gros-visualization-site'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'cp /usr/src/app/www/bundle.js $PWD/www/bundle.js'
+                sh 'cp /usr/src/app/www/main.css $PWD/www/main.css'
+            }
+        }
         stage('Test') {
             steps {
                 updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
                 sh './run-test.sh'
+            }
+        }
+        stage('Push') {
+            when { branch 'master' }
+            steps {
+                sh 'docker push $DOCKER_REGISTRY/gros-visualization-site:latest'
             }
         }
     }

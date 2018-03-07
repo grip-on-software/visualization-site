@@ -1,3 +1,9 @@
+@import "node_modules/bulma/sass/utilities/initial-variables";
+@import "node_modules/bulma/sass/utilities/functions";
+$title-weight: $weight-light;
+$subtitle-weight: $weight-light;
+@import "node_modules/bulma/bulma";
+
 .links .button:not(:last-child) {
     margin-right: 1rem;
 }
