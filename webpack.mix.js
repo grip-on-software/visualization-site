@@ -1,4 +1,15 @@
-let mix = require('laravel-mix');
+let fs = require('fs'),
+    mix = require('laravel-mix');
+
+let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
+if (!fs.existsSync(navbar)) {
+    navbar = path.resolve(__dirname, 'navbar.json');
+}
+
+let config = path.resolve(__dirname, 'config.json');
+if (!fs.existsSync(config)) {
+    config = path.resolve(__dirname, 'lib/config.json');
+}
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
@@ -12,6 +23,14 @@ mix.setPublicPath('www/')
             'www/**/*.js',
             'www/**/*.css'
         ]
+    })
+    .webpackConfig({
+        resolve: {
+            alias: {
+                'navbar.spec$': navbar,
+                'config.json$': config
+            }
+        }
     });
 
 // Full API

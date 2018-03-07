@@ -1,0 +1,176 @@
+[
+    {
+        "type": "brand",
+        "items": [
+            {
+                "type": "link",
+                "url": {"config": "visualization_url"},
+                "title": {
+                    "en": "Visualizations from GROS",
+                    "nl": "Visualisaties van GROS"
+                },
+                "content": [
+                    {
+                        "type": "image",
+                        "url": "images/ICTU-LEIDEN.png",
+                        "alt": {
+                            "en": "Grip on Software",
+                            "nl": "Grip op Software"
+                        },
+                        "width": 28,
+                        "height": 28
+                    },
+                    {
+                        "type": "text",
+                        "text": "\u00A0GROS"
+                    }
+                ]
+            },
+            {
+                "type": "burger",
+                "target": "menu-visualizations",
+                "lines": 3
+            }
+        ]
+    },
+    {
+        "type": "menu",
+        "id": "menu-visualizations",
+        "items": [
+            {
+                "type": "start",
+                "items": [
+                    {
+                        "type": "dropdown",
+                        "link": {
+                            "url": {"config": "visualization_url"},
+                            "content": {
+                                "en": "Visualizations",
+                                "nl": "Visualisaties"
+                            }
+                        },
+                        "items": [
+                            {
+                                "type": "link",
+                                "url": "timeline",
+                                "icon": ["fas", "align-center"],
+                                "content": {
+                                    "en": "Timeline",
+                                    "nl": "Tijdslijn"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": "heatmap",
+                                "icon": ["fas", "th-large"],
+                                "content": {
+                                    "en": "Heat map",
+                                    "nl": "Heatmap"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": "collaboration-graph",
+                                "icon": ["far", "circle"],
+                                "content": {
+                                    "en": "Collaboration graph",
+                                    "nl": "Samenwerkingsgraaf"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": "leaderboard",
+                                "icon": ["fas", "trophy"],
+                                "content": {
+                                    "en": "Leaderboard",
+                                    "nl": "Scorebord"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "dropdown",
+                        "link": {
+                            "url": {"config": "prediction_url"},
+                            "content": {
+                                "en": "More",
+                                "nl": "Meer"
+                            }
+                        },
+                        "items": [
+                            {
+                                "type": "link",
+                                "url": {"config": "prediction_url"},
+                                "icon": ["fas", "percent"],
+                                "content": {
+                                    "en": "Prediction",
+                                    "nl": "Voorspelling"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": "bigboat-status",
+                                "icon": ["fab", "docker"],
+                                "content": {
+                                    "en": "BigBoat status",
+                                    "nl": "BigBoat-status"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": "process-flow",
+                                "icon": ["fas", "sync"],
+                                "content": {
+                                    "en": "Process flow",
+                                    "nl": "Procesverloop"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "end",
+                "items": [
+                    {
+                        "type": "dropdown",
+                        "id": "languages",
+                        "items": [],
+                        "link": {
+                            "url": "",
+                            "icon": ["fas", "language"],
+                            "content": {
+                                "en": "Language",
+                                "nl": "Taal"
+                            },
+                            "title": {
+                                "en": "Return to default language",
+                                "nl": "Terugkeren naar standaardtaal"
+                            }
+                        }
+                    },
+                    {
+                        "type": "link",
+                        "url": "https://gros.liacs.nl",
+                        "title": {
+                            "en": "Visualizations from GROS",
+                            "nl": "Visualisaties van GROS"
+                        },
+                        "content": [
+                            {
+                                "type": "image",
+                                "url": "images/leiden.svg",
+                                "alt": {
+                                    "en": "Grip on Software at Leiden University",
+                                    "nl": "Grip op Software bij Universieit Leiden"
+                                },
+                                "width": 94,
+                                "height": 52
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -13,6 +13,7 @@ RUN npm install && npm cache clean --force
 COPY lib/ /usr/src/app/lib/
 COPY res/ /usr/src/app/res/
 COPY www/ /usr/src/app/www/
-RUN npm run production -- --env.mixfile=$PWD/webpack.mix.js 
+ARG NAVBAR_SCOPE
+RUN npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE
 
 CMD ["npm", "start"]
