@@ -26,7 +26,7 @@ pipeline {
         stage('Build') {
             steps {
                 updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
-                sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
+                sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE'
             }
         }
         stage('Extract') {
@@ -39,6 +39,7 @@ pipeline {
             steps {
                 sh 'cp /usr/src/app/www/bundle.js $PWD/www/bundle.js'
                 sh 'cp /usr/src/app/www/main.css $PWD/www/main.css'
+                sh 'cp -rf /usr/src/app/www/fonts/ $PWD/www/fonts/'
             }
         }
         stage('Test') {
