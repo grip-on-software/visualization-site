@@ -1,6 +1,10 @@
 pipeline {
     agent { label 'docker' }
 
+    environment {
+        SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+    }
+
     options {
         gitLabConnection('gitlab')
         buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -46,6 +50,13 @@ pipeline {
             steps {
                 updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
                 sh './run-test.sh'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME'
+                }
             }
         }
         stage('Push') {
