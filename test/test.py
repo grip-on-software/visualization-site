@@ -6,6 +6,7 @@ import errno
 from socket import error as SocketError
 import time
 import unittest
+import xmlrunner
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 try:
@@ -70,4 +71,8 @@ class IntegrationTest(unittest.TestCase):
         self._driver.close()
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(
+        testRunner=xmlrunner.XMLTestRunner(output='junit'),
+        # these make sure that some options that are not applicable
+        # remain hidden from the help menu.
+        failfast=False, buffer=False, catchbreak=False)

@@ -3,6 +3,7 @@ bundle.js.map
 manifest.js
 vendor.js
 node_modules
+test/junit/
 www/main.css
 www/fonts/
 www/mix-manifest.json

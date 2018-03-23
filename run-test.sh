@@ -26,7 +26,7 @@ if [ -z "$TEST_CONTAINER" ]; then
 fi
 
 echo "Up"
-docker exec $TEST_CONTAINER pip install selenium
+docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium
 docker exec $TEST_CONTAINER python /work/test.py
 status=$?
 

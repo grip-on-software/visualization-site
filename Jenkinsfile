@@ -24,6 +24,9 @@ pipeline {
         aborted {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'canceled'
         }
+        always {
+            junit 'test/junit/*.xml'
+        }
     }
 
     stages {
