@@ -13,6 +13,7 @@ RUN npm install && npm cache clean --force
 COPY navbar.json navbar.*.js [c]onfig.json /usr/src/app/
 COPY lib/ /usr/src/app/lib/
 COPY res/ /usr/src/app/res/
+COPY template /usr/src/app/template/
 COPY www/ /usr/src/app/www/
 ARG NAVBAR_SCOPE
 RUN npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE
