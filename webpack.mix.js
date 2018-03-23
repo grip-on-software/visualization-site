@@ -14,7 +14,7 @@ if (!fs.existsSync(config)) {
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot('')
+    .setResourceRoot('/')
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
