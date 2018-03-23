@@ -1,5 +1,6 @@
 let fs = require('fs'),
     mix = require('laravel-mix');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
 if (!fs.existsSync(navbar)) {
@@ -15,6 +16,7 @@ Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
     .setResourceRoot('')
     .js('lib/index.js', 'www/bundle.js')
+    .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
     .browserSync({
         proxy: false,
@@ -25,6 +27,32 @@ mix.setPublicPath('www/')
         ]
     })
     .webpackConfig({
+        module: {
+            rules: [ {
+                test: /\.mustache$/,
+                loader: 'mustache-loader',
+                options: {
+                    tiny: true,
+                    render: Object.assign({}, JSON.parse(fs.readFileSync(config)))
+                }
+            } ]
+        },
+        plugins: [
+            new HtmlWebpackPlugin({
+                template: 'template/index.mustache',
+                inject: 'body'
+            }),
+            new HtmlWebpackPlugin({
+                template: 'template/404.mustache',
+                filename: '404.html',
+                inject: 'body'
+            }),
+            new HtmlWebpackPlugin({
+                template: 'template/50x.mustache',
+                filename: '50x.html',
+                inject: 'body'
+            })
+        ],
         resolve: {
             alias: {
                 'navbar.spec$': navbar,

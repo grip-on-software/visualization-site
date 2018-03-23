@@ -1,8 +1,11 @@
 bundle.js
 bundle.js.map
+manifest.js
+vendor.js
 node_modules
 www/main.css
 www/fonts/
 www/mix-manifest.json
 www/hot
+www/*.html
 www/*.map
