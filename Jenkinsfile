@@ -41,7 +41,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'cp /usr/src/app/www/*.{js,css,html} $PWD/www/'
+                sh 'cp /usr/src/app/www/*.css $PWD/www/'
+                sh 'cp /usr/src/app/www/*.js $PWD/www/'
+                sh 'cp /usr/src/app/www/*.html $PWD/www/'
                 sh 'cp -rf /usr/src/app/www/fonts/ $PWD/www/fonts/'
             }
         }
