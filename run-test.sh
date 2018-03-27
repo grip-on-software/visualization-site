@@ -27,7 +27,7 @@ fi
 
 echo "Up"
 docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium
-docker exec $TEST_CONTAINER python /work/test.py
+docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
