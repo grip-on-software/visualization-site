@@ -4,9 +4,9 @@ manifest.js
 vendor.js
 node_modules
 test/junit/
-www/main.css
 www/fonts/
 www/mix-manifest.json
 www/hot
+www/*.css
 www/*.html
 www/*.map

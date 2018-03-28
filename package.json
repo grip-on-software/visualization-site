@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.4",
-    "@gros/visualization-ui": "^0.4.0",
+    "@gros/visualization-ui": "^0.4.1",
     "bulma": "^0.6.2",
     "cross-env": "^5.1.3",
     "d3": "^4.13.0",

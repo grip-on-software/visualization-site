@@ -14,10 +14,11 @@ if (!fs.existsSync(config)) {
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot('')
+    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? '' : '/')
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
+    .sass('res/navbar.scss', 'www/navbar.css')
     .browserSync({
         proxy: false,
         server: 'www',
