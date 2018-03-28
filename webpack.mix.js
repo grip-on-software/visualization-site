@@ -11,10 +11,11 @@ let config = path.resolve(__dirname, 'config.json');
 if (!fs.existsSync(config)) {
     config = path.resolve(__dirname, 'lib/config.json');
 }
+const configuration = JSON.parse(fs.readFileSync(config));
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? '' : '/')
+    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? configuration.visualization_url : '/')
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
