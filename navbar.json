@@ -190,7 +190,10 @@
                         "content": [
                             {
                                 "type": "image",
-                                "url": "images/leiden.svg",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "images/leiden.svg"
+                                ],
                                 "alt": {
                                     "en": "Grip on Software at Leiden University",
                                     "nl": "Grip op Software bij Universieit Leiden"

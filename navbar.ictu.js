@@ -23,7 +23,10 @@ navbar.last().items.last().items.unshift({
 });
 navbar.last().items.last().items.push({
     "type": "image",
-    "url": "images/ictu.svg",
+    "url": [
+        {"config": "visualization_url"},
+        "images/ictu.svg"
+    ],
     "title": {
         "en": "ICTU",
         "nl": "ICTU"
