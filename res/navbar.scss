@@ -1,0 +1,46 @@
+@import "node_modules/@fortawesome/fontawesome-free-webfonts/scss/fontawesome";
+@import "node_modules/@fortawesome/fontawesome-free-webfonts/scss/fa-brands";
+@import "node_modules/@fortawesome/fontawesome-free-webfonts/scss/fa-regular";
+@import "node_modules/@fortawesome/fontawesome-free-webfonts/scss/fa-solid";
+@import "node_modules/bulma/sass/utilities/initial-variables";
+@import "node_modules/bulma/sass/utilities/functions";
+$title-weight: $weight-light;
+$subtitle-weight: $weight-light;
+@import "node_modules/bulma/sass/utilities/_all";
+
+/* Import all Bulma resources */
+@import "node_modules/bulma/sass/base/_all";
+@import "node_modules/bulma/sass/elements/_all";
+@import "node_modules/bulma/sass/components/_all";
+@import "node_modules/bulma/sass/grid/_all";
+@import "node_modules/bulma/sass/layout/_all";
+
+@mixin fullscreen {
+	*|*:-moz-full-screen {
+		@content
+	}
+	*|*:-webkit-full-screen {
+		@content
+	}
+	*|*:fullscreen {
+		@content
+	}
+}
+@include touch {
+	.navbar .navbar-fullscreen {
+		display: none;
+	}
+}
+@include fullscreen {
+	.navbar {
+		width: auto;
+		float: right;
+	}
+	.navbar .navbar-menu,
+	.navbar .navbar-item {
+		display: none;
+	}
+	.navbar .navbar-fullscreen {
+		display: flex;
+	}
+}
