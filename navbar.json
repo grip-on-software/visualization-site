@@ -4,7 +4,11 @@
         "items": [
             {
                 "type": "link",
-                "url": {"config": "visualization_url"},
+                "url": [
+                    {"config": "visualization_url"},
+                    "?lang=",
+                    {"locale": "lang"}
+                ],
                 "title": {
                     "en": "Visualizations from GROS",
                     "nl": "Visualisaties van GROS"
@@ -12,7 +16,10 @@
                 "content": [
                     {
                         "type": "image",
-                        "url": "images/ICTU-LEIDEN.png",
+                        "url": [
+                            {"config": "visualization_url"},
+                            "images/ICTU-LEIDEN.png"
+                        ],
                         "alt": {
                             "en": "Grip on Software",
                             "nl": "Grip op Software"
@@ -51,7 +58,11 @@
                     {
                         "type": "dropdown",
                         "link": {
-                            "url": {"config": "visualization_url"},
+                            "url": [
+                                {"config": "visualization_url"},
+                                "?lang=",
+                                {"locale": "lang"}
+                            ],
                             "content": {
                                 "en": "Visualizations",
                                 "nl": "Visualisaties"
@@ -60,7 +71,11 @@
                         "items": [
                             {
                                 "type": "link",
-                                "url": "timeline",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "timeline?",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fas", "align-center"],
                                 "content": {
                                     "en": "Timeline",
@@ -87,7 +102,11 @@
                             },
                             {
                                 "type": "link",
-                                "url": "leaderboard",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "leaderboard?lang=",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fas", "trophy"],
                                 "content": {
                                     "en": "Leaderboard",
@@ -108,7 +127,11 @@
                         "items": [
                             {
                                 "type": "link",
-                                "url": {"config": "prediction_url"},
+                                "url": [
+                                    {"config": "prediction_url"},
+                                    "?lang=",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fas", "percent"],
                                 "content": {
                                     "en": "Prediction",
