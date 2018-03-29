@@ -15,7 +15,7 @@ const configuration = JSON.parse(fs.readFileSync(config));
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? configuration.visualization_url : '/')
+    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? '/' : configuration.visualization_url)
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
@@ -31,7 +31,7 @@ mix.setPublicPath('www/')
     .webpackConfig({
         output: {
             path: path.resolve('www/'),
-            publicPath: '.'
+            publicPath: process.env.BRANCH_NAME !== 'master' ? '.' : configuration.visualization_url
         },
         module: {
             rules: [ {
