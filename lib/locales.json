@@ -1,0 +1,56 @@
+{
+    "en": {
+        "language": "English",
+        "messages": {
+            "title": "Welcome to Visualizations from GROS",
+            "blog": "Blog",
+            "discussion": "Discussion",
+            "visualizations-title": "Visualizations",
+            "visualizations-open": "Open",
+            "visualizations-blog": "Read more on the blog",
+            "visualizations-download": "Download visualization as ZIP",
+            "timeline-title": "Timeline",
+            "timeline-content": "A timeline of sprints for each project, with events that happened during that sprint. Several sprints can be selected to compare them.",
+            "heatmap-title": "Heat Map",
+            "heatmap-content": "Project activity over time in a calendar view. Additionally files which are changed after a long time are displayed.",
+            "collaboration-graph-title": "Collaboration Graph",
+            "collaboration-graph-content": "Collaboration between team members on projects, displayed in a network. With a time-lapse mode the growth over time can be displayed.",
+            "leaderboard-title": "Leaderboard",
+            "leaderboard-content": "Project statistics are assigned a score and displayed as a leaderboard, similar to GitLab's Conversational Development Index.",
+            "more-title": "More resources",
+            "prediction-title": "Prediction",
+            "prediction-content": "A classification and risk analysis of the latest sprint.",
+            "bigboat-status-title": "BigBoat Status",
+            "bigboat-status-content": "Historical overview of availability of the BigBoat dashboard. Aggregated reliability and a breakdown of scores is shown.",
+            "process-flow-title": "Process Flow",
+            "process-flow-content": "Overview of the software development process stages. Stories are aggregated in different states, indicating bottlenecks and main streams."
+        }
+    },
+    "nl": {
+        "language": "Nederlands",
+        "messages": {
+            "title": "Welkom bij Visualisaties van GROS",
+            "blog": "Blog",
+            "discussion": "Discussie",
+            "visualizations-title": "Visualisaties",
+            "visualizations-open": "Open",
+            "visualizations-blog": "Lees meer op de blog",
+            "visualizations-download": "Download visualisatie als ZIP",
+            "timeline-title": "Tijdslijn",
+            "timeline-content": "Een tijdsweergave van sprints van elk project, met gebeurtenissen die tijdens die sprints plaatsvonden. Meerdere sprints kunnen worden geselecteerd voor vergelijkingen.",
+            "heatmap-title": "Heatmap",
+            "heatmap-content": "Projectactiviteit over tijd in een kalenderweegave. Bovendien worden bestanden die na lange tijd zijn veranderd getoond.",
+            "collaboration-graph-title": "Samenwerkingsgraaf",
+            "collaboration-graph-content": "Samenwerkingen tussen teamleden op projecten getoond als netwerk. Via de timelapsemodus kan de groei over tijd worden getoond.",
+            "leaderboard-title": "Scoreboard",
+            "leaderboard-content": "Projectstatistieken worden een score gegeven en getoond op een leaderboard, vergelijkbaar met GitLabs Conversational Development Index.",
+            "more-title": "Meer middelen",
+            "prediction-title": "Voorspelling",
+            "prediction-content": "A classificatie and risicoanalyse van de nieuwste sprint.",
+            "bigboat-status-title": "BigBoat-status",
+            "bigboat-status-content": "Historisch overzicht van beschikbaarheid van de BigBoat dashboard. Een geaggregeerd overzicht van betrouwbaarheid en uiteenzetting van scores wordt getoond.",
+            "process-flow-title": "Processverloop",
+            "process-flow-content": "Overzicht van de stappen in het softwareontwikkelingsproces. Stories worden geaggregeerd in verschillende statussen, met aanwijzing van bottlenecks en hoofdstromen."
+        }
+    }
+}

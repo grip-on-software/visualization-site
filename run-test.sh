@@ -16,11 +16,13 @@ fi
 
 PROXY_HOST=nginx
 
+rm -rf test/junit test/results
+mkdir -p test/junit test/results
 docker-compose $COMPOSE_FILES up -d --force-recreate
 
-TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q test)
+TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q runner)
 if [ -z "$TEST_CONTAINER" ]; then
-	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 docker logs
+	docker-compose $COMPOSE_FILES ps -q | xargs -t -L 1 docker logs
 	echo "Could not bring up the test instances."
 	exit 1
 fi
@@ -31,7 +33,7 @@ docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
-	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 docker logs
+	docker-compose $COMPOSE_FILES ps -q | xargs -t -L 1 docker logs
 fi
 
 docker-compose $COMPOSE_FILES down

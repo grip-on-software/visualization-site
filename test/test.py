@@ -3,6 +3,7 @@ Integration tests for the visualization hub proxies.
 """
 
 import errno
+import json
 from socket import error as SocketError
 import time
 import unittest
@@ -27,7 +28,7 @@ class IntegrationTest(unittest.TestCase):
         # Connect to the remote executor. Exceptions may be thrown when the
         # Selenium server is not yet set up.
         try:
-            url = 'http://selenium.gros.test:4444/wd/hub'
+            url = 'http://selenium.test:4444/wd/hub'
             return Remote(command_executor=url,
                           desired_capabilities=DesiredCapabilities.FIREFOX)
         except BadStatusLine:
@@ -49,26 +50,33 @@ class IntegrationTest(unittest.TestCase):
         if self._driver is None:
             self.fail('Could not establish Selenium remote driver')
 
+        with open('config.json') as config_file:
+            self._config = json.load(config_file)
+
     def test_reachability(self):
         """
         Test whether the hubs are reachable and serve correct pages.
         """
 
         driver = self._driver
-        driver.get("http://visualization.gros.example")
+        driver.get('http://{}/'.format(self._config['visualization_server']))
         self.assertIn("Visualizations from GROS", driver.title)
 
-        driver.get("http://blog.gros.example")
-        self.assertIn("GROS project update", driver.title)
+        if 'blog_url' in self._config and self._config['blog_url']:
+            driver.get(self._config['blog_url'])
+            self.assertIn("GROS project update", driver.title)
 
-        driver.get("http://discussion.gros.example")
-        self.assertIn("GROS Discussion", driver.title)
+        if 'discussion_url' in self._config and self._config['discussion_url']:
+            driver.get(self._config['discussion_url'])
+            self.assertIn("GROS Discussion", driver.title)
 
-        driver.get("http://prediction.gros.example/api/v1/predict/jira/TEST/sprint/latest")
+        driver.get("http://{}/api/v1/predict/jira/TEST/sprint/latest".format(self._config['prediction_server']))
         self.assertIn("Not found", driver.title)
 
     def tearDown(self):
-        self._driver.close()
+        if self._driver is not None:
+            self._driver.save_screenshot('results/{}.png'.format(self.id()))
+            self._driver.close()
 
 if __name__ == "__main__":
     unittest.main(

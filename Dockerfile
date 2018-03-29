@@ -10,11 +10,12 @@ ARG NPM_REGISTRY
 RUN npm config set @gros:registry $NPM_REGISTRY
 COPY package.json webpack.mix.js /usr/src/app/
 RUN npm install && npm cache clean --force
-COPY navbar.json navbar.*.js [c]onfig.json /usr/src/app/
+COPY navbar.json navbar.*.js [c]onfig.json nginx.conf.mustache /usr/src/app/
+COPY caddy/ /usr/src/app/caddy/
 COPY lib/ /usr/src/app/lib/
 COPY res/ /usr/src/app/res/
 COPY template /usr/src/app/template/
-COPY www/ /usr/src/app/www/
+COPY test/ /usr/src/app/test/
 ARG NAVBAR_SCOPE
 ARG BRANCH_NAME
 RUN npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME

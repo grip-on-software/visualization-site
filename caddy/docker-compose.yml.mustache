@@ -1,3 +1,5 @@
+# vim: set filetype=yaml :
+
 blog:
   image: greyarch/caddy
   environment:
@@ -6,7 +8,7 @@ blog:
             tls off
             errors stdout
             gzip
-            proxy / www.gros.example:2368 {
+            proxy / {{{control_host}}}:2368 {
                 transparent
             }
         }
@@ -19,7 +21,7 @@ discourse:
             tls off
             errors stdout
             gzip
-            proxy / www.gros.example:2368 {
+            proxy / {{{control_host}}}:2368 {
                 transparent
             }
         }
@@ -32,7 +34,7 @@ visualization:
             tls off
             errors stdout
             gzip
-            proxy / www.gros.example:2368 {
+            proxy / {{{control_host}}}:2368 {
                 transparent
             }
         }
@@ -45,7 +47,7 @@ prediction:
             tls off
             errors stdout
             gzip
-            proxy / www.gros.example:2368 {
+            proxy / {{{control_host}}}:2368 {
                 transparent
             }
         }
@@ -59,7 +61,7 @@ ws:
             errors stdout
             gzip
             timeouts none
-            proxy / www.gros.example:3000 {
+            proxy / {{{control_host}}}:3000 {
                 websocket
                 header_upstream Host {host}
                 header_upstream X-Real-IP {remote}

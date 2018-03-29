@@ -1,9 +1,16 @@
 bundle.js
 bundle.js.map
+/config.json
+/config.*.json
+caddy/docker-compose.yml
+test/docker-compose.yml
+/nginx.conf
 manifest.js
 vendor.js
 node_modules
+test/config.json
 test/junit/
+test/results/
 www/fonts/
 www/mix-manifest.json
 www/hot

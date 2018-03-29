@@ -6,7 +6,7 @@ Array.prototype.last = function() {
 
 navbar.last().items.last().items.unshift({
     "type": "link",
-    "url": "http://blog.gros.example/",
+    "url": {"config": "blog_url"},
     "icon": ["fas", "rss-square"],
     "content": {
         "en": "Blog",
@@ -14,7 +14,7 @@ navbar.last().items.last().items.unshift({
     }
 }, {
     "type": "link",
-    "url": "http://discussion.gros.example/",
+    "url": {"config": "discussion_url"},
     "icon": ["fab", "discourse"],
     "content": {
         "en": "Discussion",
