@@ -1,4 +1,19 @@
 {
-    "visualization_url": "http://visualization.gros.example/",
-    "prediction_url": "http://prediction.gros.example/show/"
+    "visualization_url": "/",
+    "prediction_url": "/prediction/",
+    "blog_url": "/blog/",
+    "discussion_url": "/discussion/",
+    "blog_host": "www.blog.gros.test",
+    "blog_server": "blog.gros.example",
+    "discussion_host": "www.discouse.gros.test",
+    "discussion_server": "discussion.gros.example",
+    "visualization_server": "visualization.gros.example",
+    "prediction_server": "prediction.gros.example",
+    "jenkins_host": "www.jenkins.gros.test",
+    "files_host": "www.owncloud.gros.test",
+    "control_host": "control.gros.test",
+    "websocket_server": "ws.gros.example",
+    "proxy_range": "192.168.0.0/16",
+    "allow_range": ["192.168.0.0/16"],
+    "primary_dns": "127.0.0.1"
 }

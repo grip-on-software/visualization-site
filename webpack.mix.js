@@ -1,5 +1,6 @@
 let fs = require('fs'),
-    mix = require('laravel-mix');
+    mix = require('laravel-mix'),
+    mustache = require('mustache');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
@@ -7,11 +8,34 @@ if (!fs.existsSync(navbar)) {
     navbar = path.resolve(__dirname, 'navbar.json');
 }
 
-let config = path.resolve(__dirname, 'config.json');
+let configFile = 'config.json',
+    config = path.resolve(__dirname, configFile);
 if (!fs.existsSync(config)) {
-    config = path.resolve(__dirname, 'lib/config.json');
+    configFile = 'lib/config.json';
+    config = path.resolve(__dirname, configFile);
 }
 const configuration = JSON.parse(fs.readFileSync(config));
+const control_host_index = configuration.control_host.indexOf('.');
+const domain_index = configuration.visualization_server.indexOf('.');
+const internal_domain_index = configuration.jenkins_host.indexOf('.');
+const templateConfiguration = Object.assign({}, configuration, {
+    config_file: configFile,
+    control_hostname: configuration.control_host.slice(0, control_host_index),
+    control_domain: configuration.control_host.slice(control_host_index + 1),
+    domain: configuration.visualization_server.slice(domain_index + 1),
+    internal_domain: configuration.jenkins_host.slice(internal_domain_index + 1)
+});
+
+const templates = [
+    'nginx.conf', 'caddy/docker-compose.yml', 'test/docker-compose.yml'
+];
+templates.forEach((template) => {
+    fs.writeFileSync(template,
+        mustache.render(fs.readFileSync(`${template}.mustache`, 'utf8'),
+            templateConfiguration
+        )
+    );
+});
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')

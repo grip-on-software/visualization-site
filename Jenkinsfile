@@ -2,6 +2,7 @@ pipeline {
     agent { label 'docker' }
 
     environment {
+        GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
         SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
     }
 
@@ -33,7 +34,10 @@ pipeline {
         stage('Build') {
             steps {
                 updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
-                sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
+                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
+                    sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
+                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
+                }
             }
         }
         stage('Extract') {
@@ -44,6 +48,9 @@ pipeline {
                 }
             }
             steps {
+                sh 'cp /usr/src/app/nginx.conf $PWD/'
+                sh 'cp /usr/src/app/caddy/docker-compose.yml $PWD/caddy/'
+                sh 'cp /usr/src/app/test/docker-compose.yml $PWD/test/'
                 sh 'cp /usr/src/app/www/*.css $PWD/www/'
                 sh 'cp /usr/src/app/www/*.js $PWD/www/'
                 sh 'cp /usr/src/app/www/*.html $PWD/www/'
@@ -52,8 +59,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
-                sh './run-test.sh'
+                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
+                    sh './run-test.sh'
+                }
             }
         }
         stage('SonarQube Analysis') {
