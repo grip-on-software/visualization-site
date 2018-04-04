@@ -194,6 +194,7 @@ http {
 
         location = /branches {
             rewrite ^/branches /job/create-prediction/api/json?tree=jobs[name,color] break;
+            add_header Access-Control-Allow-Origin *;
             proxy_pass http://$jenkins:8080;
         }
 
