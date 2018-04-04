@@ -84,7 +84,11 @@
                             },
                             {
                                 "type": "link",
-                                "url": "heatmap",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "heatmap?lang=",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fas", "th-large"],
                                 "content": {
                                     "en": "Heat map",
@@ -93,7 +97,11 @@
                             },
                             {
                                 "type": "link",
-                                "url": "collaboration-graph",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "collaboration-graph",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["far", "circle"],
                                 "content": {
                                     "en": "Collaboration graph",
@@ -140,7 +148,11 @@
                             },
                             {
                                 "type": "link",
-                                "url": "bigboat-status",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "bigboat-status?lang=",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fab", "docker"],
                                 "content": {
                                     "en": "BigBoat status",
@@ -149,7 +161,11 @@
                             },
                             {
                                 "type": "link",
-                                "url": "process-flow",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "process-flow?lang=",
+                                    {"locale": "lang"}
+                                ],
                                 "icon": ["fas", "sync"],
                                 "content": {
                                     "en": "Process flow",
