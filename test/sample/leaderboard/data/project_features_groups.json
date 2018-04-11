@@ -1,0 +1,1 @@
+{"num_issues":["jira"],"num_stories":["jira"],"num_comments":["jira"],"num_tests":["jira"],"num_repos":["vcs"],"num_tags":["vcs"],"num_links":["jira"],"num_commits":["vcs"],"num_push_events":["vcs"],"num_merges":["vcs"],"num_requests":["vcs"],"num_sprints":["jira","normalize"],"lifespan":["jira","normalize"],"num_versions":["jira"],"num_jobs":["jenkins"]}

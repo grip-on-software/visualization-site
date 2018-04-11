@@ -1,0 +1,24 @@
+digraph G {
+"In Progress " -> "Open " [label="3 days\n21 stories"];
+"Open " -> "In Progress " [label="25 days\n154 stories"];
+"Open " -> "Resolved Fixed" [label="65 days\n18 stories"];
+"In Progress " -> "Resolved Fixed" [label="7 days\n22 stories"];
+"Open " -> "Closed Fixed" [label="28 days\n10 stories"];
+"In Progress " -> "Closed Fixed" [label="17 days\n9 stories"];
+"Resolved Fixed" -> "Closed Fixed" [label="19 days\n99 stories"];
+"Open " -> "Resolved Won't Fix" [label="126 days\n3 stories"];
+"In Progress " -> "Resolved Won't Fix" [label="13 days\n6 stories"];
+"Open " -> "Closed Won't Fix" [label="176 days\n11 stories"];
+"Open " -> "Closed Duplicate" [label="22 days\n7 stories"];
+"Open " -> "Closed Redundant" [label="383 days\n2 stories"];
+"In Progress " [style=rounded,shape=box,color=yellow];
+"Resolved Fixed" [style=rounded,shape=box,color=green];
+"Closed Fixed" [style=rounded,shape=box,color=green];
+"Resolved Won't Fix" [style=rounded,shape=box,color=green];
+"Closed Won't Fix" [style=rounded,shape=box,color=green];
+"Closed Duplicate" [style=rounded,shape=box,color=green];
+"Closed Redundant" [style=rounded,shape=box,color=green];
+{rank = same;"Closed Duplicate"; "Closed Fixed"; "Closed Redundant"; "Closed Won't Fix"; "Resolved Fixed"; "Resolved Won't Fix"}
+{rank = same;"In Progress "}
+{rank = same;"Open "}
+}

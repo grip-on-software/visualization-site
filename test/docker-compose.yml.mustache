@@ -22,13 +22,14 @@ runner:
   command: "python -c 'import signal;signal.pause()'"
   volumes:
     - "../test:/work"
-    - "../{{{config_file}}}:/work/config.json:ro"
+    - "../{{{config_file}}}:/config.json:ro"
   working_dir: "/work"
   links:
     - "selenium:selenium.test"
+    - "coverage:coverage.test"
 
 selenium:
-  image: selenium/standalone-firefox:3.4.0
+  image: selenium/standalone-chrome:3.11.0
   domainname: test
   shm_size: "2g"
   expose:
@@ -39,6 +40,15 @@ selenium:
     - "visualization:{{{visualization_server}}}"
     - "prediction:{{{prediction_server}}}"
     - "ws:{{{websocket_server}}}"
+
+coverage:
+  image: $DOCKER_REGISTRY/gros-coverage-collector:latest
+  domainname: test
+  expose:
+    - "8888"
+  volumes:
+    - "../{{{repo_root}}}:$PWD/test/repos"
+    - "$PWD:$PWD"
 
 jenkins:
   image: greyarch/caddy
@@ -69,8 +79,30 @@ jenkins:
           }
   volumes:
     - "../www:/srv/www/job/build-visualization-site/job/master/Visualization"
+    {{#visualization_names}}
+    - "../{{{repo_root}}}/{{{.}}}/public:/srv/www/job/build-{{{.}}}/job/master/Visualization"
+    - "../test/sample/{{{.}}}/data:/srv/www/job/build-{{{.}}}/job/master/Visualization/data"
+    {{/visualization_names}}
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"
+  links:
+    {{#visualization_names}}
+    - "{{{.}}}:{{{.}}}.{{{internal_domain}}}"
+    {{/visualization_names}}
+
+{{#visualization_names}}
+{{{.}}}:
+  image: $DOCKER_REGISTRY/gros-{{{.}}}:latest
+  domainname: "{{{internal_domain}}}"
+  command: "/bin/sh -exc 'rm -rf public/data/ && mkdir -p public/ && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{.}}}/webpack.mix.js'"
+  user: "{{{user_id}}}:{{{group_id}}}"
+  volumes:
+    - "../{{{repo_root}}}:$PWD/repos"
+    - "../test/sample/{{{.}}}/data:/data"
+  working_dir: "$PWD/repos/{{{.}}}"
+  expose:
+    - "3000"
+{{/visualization_names}}
 
 blog:
   domainname: "{{{domain}}}"

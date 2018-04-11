@@ -2,6 +2,7 @@ pipeline {
     agent { label 'docker' }
 
     environment {
+        IMAGE_TAG = env.BRANCH_NAME.replaceFirst('^master$', 'latest')
         GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
         SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
     }
@@ -12,12 +13,12 @@ pipeline {
     }
     triggers {
         gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
+        cron('H H * * 5')
     }
 
     post {
         success {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
-            updateGitlabCommitStatus name: env.JOB_NAME, state: 'success'
         }
         failure {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'failed'
@@ -26,55 +27,88 @@ pipeline {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'canceled'
         }
         always {
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
             junit 'test/junit/*.xml'
         }
     }
 
     stages {
-        stage('Build') {
+        stage('Start') {
+            when {
+                expression {
+                    currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause) == null
+                }
+            }
             steps {
                 updateGitlabCommitStatus name: env.JOB_NAME, state: 'running'
+            }
+        }
+        stage('Build') {
+            steps {
+                checkout scm
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
-                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
+                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
                 }
             }
         }
-        stage('Extract') {
+        stage('Build test') {
             agent {
                 docker {
-                    image '$DOCKER_REGISTRY/gros-visualization-site'
+                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
                     reuseNode true
                 }
             }
             steps {
-                sh 'cp /usr/src/app/nginx.conf $PWD/'
-                sh 'cp /usr/src/app/caddy/docker-compose.yml $PWD/caddy/'
-                sh 'cp /usr/src/app/test/docker-compose.yml $PWD/test/'
-                sh 'cp /usr/src/app/www/*.css $PWD/www/'
-                sh 'cp /usr/src/app/www/*.js $PWD/www/'
-                sh 'cp /usr/src/app/www/*.html $PWD/www/'
-                sh 'cp -rf /usr/src/app/www/fonts/ $PWD/www/fonts/'
+                sh 'rm -rf node_modules/'
+                sh 'ln -s /usr/src/app/node_modules .'
+                sh 'npm run pretest -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME'
             }
         }
         stage('Test') {
             steps {
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
-                    sh './run-test.sh'
+                    sshagent(['gitlab-clone-auth']) {
+                        sh './run-test.sh'
+                    }
                 }
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME'
+                    sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
                 }
+            }
+        }
+        stage('Build production') {
+            when { branch 'master' }
+            agent {
+                docker {
+                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'rm -rf node_modules/'
+                sh 'ln -s /usr/src/app/node_modules .'
+                sh 'npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME'
             }
         }
         stage('Push') {
             when { branch 'master' }
             steps {
                 sh 'docker push $DOCKER_REGISTRY/gros-visualization-site:latest'
+            }
+        }
+        stage('Status') {
+            when {
+                expression {
+                    currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause) == null
+                }
+            }
+            steps {
+                updateGitlabCommitStatus name: env.JOB_NAME, state: 'success'
             }
         }
     }

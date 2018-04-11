@@ -10,7 +10,9 @@ node_modules
 .dockerignore
 .gitignore
 Jenkinsfile
+repos/
 test/config.json
+test/coverage/
 test/junit/
 test/results/
 www/

@@ -14,26 +14,95 @@ else
 	COMPOSE_FILES="$COMPOSE_FILES -f test/docker-compose.yml"
 fi
 
+function container_logs() {
+	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 -I {} /bin/sh -c 'docker inspect --format="$(cat log-format.txt)" {} && docker logs {}'
+}
+
+rm -rf test/junit test/results test/coverage
+mkdir -p repos
+mkdir -p test/junit test/results test/coverage
+
+if [ -z "$REPO_ROOT" ]; then
+	REPO_ROOT="repos"
+else
+	has_repo_root=1
+fi
+
+if [ -z "$VISUALIZATION_NAMES" ]; then
+	VISUALIZATION_NAMES=$(cat visualization_names.txt)
+fi
+
+for repo in $VISUALIZATION_NAMES; do
+	tree=$(realpath "$REPO_ROOT/$repo")
+	if [ ! -d $tree ]; then
+		echo "Cloning $tree"
+		url=$(git config --get remote.origin.url | sed s/visualization-site/$repo/)
+		git clone $url $tree
+	elif [ ! -z "$has_repo_root" ]; then
+		echo "Keeping $tree intact"
+		if [ -d "$tree/node_modules" ]; then
+			mv "$tree/node_modules" "$tree/node_modules.bak"
+		fi
+	else
+		echo "Updating $tree"
+		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git reset --hard
+		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
+	fi
+done
+
 PROXY_HOST=nginx
 
-rm -rf test/junit test/results
-mkdir -p test/junit test/results
+docker-compose $COMPOSE_FILES pull
 docker-compose $COMPOSE_FILES up -d --force-recreate
 
 TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q runner)
 if [ -z "$TEST_CONTAINER" ]; then
-	docker-compose $COMPOSE_FILES ps -q | xargs -t -L 1 docker logs
-	echo "Could not bring up the test instances."
+	container_logs
+	echo "Could not bring up the test instances." >&2
 	exit 1
 fi
 
-echo "Up"
+echo "Instances are up, performing installations"
 docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium
+
+# Total time allocated for starting the visualizations
+MAX_SECONDS=60
+seconds=0
+for name in $VISUALIZATION_NAMES; do
+	container=$(docker-compose $COMPOSE_FILES ps -q $name)
+	running="true"
+	while [ "$running" == "true" ]; do
+		if [ $seconds -gt $MAX_SECONDS ]; then
+			container_logs
+			docker-compose $COMPOSE_FILES down
+			echo "$name did not seem to be done after ${MAX_SECONDS}s." >&2
+			exit 1
+		fi
+
+		# Check if port 3000 is opened by the visualization
+		running=$(docker inspect -f '{{.State.Running}}' $container 2>&1)
+		exitcode=$?
+		if [ $exitcode -ne 0 ]; then
+			echo "$running" >&2
+			container_logs
+			docker-compose $COMPOSE_FILES down
+			echo "An error occured while waiting for $name to be done." >&2
+			exit 1
+		fi
+		if [ "$running" == "true" ]; then
+			echo "Waiting for $name to be done ($((MAX_SECONDS-seconds))s remaining)"
+			seconds=$((seconds+1))
+			sleep 1
+		fi
+	done
+done
+echo "Starting test"
+
 docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py
 status=$?
 
 if [ $status -ne 0 ]; then
-	docker-compose $COMPOSE_FILES ps -q | xargs -t -L 1 docker logs
+	container_logs
 fi
 
 docker-compose $COMPOSE_FILES down

@@ -1,0 +1,5 @@
+[
+    {"source":"A","target":"P1","internal":true,"support":false,"num_commits":123,"num_issues":456,"encryption":0},
+    {"source":"B","target":"P2","internal":true,"support":true,"num_commits":99,"num_issues":300,"encryption":0},
+    {"source":"C","target":"P1","internal":true,"support":true,"num_commits":107,"num_issues":222,"encryption":0}
+]

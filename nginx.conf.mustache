@@ -89,7 +89,7 @@ http {
         # master branch, using the publishHTML post build step from the HTML
         # Publisher plugin, with the name "Visualization" and an index page of
         # index.html.
-        location ~ /(bigboat-status|collaboration-graph|heatmap|leaderboard|process-flow|timeline)(/|\.zip) {
+        location ~ /({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
             rewrite ^/([^/]+)\.zip$ /job/build-$1/job/master/Visualization/*zip*/$1.zip break;
             rewrite ^/([^/]+)/$ /job/build-$1/job/master/Visualization/index.html break;
             rewrite ^/([^/]+)/(.+) /job/build-$1/job/master/Visualization/$2 break;
