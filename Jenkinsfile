@@ -90,7 +90,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'rm -rf node_modules/'
+                sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
                 sh 'npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME'
             }
