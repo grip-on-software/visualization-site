@@ -23,7 +23,19 @@ const templateConfiguration = Object.assign({}, configuration, {
     control_hostname: configuration.control_host.slice(0, control_host_index),
     control_domain: configuration.control_host.slice(control_host_index + 1),
     domain: configuration.visualization_server.slice(domain_index + 1),
-    internal_domain: configuration.jenkins_host.slice(internal_domain_index + 1)
+    internal_domain: configuration.jenkins_host.slice(internal_domain_index + 1),
+    repo_root: process.env.REPO_ROOT !== undefined ? process.env.REPO_ROOT : 'repos',
+    user_id: process.getuid(),
+    group_id: process.getgid(),
+    visualization_names: process.env.VISUALIZATION_NAMES !== undefined ? 
+        process.env.VISUALIZATION_NAMES.split(' ') :
+        fs.readFileSync(path.resolve(__dirname, 'visualization_names.txt')).toString('utf8').trim().split(' '),
+    join: function() {
+        return function(text, render) {
+            // Remove last character
+            return render(text).slice(0, -1);
+        };
+    }
 });
 
 const templates = [

@@ -8,7 +8,9 @@ test/docker-compose.yml
 manifest.js
 vendor.js
 node_modules
+repos/
 test/config.json
+test/coverage/
 test/junit/
 test/results/
 www/fonts/

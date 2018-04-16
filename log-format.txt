@@ -1,0 +1,1 @@
+=== Logs for {{.Name}} ({{.Config.Image}}) - {{index .Config.Labels "com.docker.compose.service"}}.{{.Config.Domainname}} ({{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}) ===

@@ -18,6 +18,5 @@ COPY template /usr/src/app/template/
 COPY test/ /usr/src/app/test/
 ARG NAVBAR_SCOPE
 ARG BRANCH_NAME
-RUN npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME
 
 CMD ["npm", "start"]
