@@ -99,7 +99,7 @@
                                 "type": "link",
                                 "url": [
                                     {"config": "visualization_url"},
-                                    "collaboration-graph",
+                                    "collaboration-graph?lang=",
                                     {"locale": "lang"}
                                 ],
                                 "icon": ["far", "circle"],
