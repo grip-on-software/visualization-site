@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 from zipfile import ZipFile
 import xmlrunner
 from selenium.webdriver import Remote
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions
@@ -164,6 +165,21 @@ class IntegrationTest(unittest.TestCase):
 
         labels = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#chart-holder svg .labels')))
         self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1) 
+
+        sprint = driver.find_element_by_id('line-drop-0-0')
+        hover = ActionChains(driver)
+        hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
+
+        tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'tooltip')))
+        self.assertIn("Start", tooltip.find_element_by_tag_name('h3').text)
+
+        burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
+        self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6) 
+
+        weekday = driver.find_element_by_css_selector('[data-weekday-scale]')
+        weekday.click()
+
+        self._wait_for(expected_conditions.staleness_of(labels))
 
     def test_navbar(self):
         """
