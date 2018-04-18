@@ -33,7 +33,7 @@ if [ -z "$VISUALIZATION_NAMES" ]; then
 fi
 
 for repo in $VISUALIZATION_NAMES; do
-	tree=$(realpath "$REPO_ROOT/$repo")
+	tree="$PWD/$REPO_ROOT/$repo"
 	if [ ! -d $tree ]; then
 		echo "Cloning $tree"
 		url=$(git config --get remote.origin.url | sed s/visualization-site/$repo/)
