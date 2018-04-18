@@ -166,6 +166,11 @@ class IntegrationTest(unittest.TestCase):
         labels = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#chart-holder svg .labels')))
         self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1) 
 
+        weekday = driver.find_element_by_css_selector('[data-weekday-scale]')
+        weekday.click()
+
+        self._wait_for(expected_conditions.staleness_of(labels))
+
         sprint = driver.find_element_by_id('line-drop-0-0')
         hover = ActionChains(driver)
         hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
@@ -175,11 +180,6 @@ class IntegrationTest(unittest.TestCase):
 
         burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
         self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6) 
-
-        weekday = driver.find_element_by_css_selector('[data-weekday-scale]')
-        weekday.click()
-
-        self._wait_for(expected_conditions.staleness_of(labels))
 
     def test_navbar(self):
         """
