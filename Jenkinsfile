@@ -19,6 +19,7 @@ pipeline {
     post {
         success {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
+            archiveArtifacts 'nginx.conf,caddy/*.yml'
         }
         failure {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'failed'
