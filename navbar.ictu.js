@@ -22,21 +22,31 @@ navbar.last().items.last().items.unshift({
     }
 });
 navbar.last().items.last().items.push({
-    "type": "image",
-    "url": [
-        {"config": "visualization_url"},
-        "images/ictu.svg"
-    ],
+    "type": "link",
+    "url": "https://www.ictu.nl",
     "title": {
         "en": "ICTU",
-        "nl": "ICTU"
+        "nl": "Stichting ICTU"
     },
-    "alt": {
-        "en": "ICTU",
-        "nl": "ICTU"
-    },
-    "width": 52,
-    "height": 94
+    "content": [
+        {
+            "type": "image",
+            "url": [
+                {"config": "visualization_url"},
+                "images/ictu.svg"
+            ],
+            "title": {
+                "en": "ICTU",
+                "nl": "ICTU"
+            },
+            "alt": {
+                "en": "ICTU",
+                "nl": "ICTU"
+            },
+            "width": 52,
+            "height": 94
+        }
+    ]
 });
 
 export default navbar;
