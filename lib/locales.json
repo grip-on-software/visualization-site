@@ -3,6 +3,8 @@
         "language": "English",
         "messages": {
             "title": "Welcome to Visualizations from GROS",
+            "homepage-description": "Read an introduction to the research at the %s.",
+            "homepage-link": "homepage",
             "blog": "Blog",
             "discussion": "Discussion",
             "visualizations-title": "Visualizations",
@@ -30,6 +32,8 @@
         "language": "Nederlands",
         "messages": {
             "title": "Welkom bij Visualisaties van GROS",
+            "homepage-description": "Lees een introductie van het onderzoek op de %s.",
+            "homepage-link": "homepage",
             "blog": "Blog",
             "discussion": "Discussie",
             "visualizations-title": "Visualisaties",
