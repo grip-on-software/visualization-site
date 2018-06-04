@@ -179,6 +179,7 @@ http {
             rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/list/jira /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
             rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/configuration /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
             rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2.json break;
+            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/links/(\w+)/sprint/(latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
             proxy_pass http://$jenkins:8080;
             add_header Access-Control-Allow-Origin *;
         }
