@@ -1,1 +1,1 @@
-bigboat-status collaboration-graph heatmap leaderboard process-flow timeline
+bigboat-status collaboration-graph heatmap leaderboard process-flow sprint-report timeline

@@ -173,6 +173,15 @@ class IntegrationTest(unittest.TestCase):
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
 
+    def test_sprint_report(self):
+        """
+        Test the sprint report visualization.
+        """
+
+        driver = self._driver
+        driver.get('http://{}/sprint-report'.format(self._config['visualization_server']))
+        self.assertIn("Sprint report", driver.title)
+
     def test_timeline(self):
         """
         Test the Timeline visualization.
