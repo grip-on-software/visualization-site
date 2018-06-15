@@ -171,6 +171,19 @@
                                     "en": "Process flow",
                                     "nl": "Procesverloop"
                                 }
+                            },
+                            {
+                                "type": "link",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "sprint-report?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "icon": ["fas", "book-open"],
+                                "content": {
+                                    "en": "Sprint report",
+                                    "nl": "Sprintrapportage"
+                                }
                             }
                         ]
                     }
