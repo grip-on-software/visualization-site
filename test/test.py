@@ -201,10 +201,13 @@ class IntegrationTest(unittest.TestCase):
 
         sprint = driver.find_element_by_id('line-drop-0-0')
         hover = ActionChains(driver)
-        hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
+        hover.move_to_element_with_offset(sprint, 1, 1).perform()
 
         tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'tooltip')))
         self.assertIn("Start", tooltip.find_element_by_tag_name('h3').text)
+
+        hover = ActionChains(driver)
+        hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
 
         burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
         self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6) 
