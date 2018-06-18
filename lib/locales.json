@@ -27,7 +27,7 @@
             "process-flow-title": "Process Flow",
             "process-flow-content": "Overview of the software development process stages. Stories are aggregated in different states, indicating bottlenecks and main streams.",
             "sprint-report-title": "Sprint Report",
-            "sprint-report-content": "Customizable report generator that provides a summary of relevant metrics from the recent sprints of multiple projects."
+            "sprint-report-content": "Customizable report generator which provides a summary of relevant metrics from the recent sprints of multiple projects."
         }
     },
     "nl": {
@@ -48,14 +48,14 @@
             "heatmap-content": "Projectactiviteit over tijd in een kalenderweegave. Bovendien worden bestanden die na lange tijd zijn veranderd getoond.",
             "collaboration-graph-title": "Samenwerkingsgraaf",
             "collaboration-graph-content": "Samenwerkingen tussen teamleden op projecten getoond als netwerk. Via de timelapsemodus kan de groei over tijd worden getoond.",
-            "leaderboard-title": "Scoreboard",
+            "leaderboard-title": "Leaderboard",
             "leaderboard-content": "Projectstatistieken worden een score gegeven en getoond op een leaderboard, vergelijkbaar met GitLabs Conversational Development Index.",
             "more-title": "Meer middelen",
             "prediction-title": "Voorspelling",
             "prediction-content": "A classificatie and risicoanalyse van de nieuwste sprint.",
             "bigboat-status-title": "BigBoat-status",
             "bigboat-status-content": "Historisch overzicht van beschikbaarheid van de BigBoat dashboard. Een geaggregeerd overzicht van betrouwbaarheid en uiteenzetting van scores wordt getoond.",
-            "process-flow-title": "Processverloop",
+            "process-flow-title": "Procesverloop",
             "process-flow-content": "Overzicht van de stappen in het softwareontwikkelingsproces. Stories worden geaggregeerd in verschillende statussen, met aanwijzing van bottlenecks en hoofdstromen.",
             "sprint-report-title": "Sprintrapportage",
             "sprint-report-content": "Aanpasbare rapportgenerator die een overzicht van relevante metrieken uit de recente sprints van meerdere projecten toont."
