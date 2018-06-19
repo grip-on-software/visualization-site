@@ -9,6 +9,7 @@ import json
 from socket import error as SocketError
 import time
 import unittest
+from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 from zipfile import ZipFile
 import xmlrunner
@@ -67,6 +68,14 @@ class IntegrationTest(unittest.TestCase):
         with open('/config.json') as config_file:
             self._config = json.load(config_file)
 
+        visualization = 'http://{}'.format(self._config['visualization_server'])
+        self._visualization_url = urljoin(visualization,
+                                          self._config['visualization_url'])
+
+        prediction = 'http://{}'.format(self._config['prediction_server'])
+        self._prediction_url = urljoin(prediction,
+                                       self._config['prediction_url'])
+
     def _wait_for(self, condition):
         return WebDriverWait(self._driver, self.WAIT_TIMEOUT,
                              self.WAIT_FREQUENCY).until(condition)
@@ -77,7 +86,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/'.format(self._config['visualization_server']))
+        driver.get(self._visualization_url)
         self.assertIn("Visualizations from GROS", driver.title)
 
         if 'blog_url' in self._config and self._config['blog_url']:
@@ -88,7 +97,7 @@ class IntegrationTest(unittest.TestCase):
             driver.get(self._config['discussion_url'])
             self.assertIn("GROS Discussion", driver.title)
 
-        driver.get("http://{}/api/v1/predict/jira/TEST/sprint/latest".format(self._config['prediction_server']))
+        driver.get("{}/api/v1/predict/jira/TEST/sprint/latest".format(self._prediction_url))
         self.assertIn("Not found", driver.title)
 
     def test_bigboat_status(self):
@@ -97,7 +106,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/bigboat-status'.format(self._config['visualization_server']))
+        driver.get('{}/bigboat-status'.format(self._visualization_url))
         self.assertIn("Big Boat status", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'content')))
@@ -110,11 +119,11 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/collaboration-graph'.format(self._config['visualization_server']))
+        driver.get('{}/collaboration-graph'.format(self._visualization_url))
         self.assertIn("Collaboration Graph", driver.title)
 
         links = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .links')))
-        self.assertEqual(len(links.find_elements_by_tag_name('line')), 3) 
+        self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
@@ -124,7 +133,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/heatmap'.format(self._config['visualization_server']))
+        driver.get('{}/heatmap'.format(self._visualization_url))
         self.assertIn("Calendar/heatmap", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'projectPicker')))
@@ -137,7 +146,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/heatmap'.format(self._config['visualization_server']))
+        driver.get('{}/heatmap'.format(self._visualization_url))
 
         year = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'days')))
         days = year.find_elements_by_class_name('day-group')
@@ -155,7 +164,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/leaderboard'.format(self._config['visualization_server']))
+        driver.get('{}/leaderboard'.format(self._visualization_url))
         self.assertIn("Leaderboard", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
@@ -167,7 +176,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/process-flow'.format(self._config['visualization_server']))
+        driver.get('{}/process-flow'.format(self._visualization_url))
         self.assertIn("Process flow", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
@@ -179,7 +188,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/sprint-report'.format(self._config['visualization_server']))
+        driver.get('{}/sprint-report'.format(self._visualization_url))
         self.assertIn("Sprint report", driver.title)
 
     def test_timeline(self):
@@ -188,11 +197,11 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/timeline'.format(self._config['visualization_server']))
+        driver.get('{}/timeline'.format(self._visualization_url))
         self.assertIn("Timeline", driver.title)
 
         labels = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#chart-holder svg .labels')))
-        self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1) 
+        self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1)
 
         weekday = driver.find_element_by_css_selector('[data-weekday-scale]')
         weekday.click()
@@ -210,7 +219,7 @@ class IntegrationTest(unittest.TestCase):
         hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
 
         burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
-        self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6) 
+        self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6)
 
     def test_navbar(self):
         """
@@ -218,7 +227,7 @@ class IntegrationTest(unittest.TestCase):
         """
 
         driver = self._driver
-        driver.get('http://{}/'.format(self._config['visualization_server']))
+        driver.get(self._visualization_url)
         container = driver.find_element_by_id('navbar')
         fullscreen = container.find_element_by_class_name('navbar-fullscreen')
         fullscreen.click()
