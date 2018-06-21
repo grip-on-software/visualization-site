@@ -1,7 +1,8 @@
-let fs = require('fs'),
-    mix = require('laravel-mix'),
-    mustache = require('mustache');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs'),
+      { URL } = require('url'),
+      mix = require('laravel-mix'),
+      mustache = require('mustache'),
+      HtmlWebpackPlugin = require('html-webpack-plugin');
 
 let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
 if (!fs.existsSync(navbar)) {
@@ -35,7 +36,24 @@ const templateConfiguration = Object.assign({}, configuration, {
             // Remove last character
             return render(text).slice(0, -1);
         };
-    }
+    },
+    path: function() {
+        return function(text, render) {
+            const path = render(text);
+            if (path.charAt(0) === '/' && path.charAt(1) !== '/') {
+                return path;
+            }
+            return '/';
+        }
+    },
+    url: function() {
+        return function(text, render) {
+            const url_parts = render(text).split('/');
+            const server = url_parts.shift();
+            return (new URL(url_parts.join('/'), `http://${server}/`)).href;
+        }
+    },
+    rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
 
 const templates = [

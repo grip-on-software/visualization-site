@@ -66,16 +66,18 @@ echo "Instances are up, performing installations"
 docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium
 
 # Total time allocated for starting the visualizations
-MAX_SECONDS=60
+if [ -z "$VISUALIZATION_MAX_SECONDS" ]; then
+	VISUALIZATION_MAX_SECONDS=60
+fi
 seconds=0
 for name in $VISUALIZATION_NAMES; do
 	container=$(docker-compose $COMPOSE_FILES ps -q $name)
 	running="true"
 	while [ "$running" == "true" ]; do
-		if [ $seconds -gt $MAX_SECONDS ]; then
+		if [ $seconds -gt $VISUALIZATION_MAX_SECONDS ]; then
 			container_logs
 			docker-compose $COMPOSE_FILES down
-			echo "$name did not seem to be done after ${MAX_SECONDS}s." >&2
+			echo "$name did not seem to be done after ${VISUALIZATION_MAX_SECONDS}s." >&2
 			exit 1
 		fi
 
@@ -90,7 +92,7 @@ for name in $VISUALIZATION_NAMES; do
 			exit 1
 		fi
 		if [ "$running" == "true" ]; then
-			echo "Waiting for $name to be done ($((MAX_SECONDS-seconds))s remaining)"
+			echo "Waiting for $name to be done ($((VISUALIZATION_MAX_SECONDS-seconds))s remaining)"
 			seconds=$((seconds+1))
 			sleep 1
 		fi

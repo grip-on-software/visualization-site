@@ -37,6 +37,8 @@ http {
 
     resolver 127.0.0.1 valid=30s;
 
+    rewrite_log {{{rewrite_log}}};
+
     map $http_upgrade $connection_upgrade {
         default upgrade;
         '' close;
@@ -89,10 +91,10 @@ http {
         # master branch, using the publishHTML post build step from the HTML
         # Publisher plugin, with the name "Visualization" and an index page of
         # index.html.
-        location ~ /({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
-            rewrite ^/([^/]+)\.zip$ /job/build-$1/job/master/Visualization/*zip*/$1.zip break;
-            rewrite ^/([^/]+)/$ /job/build-$1/job/master/Visualization/index.html break;
-            rewrite ^/([^/]+)/(.+) /job/build-$1/job/master/Visualization/$2 break;
+        location ~ {{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
+            rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)\.zip$ /job/build-$1/job/master/Visualization/*zip*/$1.zip break;
+            rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/$ /job/build-$1/job/master/Visualization/index.html break;
+            rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/(.+) /job/build-$1/job/master/Visualization/$2 break;
             proxy_pass http://$jenkins:8080;
         }
 
@@ -116,24 +118,24 @@ http {
             access_log /var/log/nginx/analytics_access.log;
         }
 
-        rewrite ^/view {{{visualization_url}}} permanent;
-        rewrite ^/job {{{visualization_url}}} permanent;
-        rewrite ^/([_0-9a-zA-Z-]+)$ {{{visualization_url}}}$1/ permanent;
+        rewrite ^/view {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}} permanent;
+        rewrite ^/job {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}} permanent;
+        rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}}$1/ permanent;
 
         proxy_intercept_errors on;
 
         error_page 404 /404.html;
         error_page 500 502 503 504 /50x.html;
 
-        location ~ /(manifest\.js|vendor\.js|navbar\.css|fonts/) {
+        location ~ {{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
             add_header Access-Control-Allow-Origin *;
-            rewrite (.+) /job/build-visualization-site/job/master/Visualization/$1 break;
+            rewrite {{#path}}{{{visualization_url}}}{{/path}}(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
             proxy_pass http://$jenkins:8080;
         }
 
-        location ~ ^/ {
-            rewrite ^/(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
-            rewrite ^/ /job/build-visualization-site/job/master/Visualization/index.html break;
+        location ~ ^{{#path}}{{{visualization_url}}}{{/path}} {
+            rewrite ^{{#path}}{{{visualization_url}}}{{/path}}(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
+            rewrite ^{{#path}}{{{visualization_url}}}{{/path}} /job/build-visualization-site/job/master/Visualization/index.html break;
             proxy_pass http://$jenkins:8080;
         }
     }
@@ -171,60 +173,60 @@ http {
         include /etc/nginx/default.d/*.conf;
 
         # Handle prediction data from Jenkins.
-        location ~ (/api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
+        location ~ {{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
             if ($branch = "") {
                 set $branch "master";
             }
-            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(\w+)/sprint/(\d+|latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/$3.json break;
-            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/list/jira /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
-            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/configuration /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
-            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units|sources) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2.json break;
-            rewrite ^/api/v1(-[-_0-9a-zA-Z]+)?/links/(\w+)/sprint/(latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(\w+)/sprint/(\d+|latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/$3.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units|sources) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(\w+)/sprint/(latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
             proxy_pass http://$jenkins:8080;
             add_header Access-Control-Allow-Origin *;
         }
 
-        location ~ (/show|/branch/(?P<branch>[-_0-9a-zA-Z]+))/ {
+        location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/ {
             set $branch "master";
-            rewrite ^(/show|/branch/[-_0-9a-zA-Z]+)/zip$ /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
-            rewrite ^(/show|/branch/[-_0-9a-zA-Z]+)/([A-Z]+)/$ $1/$2 permanent;
-            rewrite ^(/show|/branch/[-_0-9a-zA-Z]+)/([A-Z]+)$ /job/build-prediction-site/job/$branch/Visualization/index.html?$2 break;
-            rewrite ^(/show|/branch/[-_0-9a-zA-Z]+)/(.+) /job/build-prediction-site/job/$branch/Visualization/$2 break;
-            rewrite ^(/show|/branch/[-_0-9a-zA-Z]+)/$ /job/build-prediction-site/job/$branch/Visualization/index.html break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([A-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}$1/$2 permanent;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([A-Z]+)$ /job/build-prediction-site/job/$branch/Visualization/index.html?$2 break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(.+) /job/build-prediction-site/job/$branch/Visualization/$2 break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ /job/build-prediction-site/job/$branch/Visualization/index.html break;
             proxy_pass http://$jenkins:8080;
         }
 
-        location = /branches {
-            rewrite ^/branches /job/create-prediction/api/json?tree=jobs[name,color] break;
+        location = {{#path}}{{{prediction_url}}}{{/path}}branches {
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}branches /job/create-prediction/api/json?tree=jobs[name,color] break;
             add_header Access-Control-Allow-Origin *;
             proxy_pass http://$jenkins:8080;
         }
 
-        location ~ /papers/.*$ {
-            rewrite ^/papers/(.*).pdf /index.php/s/YOUR_OWNCLOUD_SHARE_ID_HERE/download?path=%2F&files=$1.pdf break;
+        location ~ {{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}papers/(.*).pdf /index.php/s/YOUR_OWNCLOUD_SHARE_ID_HERE/download?path=%2F&files=$1.pdf break;
             proxy_hide_header Content-Disposition;
             proxy_intercept_errors on;
             proxy_pass http://$owncloud;
         }
 
-        location ^~ /files {
-            rewrite ^/files /index.php/apps/files_sharing/ajax/list.php?t=YOUR_OWNCLOUD_SHARE_ID_HERE&dir=%2F&sort=name&sortdirection=asc break;
+        location ^~ {{#path}}{{{prediction_url}}}{{/path}}files {
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}files /index.php/apps/files_sharing/ajax/list.php?t=YOUR_OWNCLOUD_SHARE_ID_HERE&dir=%2F&sort=name&sortdirection=asc break;
             add_header Access-Control-Allow-Origin *;
             proxy_pass http://$owncloud;
         }
 
         autoindex off;
-        rewrite ^/(index\.html|show|papers/?)?$ /show/ permanent;
-        rewrite ^/zip$ /show/zip permanent;
+        rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(index\.html|show|papers/?)?$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}show/ permanent;
+        rewrite ^/zip$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}show/zip permanent;
 
         proxy_intercept_errors on;
 
         error_page 404 /404.html;
         error_page 500 502 503 504 /50x.html;
 
-        location ~ ^/ {
-            rewrite ^/(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
-            rewrite ^/ /job/build-visualization-site/job/master/Visualization/index.html break;
+        location ~ ^{{#path}}{{{prediction_url}}}{{/path}} {
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}} /job/build-visualization-site/job/master/Visualization/index.html break;
             proxy_pass http://$jenkins:8080;
         }
     }
