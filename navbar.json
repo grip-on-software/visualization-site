@@ -126,7 +126,11 @@
                     {
                         "type": "dropdown",
                         "link": {
-                            "url": {"config": "prediction_url"},
+                            "url": [
+                                {"config": "prediction_url"},
+                                "?lang=",
+                                {"locale": "lang"}
+                            ],
                             "content": {
                                 "en": "More",
                                 "nl": "Meer"
