@@ -54,6 +54,14 @@ class IntegrationTest(unittest.TestCase):
 
             return None
 
+    @classmethod
+    def setUpClass(cls):
+        cls._results_index = open('results/index.html', 'w')
+        cls._results_index.write('<!doctype html><html><head>')
+        cls._results_index.write('<meta charset="utf-8">')
+        cls._results_index.write('<title>Visualization test results</title>')
+        cls._results_index.write('</head><body><h1>Test results</h1><ul>')
+
     def setUp(self):
         self._driver = self._setup_driver()
         tries = 0
@@ -236,6 +244,7 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         if self._driver is not None:
             self._driver.save_screenshot('results/{}.png'.format(self.id()))
+            self._results_index.write('<li><a href="{0}.png">{0}</a></li>'.format(self.id()))
 
             for entry in self._driver.get_log('browser'):
                 print(entry)
@@ -254,6 +263,9 @@ class IntegrationTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls._results_index.write('</ul></body></html>')
+        cls._results_index.close()
+
         with closing(urlopen('http://coverage.test:8888/download')) as response:
             if response.getcode() != 200:
                 print('No coverage data downloaded!')
@@ -263,7 +275,6 @@ class IntegrationTest(unittest.TestCase):
                 with BytesIO(response.read()) as zip_data:
                     with ZipFile(zip_data, 'r') as zip_file:
                         zip_file.extractall('coverage/')
-
 
 def main():
     """
