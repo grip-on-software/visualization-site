@@ -158,7 +158,7 @@
                     <div class="columns is-multiline">
                         <div class="column is-3-desktop is-one-third-tablet">
                             <div class="card">
-                                <a href="{{ prediction_url }}" data-language="lang">
+                                <a href="{{ prediction_url }}/show" data-language="lang">
                                     <header class="card-header">
                                         <p class="card-header-title">
                                             <i data-feather="percent"></i>
@@ -172,8 +172,8 @@
                                     </div>
                                 </div>
                                 <footer class="card-footer">
-                                    <a href="{{ prediction_url }}" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-                                    <a href="{{ prediction_url }}zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
+                                    <a href="{{ prediction_url }}/show" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
+                                    <a href="{{ prediction_url }}/show/zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
                                         <i data-feather="download"></i>
                                     </a>
                                 </footer>
