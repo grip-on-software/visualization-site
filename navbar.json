@@ -128,7 +128,7 @@
                         "link": {
                             "url": [
                                 {"config": "prediction_url"},
-                                "/show/?lang=",
+                                "show/?lang=",
                                 {"locale": "lang"}
                             ],
                             "content": {
@@ -141,7 +141,7 @@
                                 "type": "link",
                                 "url": [
                                     {"config": "prediction_url"},
-                                    "/show/?lang=",
+                                    "show/?lang=",
                                     {"locale": "lang"}
                                 ],
                                 "icon": ["fas", "percent"],
