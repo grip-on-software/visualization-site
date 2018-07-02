@@ -179,6 +179,7 @@ http {
             }
             rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(\w+)/sprint/(\d+|latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/$3.json break;
             rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
+            rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects_meta.json break;
             rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
             rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units|sources) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2.json break;
             rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(\w+)/sprint/(latest) /job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
