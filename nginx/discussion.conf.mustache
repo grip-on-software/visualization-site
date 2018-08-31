@@ -1,0 +1,8 @@
+location ~ ^/admin {
+    # Require administration to originate from within VLAN
+    return 403;
+}
+
+location ~ ^/ {
+    proxy_pass http://{{#upstream}}discourse:3000{{/upstream}};
+}

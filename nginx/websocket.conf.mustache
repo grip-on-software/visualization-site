@@ -1,0 +1,16 @@
+location / {
+    set_real_ip_from {{{proxy_range}}};
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+    {{#allow_range}}
+    allow {{{.}}};
+    {{/allow_range}}
+    deny all;
+
+    access_log /var/log/nginx/analytics_access.log;
+
+    proxy_pass http://127.0.0.1:7890;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+}

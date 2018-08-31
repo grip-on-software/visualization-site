@@ -8,6 +8,7 @@ nginx:
   volumes:
     - "../www:/srv/visualization-site/www"
     - "../nginx.conf:/etc/nginx/nginx.conf:ro"
+    - "../nginx:/etc/nginx/nginx"
   expose:
     - "2368"
     - "3000"

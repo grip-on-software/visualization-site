@@ -4,6 +4,7 @@ bundle.js.map
 caddy/docker-compose.yml
 test/docker-compose.yml
 /nginx.conf
+nginx/*.conf
 manifest.js
 vendor.js
 node_modules

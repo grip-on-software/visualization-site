@@ -44,27 +44,40 @@ const templateConfiguration = Object.assign({}, configuration, {
                 return path;
             }
             return '/';
-        }
+        };
     },
     url: function() {
         return function(text, render) {
             const url_parts = render(text).split('/');
             const server = url_parts.shift();
             return (new URL(url_parts.join('/'), `http://${server}/`)).href;
-        }
+        };
+    },
+    upstream: function() {
+        return function(text, render) {
+            return process.env.NGINX_UPSTREAM === 'local' ? text.split(':', 1) :
+                `$${text}`;
+        };
     },
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
 
 const templates = [
-    'nginx.conf', 'caddy/docker-compose.yml', 'test/docker-compose.yml'
+    'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf', 
+    'nginx/prediction.conf', 'nginx/visualization.conf', 'nginx/websocket.conf',
+    'caddy/docker-compose.yml', 'test/docker-compose.yml'
 ];
 templates.forEach((template) => {
-    fs.writeFileSync(template,
-        mustache.render(fs.readFileSync(`${template}.mustache`, 'utf8'),
-            templateConfiguration
-        )
-    );
+    try {
+        fs.writeFileSync(template,
+            mustache.render(fs.readFileSync(`${template}.mustache`, 'utf8'),
+                templateConfiguration
+            )
+        );
+    }
+    catch (e) {
+        throw new Error(`Could not render ${template}.mustache: ${e.message}`);
+    }
 });
 
 Mix.paths.setRootPath(__dirname);
