@@ -13,8 +13,9 @@ RUN npm install && npm cache clean --force
 COPY navbar.json navbar.*.js [c]onfig.json nginx.conf.mustache /usr/src/app/
 COPY caddy/ /usr/src/app/caddy/
 COPY lib/ /usr/src/app/lib/
+COPY nginx/ /usr/src/app/nginx/
 COPY res/ /usr/src/app/res/
-COPY template /usr/src/app/template/
+COPY template/ /usr/src/app/template/
 COPY test/ /usr/src/app/test/
 ARG NAVBAR_SCOPE
 ARG BRANCH_NAME

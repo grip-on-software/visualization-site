@@ -1,0 +1,8 @@
+location ~ ^/ghost {
+    # Require administration to originate from within gros VLAN
+    return 403;
+}
+
+location ~ ^/ {
+    proxy_pass http://{{#upstream}}blog:2368{{/upstream}};
+}
