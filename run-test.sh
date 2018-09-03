@@ -6,16 +6,16 @@ function version() {
 }
 
 COMPOSE_VERSION=$(docker-compose version --short)
-COMPOSE_FILES="-f caddy/docker-compose.yml"
+COMPOSE_ARGS="-p ${BUILD_TAG:-visualization} -f caddy/docker-compose.yml"
 if [ $(version $COMPOSE_VERSION) -lt $(version "1.7.0") ]; then
 	sed -E 's/( +)shm_size: .*/\1volumes:\'$'\n''\1  - \/dev\/shm:\/dev\/shm/' test/docker-compose.yml > test/docker-compose.shm.yml
-	COMPOSE_FILES="$COMPOSE_FILES -f test/docker-compose.shm.yml"
+	COMPOSE_ARGS="$COMPOSE_ARGS -f test/docker-compose.shm.yml"
 else
-	COMPOSE_FILES="$COMPOSE_FILES -f test/docker-compose.yml"
+	COMPOSE_ARGS="$COMPOSE_ARGS -f test/docker-compose.yml"
 fi
 
 function container_logs() {
-	docker-compose $COMPOSE_FILES ps -q | xargs -L 1 -I {} /bin/sh -c 'docker inspect --format="$(cat log-format.txt)" {} && docker logs {}'
+	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/sh -c 'docker inspect --format="$(cat log-format.txt)" {} && docker logs {}'
 }
 
 rm -rf test/junit test/results test/coverage
@@ -52,10 +52,10 @@ done
 
 PROXY_HOST=nginx
 
-docker-compose $COMPOSE_FILES pull
-docker-compose $COMPOSE_FILES up -d --force-recreate
+docker-compose $COMPOSE_ARGS pull
+docker-compose $COMPOSE_ARGS up -d --force-recreate
 
-TEST_CONTAINER=$(docker-compose $COMPOSE_FILES ps -q runner)
+TEST_CONTAINER=$(docker-compose $COMPOSE_ARGS ps -q runner)
 if [ -z "$TEST_CONTAINER" ]; then
 	container_logs
 	echo "Could not bring up the test instances." >&2
@@ -71,12 +71,12 @@ if [ -z "$VISUALIZATION_MAX_SECONDS" ]; then
 fi
 seconds=0
 for name in $VISUALIZATION_NAMES; do
-	container=$(docker-compose $COMPOSE_FILES ps -q $name)
+	container=$(docker-compose $COMPOSE_ARGS ps -q $name)
 	running="true"
 	while [ "$running" == "true" ]; do
 		if [ $seconds -gt $VISUALIZATION_MAX_SECONDS ]; then
 			container_logs
-			docker-compose $COMPOSE_FILES down
+			docker-compose $COMPOSE_ARGS down
 			echo "$name did not seem to be done after ${VISUALIZATION_MAX_SECONDS}s." >&2
 			exit 1
 		fi
@@ -87,7 +87,7 @@ for name in $VISUALIZATION_NAMES; do
 		if [ $exitcode -ne 0 ]; then
 			echo "$running" >&2
 			container_logs
-			docker-compose $COMPOSE_FILES down
+			docker-compose $COMPOSE_ARGS down
 			echo "An error occured while waiting for $name to be done." >&2
 			exit 1
 		fi
@@ -107,6 +107,6 @@ if [ $status -ne 0 ]; then
 	container_logs
 fi
 
-docker-compose $COMPOSE_FILES down
+docker-compose $COMPOSE_ARGS down
 
 exit $status
