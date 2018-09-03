@@ -163,7 +163,7 @@ class IntegrationTest(unittest.TestCase):
         hover = ActionChains(driver)
         hover.move_to_element_with_offset(day, 1, 1).click().perform()
 
-        tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'tooltip')))
+        tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'tooltip')))
         self.assertIn("April 12, 2018", tooltip.find_element_by_tag_name('h3').text)
 
     def test_leaderboard(self):
@@ -255,7 +255,8 @@ class IntegrationTest(unittest.TestCase):
                 request = Request('http://coverage.test:8888/client',
                                   data=json.dumps(coverage).encode('utf-8'),
                                   headers=headers)
-                with closing(urlopen(request)) as response:
+                response = urlopen(request)
+                with closing(response):
                     if response.getcode() != 200:
                         self.fail('Could not upload coverage data')
 
@@ -266,7 +267,8 @@ class IntegrationTest(unittest.TestCase):
         cls._results_index.write('</ul></body></html>')
         cls._results_index.close()
 
-        with closing(urlopen('http://coverage.test:8888/download')) as response:
+        response = urlopen('http://coverage.test:8888/download')
+        with closing(response):
             if response.getcode() != 200:
                 print('No coverage data downloaded!')
                 for line in response:
