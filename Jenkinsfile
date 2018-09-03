@@ -28,8 +28,8 @@ pipeline {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'canceled'
         }
         always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'test/results/', reportFiles: 'index.html', reportName: 'Results', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/results/', reportFiles: 'index.html', reportName: 'Results', reportTitles: ''])
             junit 'test/junit/*.xml'
         }
     }
