@@ -135,6 +135,40 @@ class IntegrationTest(unittest.TestCase):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
+    def test_collaboration_graph_extern(self):
+        """
+        Test the external filter mechanism of the Collaboration graph.
+        """
+
+        driver = self._driver
+        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+
+        nodes = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes')))
+        circle = nodes.find_elements_by_tag_name('circle')[2]
+
+        button = driver.find_element_by_css_selector('.regular-option')
+        button.click()
+        self._wait_for(expected_conditions.invisibility_of_element_located(circle))
+
+        self.assertEqual(circle.get_attribute('visibility'), 'collapse')
+
+    def test_collaboration_graph_find(self):
+        """
+        Test the search mechanism of the Collaboration graph.
+        """
+
+        driver = self._driver
+        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+
+        nodes = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes')))
+        circles = nodes.find_elements_by_tag_name('circle')
+
+        search = driver.find_element_by_css_selector('input.regular-option')
+        search.send_keys('A')
+
+        time.sleep(3)
+        self.assertEqual(circles[2].get_attribute('fill'), 'red')
+
     def test_collaboration_timelapse(self):
         """
         Test the timelapse mechanism of the Collaboration graph.
@@ -142,7 +176,6 @@ class IntegrationTest(unittest.TestCase):
 
         driver = self._driver
         driver.get('{}/collaboration-graph'.format(self._visualization_url))
-        self.assertIn("Collaboration Graph", driver.title)
 
         button = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#options .button')))
         button.click()
@@ -164,6 +197,9 @@ class IntegrationTest(unittest.TestCase):
 
         self.assertTrue(faster.get_attribute("disabled"))
 
+        slower.click()
+        self.assertFalse(faster.get_attribute("disabled"))
+
         title = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#options h3')))
         self.assertEqual(title.text, "August 2017")
 
@@ -172,8 +208,16 @@ class IntegrationTest(unittest.TestCase):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 3)
 
-        time.sleep(.5)
+        self._wait_for(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.fa-stop')))
         self.assertEqual(pause.get_attribute("data-tooltip"), "Stopped")
+
+        button.click()
+        self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes .node:nth-child(5)')))
+
+        links = driver.find_element_by_css_selector('svg#graph .links')
+        self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
+        nodes = driver.find_element_by_css_selector('svg#graph .nodes')
+        self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
     def test_heatmap(self):
         """
