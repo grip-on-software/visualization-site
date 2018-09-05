@@ -283,6 +283,29 @@ class IntegrationTest(unittest.TestCase):
         driver.get('{}/sprint-report'.format(self._visualization_url))
         self.assertIn("Sprint report", driver.title)
 
+        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
+        item = items.find_element_by_css_selector('li:last-child')
+        item.click()
+
+        table = self._wait_for(expected_conditions.visibility_of_element_located((By.TAG_NAME, 'table')))
+        self.assertEqual(len(table.find_elements_by_tag_name('tbody')), 1)
+        project = table.find_element_by_class_name('project')
+        self.assertEqual(len(project.find_elements_by_class_name('sprint')), 1)
+        self.assertEqual(project.find_element_by_class_name('board').text, 'Proj1')
+        self.assertEqual(project.find_element_by_class_name('display-name').text, 'Project1')
+        self.assertEqual(len(table.find_elements_by_class_name('feature')), 3)
+
+        formats = driver.find_element_by_id('format')
+        old_display = table
+        for item in formats.find_elements_by_css_selector('li:not(:first-child)'):
+            item.click()
+
+            self._wait_for(expected_conditions.staleness_of(old_display))
+            chart = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'chart')))
+            self.assertEqual(len(chart.find_elements_by_class_name('feature')), 3)
+            old_display = chart
+
     def test_timeline(self):
         """
         Test the Timeline visualization.
