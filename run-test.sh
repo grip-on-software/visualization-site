@@ -15,7 +15,16 @@ else
 fi
 
 function container_logs() {
-	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/sh -c 'docker inspect --format="$(cat log-format.txt)" {} && docker logs {}'
+	echo '<h1>Logs</h1><ul>' >> test/results/index.html
+
+	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/bash -c '
+		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_{}.html
+		echo "<pre>" >> test/results/logs_{}.html
+		docker logs {} >> test/results/logs_{}.html 2>&1
+		echo "</pre></body></html>" >> test/results/logs_{}.html
+		echo "<li><a href=\"logs_{}.html\">$(docker inspect --format={{.Name}} {}) ($(docker logs {} 2>&1 | wc -c) bytes)</a></li>" >> test/results/index.html'
+
+	echo '</ul></body></html>' >> test/results/index.html
 }
 
 rm -rf test/junit test/results test/coverage
@@ -103,10 +112,9 @@ echo "Starting test"
 docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py
 status=$?
 
-if [ $status -ne 0 ]; then
-	container_logs
-fi
-
+container_logs
 docker-compose $COMPOSE_ARGS down
 
-exit $status
+if [ $status -ne 0 ]; then
+	exit 2
+fi

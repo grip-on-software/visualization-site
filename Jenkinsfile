@@ -71,7 +71,16 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sshagent(['gitlab-clone-auth']) {
-                        sh './run-test.sh'
+                        script {
+                            def ret = sh returnStatus: true, script: './run-test.sh'
+                            if (ret == 2) {
+                                currentBuild.result = 'UNSTABLE'
+                            }
+                            else if (ret != 0) {
+                                currentBuild.result = 'FAILURE'
+                                error("Test stage failed with exit code ${ret}")
+                            }
+                        }
                     }
                 }
             }
