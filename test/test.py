@@ -348,7 +348,7 @@ class IntegrationTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls._results_index.write('</ul></body></html>')
+        cls._results_index.write('</ul>')
         cls._results_index.close()
 
         response = urlopen('http://coverage.test:8888/download')
