@@ -203,8 +203,7 @@ class IntegrationTest(unittest.TestCase):
         graph = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'average-reliability')))
         ActionChains(driver).move_to_element_with_offset(graph, 480, 10).click().perform()
 
-        focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'focus')))
-        self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '.focus tspan')))
+        focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#average-reliability .focus')))
         self.assertEqual(focus.find_element_by_css_selector('tspan:first-child').text, '26 Jun 18:31')
         self.assertEqual(focus.find_element_by_css_selector('tspan:last-child').text, 'Available IPs')
         self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')
