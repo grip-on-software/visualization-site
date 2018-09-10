@@ -198,7 +198,7 @@ class IntegrationTest(unittest.TestCase):
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'content')))
         self.assertIn("TEST", element.find_element_by_tag_name('h2').text)
         self.assertEqual("http://www.dashboard.test/", element.find_element_by_id('source-url').get_attribute('href'))
-        self.assertIn("2017-06-25 17:45:02", element.find_element_by_id('last-checked').text)
+        self.assertIn("2017-06-27 09:00:39", element.find_element_by_id('last-checked').text)
 
         graph = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'average-reliability')))
         ActionChains(driver).move_to_element_with_offset(graph, 480, 10).perform()
