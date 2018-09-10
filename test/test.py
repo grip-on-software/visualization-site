@@ -197,8 +197,16 @@ class IntegrationTest(unittest.TestCase):
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'content')))
         self.assertIn("TEST", element.find_element_by_tag_name('h2').text)
-        self.assertEqual("http://www.dashboard.test", element.find_element_by_id('source-url').get_attribute('href'))
+        self.assertEqual("http://www.dashboard.test/", element.find_element_by_id('source-url').get_attribute('href'))
         self.assertIn("2017-06-25 17:45:02", element.find_element_by_id('last-checked').text)
+
+        graph = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'average-reliability')))
+        ActionChains(driver).move_to_element_with_offset(graph, 480, 10).perform()
+
+        focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'focus')))
+        self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')
+        self.assertEqual(focus.find_element_by_css_selector('tspan:first-child').text, '26 Jun 18:31')
+        self.assertEqual(focus.find_element_by_css_selector('tspan:last-child').text, 'Available IPs')
 
     def test_collaboration_graph(self):
         """
