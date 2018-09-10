@@ -27,9 +27,9 @@ function container_logs() {
 	echo '</ul></body></html>' >> test/results/index.html
 }
 
-rm -rf test/junit test/results test/coverage
+rm -rf test/junit test/results test/coverage test/downloads
 mkdir -p repos
-mkdir -p test/junit test/results test/coverage
+mkdir -p test/junit test/results test/coverage test/downloads
 
 if [ -z "$REPO_ROOT" ]; then
 	REPO_ROOT="repos"
