@@ -30,7 +30,7 @@ runner:
     - "coverage:coverage.test"
 
 selenium:
-  image: selenium/standalone-chrome:3.11.0
+  image: selenium/standalone-chrome:3.14.0
   domainname: test
   shm_size: "2g"
   expose:
@@ -41,6 +41,9 @@ selenium:
     - "visualization:{{{visualization_server}}}"
     - "prediction:{{{prediction_server}}}"
     - "ws:{{{websocket_server}}}"
+  volumes:
+    - "../test:/work"
+  working_dir: "/work"
 
 coverage:
   image: $DOCKER_REGISTRY/gros-coverage-collector:latest

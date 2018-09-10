@@ -6,6 +6,7 @@ from contextlib import closing
 import errno
 from io import BytesIO
 import json
+import os.path
 from socket import error as SocketError
 import time
 import unittest
@@ -13,16 +14,85 @@ from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 from zipfile import ZipFile
 import xmlrunner
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Remote
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 try:
     from httplib import BadStatusLine
 except ImportError:
     from http.client import BadStatusLine
+
+class SprintReportExportTest:
+    """
+    Test case for a sprint report export mechanism.
+    """
+
+    def __init__(self, driver):
+        self._driver = driver
+
+    def test(self, button):
+        """
+        Test an export after clicking its associated button.
+        """
+
+        raise NotImplementedError('Must be implemented by subclass')
+
+    def get_message(self, exporter):
+        """
+        Provide a message for unittest assertions.
+        """
+
+        raise NotImplementedError('Must be implemented by subclass')
+
+class SprintReportExportFilename(SprintReportExportTest):
+    """
+    Test case for a sprint report export file download.
+    """
+
+    def __init__(self, driver, options):
+        super(SprintReportExportFilename, self).__init__(driver)
+        self.options = {
+            'filename': 'sprint-report',
+            'path': '/work/downloads',
+            'timeout': 5,
+            'poll_frequency': 0.5
+        }
+        self.options.update(options)
+
+    def test(self, button):
+        path = os.path.join(self.options['path'], self.options['filename'])
+        wait = WebDriverWait(self._driver, self.options['timeout'],
+                             self.options['poll_frequency'])
+        try:
+            wait.until(lambda driver: os.path.exists(path))
+        except TimeoutException:
+            return False
+
+        return True
+
+    def get_message(self, exporter):
+        return '{path}/{filename} exists within {timeout} seconds after clicking {export} export'.format(export=exporter, **self.options)
+
+class SprintReportExportAttribute(SprintReportExportTest):
+    """
+    Test case for a sprint report export attribute change.
+    """
+
+    def __init__(self, driver, attribute, value):
+        super(SprintReportExportAttribute, self).__init__(driver)
+        self.attribute = attribute
+        self.value = value
+
+    def test(self, button):
+        return button.get_attribute(self.attribute) == self.value
+
+    def get_message(self, exporter):
+        return '{} export has attribute {}={}'.format(exporter, self.attribute, self.value)
 
 class IntegrationTest(unittest.TestCase):
     """
@@ -44,8 +114,16 @@ class IntegrationTest(unittest.TestCase):
             url = 'http://selenium.test:4444/wd/hub'
             capabilities = DesiredCapabilities.CHROME
             capabilities['loggingPrefs'] = {'browser': 'ALL'}
+            options = Options()
+            options.add_experimental_option("prefs", {
+                "download.default_directory": "/work/downloads",
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing.enabled": True
+            })
             return Remote(command_executor=url,
-                          desired_capabilities=capabilities)
+                          desired_capabilities=capabilities,
+                          options=options)
         except BadStatusLine:
             return None
         except SocketError as socket_error:
@@ -84,9 +162,9 @@ class IntegrationTest(unittest.TestCase):
         self._prediction_url = urljoin(prediction,
                                        self._config['prediction_url'])
 
-    def _wait_for(self, condition):
+    def _wait_for(self, condition, message=''):
         return WebDriverWait(self._driver, self.WAIT_TIMEOUT,
-                             self.WAIT_FREQUENCY).until(condition)
+                             self.WAIT_FREQUENCY).until(condition, message)
 
     def test_reachability(self):
         """
@@ -305,6 +383,34 @@ class IntegrationTest(unittest.TestCase):
             chart = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'chart')))
             self.assertEqual(len(chart.find_elements_by_class_name('feature')), 3)
             old_display = chart
+
+    def test_sprint_report_export(self):
+        """
+        Test the export mechanism of the sprint report visualization.
+        """
+
+        driver = self._driver
+        driver.get('{}/sprint-report'.format(self._visualization_url))
+
+        icon = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'a[data-toggle=export]')))
+        icon.click()
+
+        export = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'export')))
+        exports = {
+            'csv': SprintReportExportFilename(driver, {
+                'filename': 'sprint-report.csv'
+            }),
+            'html': SprintReportExportFilename(driver, {
+                'filename': 'sprint-report.zip'
+            }),
+            'link': SprintReportExportAttribute(driver, 'data-tooltip',
+                                                'Copied link to the clipboard')
+        }
+        for exporter, test_case in exports.items():
+            button = export.find_element_by_id('export-{}'.format(exporter))
+            button.click()
+            self.assertTrue(test_case.test(button),
+                            test_case.get_message(exporter))
 
     def test_timeline(self):
         """
