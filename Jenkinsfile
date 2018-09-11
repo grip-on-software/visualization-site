@@ -21,6 +21,9 @@ pipeline {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
             archiveArtifacts 'nginx.conf,nginx/*.conf,caddy/*.yml'
         }
+        unstable {
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
+        }
         failure {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'failed'
         }
