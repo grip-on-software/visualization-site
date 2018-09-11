@@ -201,7 +201,7 @@ class IntegrationTest(unittest.TestCase):
         self.assertIn("2017-06-27 09:00:39", element.find_element_by_id('last-checked').text)
 
         graph = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'average-reliability')))
-        ActionChains(driver).move_to_element_with_offset(graph, 480, 10).click().perform()
+        ActionChains(driver).move_to_element_with_offset(graph, 480, 250).click().perform()
 
         focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#average-reliability .focus')))
         tspan = self._wait_for(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '#average-reliability .focus tspan')))
