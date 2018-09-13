@@ -49,7 +49,12 @@ const templateConfiguration = Object.assign({}, configuration, {
     url: function() {
         return function(text, render) {
             const url_parts = render(text).split('/');
-            const server = url_parts.shift();
+            var server = url_parts.shift();
+            if (process.env.NGINX_UPSTREAM === 'local') {
+                const server_parts = server.split('.');
+                server_parts.shift();
+                server = server_parts.join('.');
+            }
             return (new URL(url_parts.join('/'), `http://${server}/`)).href;
         };
     },

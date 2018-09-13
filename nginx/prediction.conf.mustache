@@ -23,7 +23,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
 
-location = {{#path}}{{{prediction_url}}}{{/path}}branches {
+location ~ ^{{#path}}{{{prediction_url}}}{{/path}}branches {
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}branches /job/create-prediction/api/json?tree=jobs[name,color] break;
     add_header Access-Control-Allow-Origin *;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
@@ -36,7 +36,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
     proxy_pass http://{{#upstream}}owncloud{{/upstream}};
 }
 
-location ^~ {{#path}}{{{prediction_url}}}{{/path}}files {
+location ~ ^{{#path}}{{{prediction_url}}}{{/path}}files {
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}files /index.php/apps/files_sharing/ajax/list.php?t=YOUR_OWNCLOUD_SHARE_ID_HERE&dir=%2F&sort=name&sortdirection=asc break;
     add_header Access-Control-Allow-Origin *;
     proxy_pass http://{{#upstream}}owncloud{{/upstream}};
@@ -44,7 +44,7 @@ location ^~ {{#path}}{{{prediction_url}}}{{/path}}files {
 
 autoindex off;
 rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(index\.html|show|papers/?)?$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}show/ permanent;
-rewrite ^/zip$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}show/zip permanent;
+rewrite ^{{#path}}{{{prediction_url}}}{{/path}}zip$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}show/zip permanent;
 
 proxy_intercept_errors on;
 
