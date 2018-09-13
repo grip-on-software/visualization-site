@@ -35,6 +35,8 @@ http {
     # for more information.
     include /etc/nginx/conf.d/*.conf;
 
+    include nginx/upstreams.conf;
+
     resolver 127.0.0.1 valid=30s;
 
     rewrite_log {{{rewrite_log}}};

@@ -64,12 +64,24 @@ const templateConfiguration = Object.assign({}, configuration, {
                 `$${text}`;
         };
     },
+    upstream_server: function() {
+        return function(text, render) {
+            if (process.env.NGINX_UPSTREAM === 'local') {
+                const parts = render(text).split('/');
+                return `upstream ${parts[0]} {
+    server ${parts[1]} fail_timeout=0;
+}`;
+            }
+            return '';
+        };
+    },
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
 
 const templates = [
     'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf', 
     'nginx/prediction.conf', 'nginx/visualization.conf', 'nginx/websocket.conf',
+    'nginx/upstreams.conf',
     'caddy/docker-compose.yml', 'test/docker-compose.yml'
 ];
 templates.forEach((template) => {
