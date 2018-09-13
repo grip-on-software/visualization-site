@@ -83,10 +83,10 @@ jenkins:
               root /srv/discussion
           }
   volumes:
-    - "../www:/srv/www/job/build-visualization-site/job/master/Visualization"
+    - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
     {{#visualization_names}}
-    - "../{{{repo_root}}}/{{{.}}}/public:/srv/www/job/build-{{{.}}}/job/master/Visualization"
-    - "../test/sample/{{{.}}}/data:/srv/www/job/build-{{{.}}}/job/master/Visualization/data"
+    - "../{{{repo_root}}}/{{{.}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{.}}}/job/master/Visualization"
+    - "../test/sample/{{{.}}}/data:/srv/www{{{jenkins_path}}}/job/build-{{{.}}}/job/master/Visualization/data"
     {{/visualization_names}}
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"

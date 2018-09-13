@@ -9,9 +9,9 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
 # Publisher plugin, with the name "Visualization" and an index page of
 # index.html.
 location ~ ^{{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
-    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)\.zip$ /job/build-$1/job/master/Visualization/*zip*/$1.zip break;
-    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/$ /job/build-$1/job/master/Visualization/index.html break;
-    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/(.+) /job/build-$1/job/master/Visualization/$2 break;
+    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)\.zip$ {{{jenkins_path}}}/job/build-$1/job/master/Visualization/*zip*/$1.zip break;
+    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/$ {{{jenkins_path}}}/job/build-$1/job/master/Visualization/index.html break;
+    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}([^/]+)/(.+) {{{jenkins_path}}}/job/build-$1/job/master/Visualization/$2 break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
 
@@ -46,12 +46,12 @@ error_page 500 502 503 504 /50x.html;
 
 location ~ ^{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
     add_header Access-Control-Allow-Origin *;
-    rewrite {{#path}}{{{visualization_url}}}{{/path}}(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
+    rewrite {{#path}}{{{visualization_url}}}{{/path}}(.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$1 break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
 
 location ~ ^{{#path}}{{{visualization_url}}}{{/path}} {
-    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}(.+) /job/build-visualization-site/job/master/Visualization/$1 break;
-    rewrite ^{{#path}}{{{visualization_url}}}{{/path}} /job/build-visualization-site/job/master/Visualization/index.html break;
+    rewrite ^{{#path}}{{{visualization_url}}}{{/path}}(.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$1 break;
+    rewrite ^{{#path}}{{{visualization_url}}}{{/path}} {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }

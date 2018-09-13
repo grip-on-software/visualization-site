@@ -10,6 +10,7 @@
     "visualization_server": "visualization.gros.example",
     "prediction_server": "prediction.gros.example",
     "jenkins_host": "www.jenkins.gros.test",
+    "jenkins_path": "",
     "files_host": "www.owncloud.gros.test",
     "control_host": "control.gros.test",
     "websocket_server": "ws.gros.example",
