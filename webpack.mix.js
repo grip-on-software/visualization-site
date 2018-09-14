@@ -50,7 +50,7 @@ const templateConfiguration = Object.assign({}, configuration, {
         return function(text, render) {
             const url_parts = render(text).split('/');
             var server = url_parts.shift();
-            if (process.env.NGINX_UPSTREAM === 'local') {
+            if (process.env.VISUALIZATION_URL_STRIP === 'subdomain') {
                 const server_parts = server.split('.');
                 server_parts.shift();
                 server = server_parts.join('.');
@@ -60,19 +60,7 @@ const templateConfiguration = Object.assign({}, configuration, {
     },
     upstream: function() {
         return function(text, render) {
-            return process.env.NGINX_UPSTREAM === 'local' ? text.split(':', 1) :
-                `$${text}`;
-        };
-    },
-    upstream_server: function() {
-        return function(text, render) {
-            if (process.env.NGINX_UPSTREAM === 'local') {
-                const parts = render(text).split('/');
-                return `upstream ${parts[0]} {
-    server ${parts[1]} fail_timeout=0;
-}`;
-            }
-            return '';
+            return `$${text}`;
         };
     },
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
@@ -81,7 +69,6 @@ const templateConfiguration = Object.assign({}, configuration, {
 const templates = [
     'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf', 
     'nginx/prediction.conf', 'nginx/visualization.conf', 'nginx/websocket.conf',
-    'nginx/upstreams.conf',
     'caddy/docker-compose.yml', 'test/docker-compose.yml'
 ];
 templates.forEach((template) => {
