@@ -50,12 +50,7 @@ const templateConfiguration = Object.assign({}, configuration, {
         return function(text, render) {
             const url_parts = render(text).split('/');
             var server = url_parts.shift();
-            if (process.env.VISUALIZATION_URL_STRIP === 'subdomain') {
-                const server_parts = server.split('.');
-                server_parts.shift();
-                server = server_parts.join('.');
-            }
-            return (new URL(url_parts.join('/'), `http://${server}/`)).href;
+            return (new URL(url_parts.join('/'), `http://${server}/`)).pathname;
         };
     },
     upstream: function() {
