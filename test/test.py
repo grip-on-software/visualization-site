@@ -176,6 +176,9 @@ class IntegrationTest(unittest.TestCase):
         driver.get(self._visualization_url)
         self.assertIn("Visualizations from GROS", driver.title)
 
+        driver.get('http://{}'.format(self._config['www_server']))
+        self.assertIn("Visualizations from GROS", driver.title)
+
         if 'blog_url' in self._config and self._config['blog_url']:
             driver.get(self._config['blog_url'])
             self.assertIn("GROS project update", driver.title)

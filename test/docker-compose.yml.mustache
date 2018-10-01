@@ -38,6 +38,7 @@ selenium:
   links:
     - "blog:{{{blog_server}}}"
     - "discourse:{{{discussion_server}}}"
+    - "www:{{{www_server}}}"
     - "visualization:{{{visualization_server}}}"
     - "prediction:{{{prediction_server}}}"
     - "ws:{{{websocket_server}}}"
@@ -117,6 +118,13 @@ blog:
     - "nginx:{{{control_host}}}"
 
 discourse:
+  domainname: "{{{domain}}}"
+  environment:
+    - GODEBUG=netdns=cgo
+  links:
+    - "nginx:{{{control_host}}}"
+
+www:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo

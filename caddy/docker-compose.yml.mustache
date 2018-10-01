@@ -26,6 +26,19 @@ discourse:
             }
         }
 
+www:
+  image: greyarch/caddy
+  environment:
+    CONFIG: |
+        :80 {
+            tls off
+            errors stdout
+            gzip
+            proxy / {{{control_host}}}:2368 {
+                transparent
+            }
+        }
+
 visualization:
   image: greyarch/caddy
   environment:

@@ -8,6 +8,7 @@
     "discussion_host": "www.discouse.gros.test",
     "discussion_server": "discussion.gros.example",
     "visualization_server": "visualization.gros.example",
+    "www_server": "www.gros.example",
     "prediction_server": "prediction.gros.example",
     "jenkins_host": "www.jenkins.gros.test",
     "jenkins_path": "",
