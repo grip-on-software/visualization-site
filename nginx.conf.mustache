@@ -69,6 +69,13 @@ http {
     server {
         listen       2368;
         listen       [::]:2368;
+        server_name  "{{{www_server}}}";
+        return 301 "http://{{{visualization_server}}}$request_uri";
+    }
+
+    server {
+        listen       2368;
+        listen       [::]:2368;
         server_name  "{{{visualization_server}}}";
         set $jenkins "{{{jenkins_host}}}";
         root /srv/visualization-site/www;
