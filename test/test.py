@@ -466,6 +466,30 @@ class IntegrationTest(unittest.TestCase):
             self.assertEqual(len(chart.find_elements_by_class_name('feature')), 3)
             old_display = chart
 
+    def test_sprint_report_details(self):
+        """
+        Test the details subtable of the sprint report visualization.
+        """
+
+        driver = self._driver
+        driver.get('{}/sprint-report'.format(self._visualization_url))
+        self.assertIn("Sprint report", driver.title)
+
+        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
+        item = items.find_element_by_css_selector('li:last-child')
+        item.click()
+
+        table = self._wait_for(expected_conditions.visibility_of_element_located((By.TAG_NAME, 'table')))
+        expand = table.find_element_by_css_selector('.fa-expand')
+        expand.click()
+
+        details = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'table.details')))
+        rows = details.find_elements_by_css_selector('tr.detail')
+        self.assertEqual(len(rows), 3)
+        self.assertEqual([row.find_element_by_css_selector('td:first-child a').text for row in rows], ["P1-198", "P1-224", "P1-301"])
+        self.assertEqual([row.find_element_by_css_selector('td:last-child').text for row in rows], ["2", "5", "0.5"])
+
     def test_sprint_report_export(self):
         """
         Test the export mechanism of the sprint report visualization.
