@@ -31,7 +31,7 @@ location ~ ^{{#path}}{{{prediction_url}}}{{/path}}branches {
 }
 
 location ~ {{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}papers/(.*).pdf /index.php/s/YOUR_OWNCLOUD_SHARE_ID_HERE/download?path=%2F&files=$1.pdf break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) /index.php/s/YOUR_OWNCLOUD_SHARE_ID_HERE/download?path=%2F&files=$1? break;
     proxy_hide_header Content-Disposition;
     proxy_intercept_errors on;
     proxy_pass http://{{#upstream}}owncloud{{/upstream}};
