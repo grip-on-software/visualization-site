@@ -448,7 +448,7 @@ class IntegrationTest(unittest.TestCase):
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
-        table = self._wait_for(expected_conditions.visibility_of_element_located((By.TAG_NAME, 'table')))
+        table = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#format-content table')))
         self.assertEqual(len(table.find_elements_by_tag_name('tbody')), 1)
         project = table.find_element_by_class_name('project')
         self.assertEqual(len(project.find_elements_by_class_name('sprint')), 1)
@@ -480,7 +480,7 @@ class IntegrationTest(unittest.TestCase):
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
-        table = self._wait_for(expected_conditions.visibility_of_element_located((By.TAG_NAME, 'table')))
+        table = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#format-content table')))
         expand = table.find_element_by_css_selector('.fa-expand')
         expand.click()
 
