@@ -20,7 +20,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a
     set $branch "master";
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}$1/$2 permanent;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?$2 break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z/]+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?$2 break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$2 break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
