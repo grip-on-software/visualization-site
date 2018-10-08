@@ -4,6 +4,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-
         set $branch "master";
     }
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([-_0-9a-zA-Z]+)/sprint/(\d+|latest)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/$3.json break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([-_0-9a-zA-Z]+)/sprints$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/sprints.json break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects_meta.json break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
@@ -11,7 +12,6 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/sources.json break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)/sprint/latest$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)/sprint/(\d+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.$3.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)/sprints$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/sprints.json break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
     add_header Access-Control-Allow-Origin *;
 }
