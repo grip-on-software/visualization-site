@@ -152,6 +152,8 @@ class IntegrationTest(unittest.TestCase):
         if self._driver is None:
             self.fail('Could not establish Selenium remote driver')
 
+        self._driver.set_window_size(1024, 768)
+
         with open('/config.json') as config_file:
             self._config = json.load(config_file)
 
