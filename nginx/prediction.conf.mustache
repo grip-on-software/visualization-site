@@ -22,7 +22,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}$1/$2 permanent;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$2 break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/sprint/(\d+|latest) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$2&sprint=$3 break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)([-_0-9a-zA-Z]+/sprint)?/(?P<path>.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$path break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[-_0-9a-zA-Z]+/sprint)?/(?P<path>.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$path break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
@@ -56,7 +56,7 @@ error_page 404 /404.html;
 error_page 500 502 503 504 /50x.html;
 
 location ~ ^{{#path}}{{{prediction_url}}}{{/path}} {
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(.+\.css|.+\.js) {{{jenkins_path}}}/job/build-prediction-site/job/master/Visualization/$1 break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$1 break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}} {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
