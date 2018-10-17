@@ -202,7 +202,7 @@
                         "items": [],
                         "link": {
                             "url": "",
-                            "icon": ["fas", "language"],
+                            "icon": ["fas", "language", "xs"],
                             "content": {
                                 "en": "Language",
                                 "nl": "Taal"
