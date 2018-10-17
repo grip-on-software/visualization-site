@@ -28,6 +28,61 @@ try:
 except ImportError:
     from http.client import BadStatusLine
 
+class SprintReportFormatTest:
+    """
+    Test case for a sprint report format mechanism.
+    """
+
+    def get_test_element_locator(self):
+        """
+        Get the Selenium locator tuple to find an element that is created
+        after selecting the format.
+        """
+
+        raise NotImplementedError('Must be implemented by subclasses')
+
+    def test(self, runner, element):
+        """
+        Perform unit tests upon the located element.
+        """
+
+        raise NotImplementedError('Must be implemented by subclasses')
+
+class SprintReportFormatTable(SprintReportFormatTest):
+    """
+    Test case for the table format.
+    """
+
+    def get_test_element_locator(self):
+        return (By.CSS_SELECTOR, '#format-content table')
+
+    def test(self, runner, element):
+        runner.assertEqual(len(element.find_elements_by_tag_name('tbody')), 1)
+        project = element.find_element_by_class_name('project')
+        runner.assertEqual(len(project.find_elements_by_class_name('sprint')), 1)
+        runner.assertEqual(project.find_element_by_class_name('board').text, 'Proj1')
+        runner.assertEqual(project.find_element_by_class_name('display-name').text, 'Project1')
+        runner.assertEqual(len(element.find_elements_by_class_name('feature')), 3)
+
+class SprintReportFormatChart(SprintReportFormatTest):
+    """
+    Test case for chart formats.
+    """
+
+    def get_test_element_locator(self):
+        return (By.CLASS_NAME, 'chart')
+
+    def test(self, runner, element):
+        runner.assertEqual(len(element.find_elements_by_class_name('feature')), 3)
+
+class SprintReportFormatScatterPlot(SprintReportFormatChart):
+    """
+    Test case for the scatter plot format.
+    """
+
+    def test(self, runner, element):
+        runner.assertEqual(len(element.find_elements_by_css_selector('.features circle')), 1)
+
 class SprintReportExportTest:
     """
     Test case for a sprint report export mechanism.
@@ -445,28 +500,31 @@ class IntegrationTest(unittest.TestCase):
         driver.get('{}/sprint-report'.format(self._visualization_url))
         self.assertIn("Sprint report", driver.title)
 
+        # Select one project
         items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
         self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
-        table = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#format-content table')))
-        self.assertEqual(len(table.find_elements_by_tag_name('tbody')), 1)
-        project = table.find_element_by_class_name('project')
-        self.assertEqual(len(project.find_elements_by_class_name('sprint')), 1)
-        self.assertEqual(project.find_element_by_class_name('board').text, 'Proj1')
-        self.assertEqual(project.find_element_by_class_name('display-name').text, 'Project1')
-        self.assertEqual(len(table.find_elements_by_class_name('feature')), 3)
-
-        formats = driver.find_element_by_id('format')
-        old_display = table
-        for item in formats.find_elements_by_css_selector('li:not(:first-child)'):
+        # Format options
+        options = driver.find_element_by_id('format')
+        formats = {
+            'table': SprintReportFormatTable(),
+            'line_chart': SprintReportFormatChart(),
+            'bar_chart': SprintReportFormatChart(),
+            'scatter_plot': SprintReportFormatScatterPlot()
+        }
+        old_display = None
+        for name, formatter in formats.items():
+            item = options.find_element_by_id('format-{}'.format(name))
             item.click()
 
-            self._wait_for(expected_conditions.staleness_of(old_display))
-            chart = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'chart')))
-            self.assertEqual(len(chart.find_elements_by_class_name('feature')), 3)
-            old_display = chart
+            if old_display is not None:
+                self._wait_for(expected_conditions.staleness_of(old_display))
+
+            element = self._wait_for(expected_conditions.visibility_of_element_located(formatter.get_test_element_locator()))
+            formatter.test(self, element)
+            old_display = element
 
     def test_sprint_report_details(self):
         """
