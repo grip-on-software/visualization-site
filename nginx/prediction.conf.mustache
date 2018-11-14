@@ -28,7 +28,7 @@ location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a
 }
 
 location ~ ^{{#path}}{{{prediction_url}}}{{/path}}branches {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}branches {{{jenkins_path}}}/job/create-prediction/api/json?tree=jobs[name,color] break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}branches {{{jenkins_path}}}/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]] break;
     add_header Access-Control-Allow-Origin *;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
