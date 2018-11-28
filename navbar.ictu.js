@@ -20,6 +20,21 @@ navbar.last().items.last().items.unshift({
         "en": "Discussion",
         "nl": "Discussie"
     }
+}, {
+    "type": "link",
+    "url": [
+        {"config": "jira_url"},
+        "browse/GROS"
+    ],
+    "title": {
+        "en": "View and create issues for GROS",
+        "nl": "Taken voor GROS bekijken en maken"
+    },
+    "icon": ["fas", "chalkboard", "xs"],
+    "content": {
+        "en": "JIRA",
+        "nl": "Jira"
+    }
 });
 navbar.last().items.last().items.push({
     "type": "link",
