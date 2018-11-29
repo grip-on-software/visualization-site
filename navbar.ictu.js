@@ -24,7 +24,7 @@ navbar.last().items.last().items.unshift({
     "type": "link",
     "url": [
         {"config": "jira_url"},
-        "browse/GROS"
+        "/browse/GROS"
     ],
     "title": {
         "en": "View and create issues for GROS",
