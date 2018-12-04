@@ -58,6 +58,7 @@ const templateConfiguration = Object.assign({}, configuration, {
             return `$${text}`;
         };
     },
+    error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
 

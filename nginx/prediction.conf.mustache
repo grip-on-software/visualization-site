@@ -1,34 +1,34 @@
 # Handle prediction data from Jenkins.
-location ~ {{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
     if ($branch = "") {
         set $branch "master";
     }
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([-_0-9a-zA-Z]+)/sprint/(\d+|latest)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/$3.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([-_0-9a-zA-Z]+)/sprints$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/sprints.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects_meta.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units|short_units|sources)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/sources.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)/sprint/latest$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.json break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([-_0-9a-zA-Z]+)/sprint/(\d+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$2/links.$3.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[-_0-9a-zA-Z]+)/sprint/(?P<sprint>\d+|latest)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$project/$sprint.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[-_0-9a-zA-Z]+)/sprints$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$project/sprints.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/projects_meta.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/configuration.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(?P<locale>descriptions|tags|units|short_units|sources)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$locale.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[-_0-9a-zA-Z]+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$project/sources.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[-_0-9a-zA-Z]+)/sprint/latest$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$project/links.json break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[-_0-9a-zA-Z]+)/sprint/(?P<sprint>\d+)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$project/links.$sprint.json break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
     add_header Access-Control-Allow-Origin *;
 }
 
-location ~ {{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/ {
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/ {
     set $branch "master";
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
     rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{prediction_url}}}{{/url}}$1/$2 permanent;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$2 break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/sprint/(\d+|latest) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$2&sprint=$3 break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[-_0-9a-zA-Z]+/sprint)?/(?P<path>.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$path break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[-_0-9a-zA-Z]+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$project break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[-_0-9a-zA-Z]+)/sprint/(?P<sprint>\d+|latest) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$project&sprint=$sprint break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[-_0-9a-zA-Z]+/sprint)?/(?P<path>.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$path break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
 
-location ~ ^{{#path}}{{{prediction_url}}}{{/path}}branches {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}branches {{{jenkins_path}}}/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]] break;
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}branches {
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}branches {{{jenkins_path}}}/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]] break;
     add_header Access-Control-Allow-Origin *;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
@@ -55,8 +55,8 @@ proxy_intercept_errors on;
 error_page 404 /404.html;
 error_page 500 502 503 504 /50x.html;
 
-location ~ ^{{#path}}{{{prediction_url}}}{{/path}} {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(.+\.css|.+\.js.*) {{{jenkins_path}}}/job/build-prediction-site/job/master/Visualization/$1 break;
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$1 break;
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}} {
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+\.css|.+\.js.*) {{{jenkins_path}}}/job/build-prediction-site/job/master/Visualization/$file break;
+    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$file break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
