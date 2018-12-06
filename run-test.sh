@@ -20,7 +20,7 @@ function container_logs() {
 	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/bash -c '
 		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_{}.html
 		echo "<pre>" >> test/results/logs_{}.html
-		docker logs {} >> test/results/logs_{}.html 2>&1
+		docker logs {} 2>&1 | sed "s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g" >> test/results/logs_{}.html 2>&1
 		echo "</pre></body></html>" >> test/results/logs_{}.html
 		echo "<li><a href=\"logs_{}.html\">$(docker inspect --format={{.Name}} {}) ($(docker logs {} 2>&1 | wc -c) bytes)</a></li>" >> test/results/index.html'
 
