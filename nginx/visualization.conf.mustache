@@ -9,7 +9,7 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
 # Publisher plugin, with the name "Visualization" and an index page of
 # index.html.
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
-    {{{visualization_branch}}}
+    {{{hub_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)\.zip$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/*zip*/$name.zip break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/index.html break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/$file break;
@@ -36,9 +36,9 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}analytics {
     access_log /var/log/nginx/analytics_access.log;
 }
 
-rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}} permanent;
-rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}} permanent;
-rewrite ^{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{visualization_url}}}{{/url}}$name/ permanent;
+rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}} permanent;
+rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}} permanent;
+rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}$name/ permanent;
 
 proxy_intercept_errors on;
 
@@ -46,13 +46,14 @@ error_page 404 /404.html;
 error_page 500 502 503 504 /50x.html;
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
+    {{{hub_branch}}}
     add_header Access-Control-Allow-Origin *;
-    rewrite {{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization/$file break;
+    rewrite {{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/$file break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {
-    {{{visualization_branch}}}
+    {{{hub_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/$file break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/index.html break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
