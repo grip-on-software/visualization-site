@@ -57,6 +57,7 @@
                 "items": [
                     {
                         "type": "dropdown",
+                        "class": "is-focus",
                         "link": {
                             "url": [
                                 {"config": "visualization_url"},
@@ -125,6 +126,7 @@
                     },
                     {
                         "type": "dropdown",
+                        "class": "is-focus",
                         "link": {
                             "url": [
                                 {"config": "prediction_url"},
