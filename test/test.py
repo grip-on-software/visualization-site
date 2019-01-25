@@ -83,6 +83,14 @@ class SprintReportFormatScatterPlot(SprintReportFormatChart):
     def test(self, runner, element):
         runner.assertEqual(len(element.find_elements_by_css_selector('.features circle')), 1)
 
+class SprintReportFormatSankeyChart(SprintReportFormatChart):
+    """
+    Test case for the sankey chart format.
+    """
+
+    def test(self, runner, element):
+        runner.assertEqual(len(element.find_elements_by_css_selector('g.nodes g')), 1)
+
 class SprintReportExportTest:
     """
     Test case for a sprint report export mechanism.
@@ -512,7 +520,8 @@ class IntegrationTest(unittest.TestCase):
             'table': SprintReportFormatTable(),
             'line_chart': SprintReportFormatChart(),
             'bar_chart': SprintReportFormatChart(),
-            'scatter_plot': SprintReportFormatScatterPlot()
+            'scatter_plot': SprintReportFormatScatterPlot(),
+            'sankey_chart': SprintReportFormatSankeyChart()
         }
         old_display = None
         for name, formatter in formats.items():
