@@ -89,7 +89,7 @@ class SprintReportFormatSankeyChart(SprintReportFormatChart):
     """
 
     def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_css_selector('g.nodes g')), 1)
+        runner.assertEqual(len(element.find_elements_by_css_selector('g.nodes g')), 3)
 
 class SprintReportExportTest:
     """
