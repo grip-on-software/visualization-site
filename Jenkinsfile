@@ -66,24 +66,25 @@ pipeline {
                 }
             }
             steps {
-                sh 'rm -rf node_modules/'
-                sh 'ln -s /usr/src/app/node_modules .'
-                sh 'npm run pretest -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME'
+                withCredentials([file(credentialsId: 'upload-server-certificate', variable: 'SERVER_CERTIFICATE')]) {
+                    sh 'rm -rf node_modules/'
+                    sh 'ln -s /usr/src/app/node_modules .'
+                    sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
+                    sh 'npm run pretest -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME --env.SERVER_CERTIFICATE=$PWD/wwwgros.crt'
+                }
             }
         }
         stage('Test') {
             steps {
-                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION'), file(credentialsId: 'upload-server-certificate', variable: 'SERVER_CERTIFICATE')]) {
-                    sshagent(['gitlab-clone-auth']) {
-                        script {
-                            def ret = sh returnStatus: true, script: './run-test.sh'
-                            if (ret == 2) {
-                                currentBuild.result = 'UNSTABLE'
-                            }
-                            else if (ret != 0) {
-                                currentBuild.result = 'FAILURE'
-                                error("Test stage failed with exit code ${ret}")
-                            }
+                sshagent(['gitlab-clone-auth']) {
+                    script {
+                        def ret = sh returnStatus: true, script: './run-test.sh'
+                        if (ret == 2) {
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                        else if (ret != 0) {
+                            currentBuild.result = 'FAILURE'
+                            error("Test stage failed with exit code ${ret}")
                         }
                     }
                 }
