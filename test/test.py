@@ -323,7 +323,7 @@ class IntegrationTest(unittest.TestCase):
         search = driver.find_element_by_css_selector('input.regular-option')
         search.send_keys('A')
 
-        time.sleep(3)
+        time.sleep(5)
         self.assertEqual(circles[2].get_attribute('fill'), 'red')
 
     def test_collaboration_timelapse(self):
