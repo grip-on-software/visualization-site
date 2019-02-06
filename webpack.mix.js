@@ -26,6 +26,8 @@ const templateConfiguration = Object.assign({}, configuration, {
     domain: configuration.visualization_server.slice(domain_index + 1),
     internal_domain: configuration.jenkins_host.slice(internal_domain_index + 1),
     repo_root: process.env.REPO_ROOT !== undefined ? process.env.REPO_ROOT : 'repos',
+    server_certificate: process.env.SERVER_CERTIFICATE !== undefined ?
+        process.env.SERVER_CERTIFICATE : configuration.auth_cert,
     user_id: process.getuid(),
     group_id: process.getgid(),
     visualization_names: process.env.VISUALIZATION_NAMES !== undefined ? 

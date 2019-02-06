@@ -73,7 +73,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
+                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION'), file(credentialsId: 'upload-server-certificate', variable: 'SERVER_CERTIFICATE')]) {
                     sshagent(['gitlab-clone-auth']) {
                         script {
                             def ret = sh returnStatus: true, script: './run-test.sh'
