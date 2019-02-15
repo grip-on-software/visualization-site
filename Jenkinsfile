@@ -70,7 +70,7 @@ pipeline {
                     sh 'rm -rf node_modules/'
                     sh 'ln -s /usr/src/app/node_modules .'
                     sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
-                    sh 'SERVER_CERTIFICATE=$PWD/wwwgros.crt npm run pretest -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME --env.SERVER_CERTIFICATE=$PWD/wwwgros.crt'
+                    sh 'SERVER_CERTIFICATE=$PWD/wwwgros.crt npm run pretest -- --env.mixfile=$PWD/webpack.mix.js'
                 }
             }
         }
@@ -98,7 +98,7 @@ pipeline {
             }
         }
         stage('Build production') {
-            when { branch 'master' }
+            when { branch '*master' }
             agent {
                 docker {
                     image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
@@ -108,7 +108,7 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
-                sh 'npm run production -- --env.mixfile=$PWD/webpack.mix.js --env.NAVBAR_SCOPE=$NAVBAR_SCOPE --env.BRANCH_NAME=$BRANCH_NAME'
+                sh 'npm run production -- --env.mixfile=$PWD/webpack.mix.js'
             }
         }
         stage('Push') {
