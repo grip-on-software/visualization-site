@@ -25,6 +25,7 @@ runner:
   volumes:
     - "../test:/work"
     - "../{{{config_file}}}:/config.json:ro"
+    - "../visualization_names.txt:/visualization_names.txt:ro"
   working_dir: "/work"
   links:
     - "selenium:selenium.test"
