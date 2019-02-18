@@ -24,20 +24,24 @@
     display:flex;
     flex-direction: column;
     height: 100%;
-}
-.card-footer {
-    margin-top: auto;
-}
 
-.card-header-title:hover {
-	color: #000000;
-	background-color: #fdfdfd;
-}
+    .card-header-icon {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        font-weight: normal;
+    }
+    .card-header-icon + .card-header-title {
+        padding-left: 0;
+    }
+    .card-header-title:hover {
+	    color: #000000;
+	    background-color: #fdfdfd;
+    }
 
-.card-header-title svg {
-    margin-right: .5rem;
-}
-
-.card .card-footer-item.is-wider {
-    flex-grow: 6; /* Default flex grow is 1 */
+    .card-footer {
+        margin-top: auto;
+    }
+    .card-footer-item.is-wider {
+        flex-grow: 6; /* Default flex grow is 1 */
+    }
 }

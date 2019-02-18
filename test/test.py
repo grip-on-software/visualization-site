@@ -7,6 +7,7 @@ from contextlib import closing
 import errno
 from io import BytesIO
 import json
+import linecache
 import os.path
 from socket import error as SocketError
 import time
@@ -27,6 +28,18 @@ try:
     from httplib import BadStatusLine
 except ImportError:
     from http.client import BadStatusLine
+
+def skip_unless_visualization(name):
+    """
+    Skip a test unless a visualization with the given `name` is under test,
+    i.e., it is part of the produced output.
+    """
+
+    visualization_names = linecache.getline('/visualization_names.txt', 1)
+    if name in visualization_names.rstrip().split(' '):
+        return lambda func: func
+
+    return unittest.skip("Visualization {} is not under test".format(name))
 
 class SprintReportFormatTest:
     """
@@ -255,6 +268,7 @@ class IntegrationTest(unittest.TestCase):
         driver.get("{}/api/v1/predict/jira/TEST/sprint/latest".format(self._prediction_url))
         self.assertIn("Not found", driver.title)
 
+    @skip_unless_visualization("bigboat-status")
     def test_bigboat_status(self):
         """
         Test the BigBoat status visualization.
@@ -278,6 +292,7 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual(focus.find_element_by_css_selector('tspan:last-child').text, 'Available IPs')
         self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')
 
+    @skip_unless_visualization("collaboration-graph")
     def test_collaboration_graph(self):
         """
         Test the Collaboration graph visualization.
@@ -292,6 +307,7 @@ class IntegrationTest(unittest.TestCase):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
+    @skip_unless_visualization("collaboration-graph")
     def test_collaboration_graph_extern(self):
         """
         Test the external filter mechanism of the Collaboration graph.
@@ -309,6 +325,7 @@ class IntegrationTest(unittest.TestCase):
 
         self.assertEqual(circle.get_attribute('visibility'), 'collapse')
 
+    @skip_unless_visualization("collaboration-graph")
     def test_collaboration_graph_find(self):
         """
         Test the search mechanism of the Collaboration graph.
@@ -326,7 +343,8 @@ class IntegrationTest(unittest.TestCase):
         time.sleep(5)
         self.assertEqual(circles[2].get_attribute('fill'), 'red')
 
-    def test_collaboration_timelapse(self):
+    @skip_unless_visualization("collaboration-graph")
+    def test_collaboration_graph_timelapse(self):
         """
         Test the timelapse mechanism of the Collaboration graph.
         """
@@ -376,6 +394,7 @@ class IntegrationTest(unittest.TestCase):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
+    @skip_unless_visualization("heatmap")
     def test_heatmap(self):
         """
         Test the Heatmap visualization.
@@ -388,7 +407,7 @@ class IntegrationTest(unittest.TestCase):
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'projectPicker')))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 2)
 
-
+    @skip_unless_visualization("heatmap")
     def test_heatmap_tooltip(self):
         """
         Test the tooltips of individual days in the heatmap calendar.
@@ -407,6 +426,7 @@ class IntegrationTest(unittest.TestCase):
         tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'tooltip')))
         self.assertIn("April 12, 2018", tooltip.find_element_by_tag_name('h3').text)
 
+    @skip_unless_visualization("leaderboard")
     def test_leaderboard(self):
         """
         Test the Leaderboard visualization.
@@ -419,6 +439,7 @@ class IntegrationTest(unittest.TestCase):
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
 
+    @skip_unless_visualization("leaderboard")
     def test_leaderboard_sort(self):
         """
         Test the sort mechanism of the Leaderboard visualization.
@@ -479,6 +500,7 @@ class IntegrationTest(unittest.TestCase):
         card = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'card')))
         self.assertEqual(card.find_element_by_class_name('ellipsized-title').text, 'P1')
 
+    @skip_unless_visualization("process-flow")
     def test_process_flow(self):
         """
         Test the Process flow visualization.
@@ -499,6 +521,7 @@ class IntegrationTest(unittest.TestCase):
         # Open -> Closed Redundant) are not shown by default.
         self.assertEqual(len(graph.find_elements_by_class_name('edge')), 10)
 
+    @skip_unless_visualization("sprint-report")
     def test_sprint_report(self):
         """
         Test the sprint report visualization.
@@ -535,6 +558,7 @@ class IntegrationTest(unittest.TestCase):
             formatter.test(self, element)
             old_display = element
 
+    @skip_unless_visualization("sprint-report")
     def test_sprint_report_details(self):
         """
         Test the details subtable of the sprint report visualization.
@@ -559,6 +583,7 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual([row.find_element_by_css_selector('td:first-child a').text for row in rows], ["P1-198", "P1-224", "P1-301"])
         self.assertEqual([row.find_element_by_css_selector('td:last-child').text for row in rows], ["2", "5", "0.5"])
 
+    @skip_unless_visualization("sprint-report")
     def test_sprint_report_export(self):
         """
         Test the export mechanism of the sprint report visualization.
@@ -587,6 +612,7 @@ class IntegrationTest(unittest.TestCase):
             self.assertTrue(test_case.test(button),
                             test_case.get_message(exporter))
 
+    @skip_unless_visualization("timeline")
     def test_timeline(self):
         """
         Test the Timeline visualization.

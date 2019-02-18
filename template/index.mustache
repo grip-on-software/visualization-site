@@ -16,245 +16,77 @@
 
         <div class="section">
             <div class="container">
-                <h1 class="title" data-message="title">Welcome to Visualizations from GROS</h1>
+                <h1 class="title">{{{message-title}}}</h1>
 
 				<p class="homepage" data-message="homepage-description">Read an introduction to the research at the <a href="https://gros.liacs.nl" data-message="homepage-link">homepage</a>.</p>
 
                 <div class="links">
 					{{#blog_url}}
                     <a href="{{blog_url}}" class="button is-link is-outlined is-medium">
-                        <span data-message="blog">Blog</span>
-                        <i data-feather="external-link"></i>
+                        {{{message-blog}}}
+                        <span class="icon is-size-7">
+                            <i class="fas fa-external-link-alt"></i>
+                        </span>
                     </a>
 					{{/blog_url}}
 					{{#discussion_url}}
                     <a href="{{discussion_url}}" class="button is-link is-outlined is-medium">
-                        <span data-message="discussion">Discussion</span>
-                        <i data-feather="external-link"></i>
+                        {{{message-discussion}}}
+                        <span class="icon is-size-7">
+                            <i class="fas fa-external-link-alt"></i>
+                        </span>
                     </a>
 					{{/discussion_url}}
                 </div>
 
-                <div class="container visualizations">
-                    <h2 class="title is-6" data-message="visualizations-title">Visualizations</h2>
+                {{#groups}}
+                <div class="container {{id}}">
+                    <h2 class="title is-6">{{{title}}}</h2>
 
+                    {{test}}
                     <div class="columns is-multiline">
+                        {{#items}}
+                        {{test}}
                         <div class="column is-3-desktop is-one-third-tablet">
                             <div class="card">
-                                <a href="timeline" data-language="">
+                                <a href="{{show}}" data-language="{{language_parameter}}">
                                     <header class="card-header">
+                                        <span class="card-header-icon">
+	                                        {{{icon}}}
+                                        </span>
                                         <p class="card-header-title">
-	                                        <i data-feather="align-center"></i>
-											<span data-message="timeline-title">Timeline</span>
+											{{{title}}}
                                         </p>
                                     </header>
                                 </a>
                                 <div class="card-content">
-                                    <div class="content" data-message="timeline-content">
-                                        A timeline of sprints for each project, with events that happened during that sprint. Several sprints can be selected to
-                                        compare them.
+                                    <div class="content">
+                                        {{{content}}}
                                     </div>
                                 </div>
                                 <footer class="card-footer">
-                                    <a href="timeline" data-language="" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
+                                    <a href="{{show}}" data-language="{{language_parameter}}" class="card-footer-item is-wider">{{{message-visualizations-open}}}</a>
 									{{#blog_url}}
-                                    <a href="{{blog_url}}update-voor-de-tijdlijn/" hreflang="nl" class="card-footer-item" data-message-title="visualizations-blog">
-                                        <i data-feather="info"></i>
+                                    {{#blog}}
+                                    <a href="{{blog_url}}{{fragment}}/" hreflang="{{language}}" class="card-footer-item" data-message-title="visualizations-blog">
+                                        <span class="icon">
+                                            <i class="fas fa-info"></i>
+                                        </span>
                                     </a>
+                                    {{/blog}}
 									{{/blog_url}}
-                                    <a href="timeline.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
+                                    <a href="{{download}}" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
+                                        <span class="icon">
+                                            <i class="fas fa-download"></i>
+                                        </span>
                                     </a>
                                 </footer>
                             </div>
                         </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="heatmap" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="grid"></i>
-											<span data-message="heatmap-title">Heatmap</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="heatmap-content">
-                                        Project activity over time in a calendar view. Additionally files which are changed after a long time are displayed.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="heatmap" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-									{{#blog_url}}
-                                    <a href="{{blog_url}}heatmap-van-projectactiviteit/" hreflang="nl" class="card-footer-item" data-message-title="visualizations-blog">
-                                        <i data-feather="info"></i>
-                                    </a>
-									{{/blog_url}}
-                                    <a href="heatmap.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="collaboration-graph" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="circle"></i>
-											<span data-message="collaboration-graph-title">Collaboration Graph</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="collaboration-graph-content">
-                                        Collaboration between team members on projects, displayed in a graph. With a timelapse mode the growth over time can
-                                        be displayed.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="collaboration-graph" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-									{{#blog_url}}
-                                    <a href="{{blog_url}}netwerk-samenwerking-binnen-ictu/" class="card-footer-item" data-message-title="visualizations-blog">
-                                        <i data-feather="info"></i>
-                                    </a>
-									{{/blog_url}}
-                                    <a href="collaboration-graph.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="leaderboard" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="award"></i>
-											<span data-message="leaderboard-title">Leaderboard</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="leaderboard-content">
-                                        Project statistics are assigned a score and displayed as a leaderboard, 
-                                        similar to GitLab's Conversational Development Index.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="leaderboard" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-                                    <a href="leaderboard.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
+                        {{/items}}
                     </div>
                 </div>
-
-                <div class="container more">
-                    <h2 class="title is-6" data-message="more-title">More resources</h2>
-
-                    <div class="columns is-multiline">
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="{{ prediction_url }}show" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="percent"></i>
-											<span data-message="prediction-title">Prediction</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="prediction-content">
-                                        A classification and risk analysis of the latest sprint.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="{{ prediction_url }}show" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-                                    <a href="{{ prediction_url }}show/zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="bigboat-status" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="activity"></i>
-											<span data-message="bigboat-status-title">BigBoat Status</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="bigboat-status-content">
-                                        Historical overview of availability of the BigBoat dashboard. Aggregated reliability and a breakdown of scores is shown.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="bigboat-status" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-									{{#blog_url}}
-                                    <a href="{{blog_url}}big-boat-status-visualisatie/" class="card-footer-item" data-message-title="visualizations-blog">
-                                        <i data-feather="info"></i>
-                                    </a>
-									{{/blog_url}}
-                                    <a href="bigboat-status.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="process-flow" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="wind"></i>
-											<span data-message="process-flow-title">Process Flow</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="process-flow-content">
-                                        Overview of the software development process stages. Stories are aggregated in different states, indicating bottlenecks and main streams.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="process-flow" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-                                    <a href="process-flow.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="sprint-report" data-language="lang">
-                                    <header class="card-header">
-                                        <p class="card-header-title">
-                                            <i data-feather="book-open"></i>
-											<span data-message="sprint-report-title">Sprint Report</span>
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content" data-message="sprint-report-content">
-                                        Customizable report generator that provides a summary of relevant metrics from the recent sprints of multiple projects.
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="sprint-report" data-language="lang" class="card-footer-item is-wider" data-message="visualizations-open">Open</a>
-                                    <a href="sprint-report.zip" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <i data-feather="download"></i>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{/groups}}
             </div>
         </div>
     </body>

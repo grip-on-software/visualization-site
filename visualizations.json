@@ -1,0 +1,73 @@
+{
+    "groups": [
+        {
+            "id": "visualizations",
+            "items": [
+                {
+                    "id": "timeline",
+                    "icon": ["fas", "align-center"],
+                    "language_parameter": "",
+                    "blog": {
+                        "fragment": "update-voor-de-tijdlijn",
+                        "language": "nl"
+                    }
+                },
+                {
+                    "id": "heatmap",
+                    "icon": ["fas", "th-large"],
+                    "language_parameter": "lang",
+                    "blog": {
+                        "fragment": "heatmap-van-projectactiviteit",
+                        "language": "nl"
+                    }
+                },
+                {
+                    "id": "collaboration-graph",
+                    "icon": ["far", "circle"],
+                    "language_parameter": "lang",
+                    "blog": {
+                        "fragment": "netwerk-samenwerking-binnen-ictu",
+                        "language": "nl"
+                    }
+                },
+                {
+                    "id": "leaderboard",
+                    "icon": ["fas", "trophy"],
+                    "language_parameter": "lang"
+                }
+            ]
+        },
+        {
+            "id": "more",
+            "items": [
+                {
+                    "id": "prediction",
+                    "icon": ["fas", "percent"],
+                    "url": "{{{prediction_url}}}show",
+                    "language_parameter": "lang",
+                    "download": "{{{prediction_url}}}show/zip",
+                    "skip_test": true
+                },
+                {
+                    "id": "bigboat-status",
+                    "icon": ["fab", "docker"],
+                    "language_parameter": "lang",
+                    "blog": {
+                        "fragment": "big-boat-status-visualisatie",
+                        "language": "nl"
+                    }
+                },
+                {
+                    "id": "process-flow",
+                    "icon": ["fas", "sync"],
+                    "language_parameter": "lang"
+                },
+                {
+                    "id": "sprint-report",
+                    "icon": ["fas", "book-open"],
+                    "language_parameter": "lang"
+                }
+            ]
+        }
+    ]
+}

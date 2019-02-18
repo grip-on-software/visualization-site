@@ -1,8 +1,15 @@
 const fs = require('fs'),
       { URL } = require('url'),
       mix = require('laravel-mix'),
+      _ = require('lodash'),
       mustache = require('mustache'),
       HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const spec = JSON.parse(fs.readFileSync('lib/locales.json'));
+const message = (key) => `<span data-message="${key}">${spec.en.messages[key]}</span>`;
+const messages = _.transform(spec.en.messages, (result, value, key) => {
+    result[`message-${key}`] = message(key);
+}, {});
 
 let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
 if (!fs.existsSync(navbar)) {
@@ -16,23 +23,56 @@ if (!fs.existsSync(config)) {
     config = path.resolve(__dirname, configFile);
 }
 const configuration = JSON.parse(fs.readFileSync(config));
+
+let visualizations = JSON.parse(fs.readFileSync('visualizations.json'));
+if (typeof process.env.VISUALIZATION_NAMES !== "undefined") {
+    const names = new Set(process.env.VISUALIZATION_NAMES.split(' '));
+    visualizations.groups = _.map(visualizations.groups,
+        (group) => _.assign({}, group, {
+            items: _.filter(group.items, (item) => names.has(item.id))
+        })
+    );
+}
+visualizations.groups = _.map(visualizations.groups,
+    (group) => _.assign({}, group, {
+        title: message(`${group.id}-title`),
+        items: _.map(group.items, (item) => _.assign({}, item, {
+            show: typeof item.url !== "undefined" ?
+                mustache.render(item.url, configuration) : item.id,
+            download: typeof item.download !== "undefined" ?
+                mustache.render(item.download, configuration) :
+                `${item.id}.zip`,
+            icon: `<span class="icon">
+                <i class="${_.map(item.icon, (part, i) => i === 0 ? part : `fa-${part}`).join(' ')}" aria-hidden="true"></i>
+            </span>`,
+            title: message(`${item.id}-title`),
+            content: message(`${item.id}-content`)
+        }))
+    })
+);
+const visualization_names = _.flattenDeep(_.map(visualizations.groups,
+    (group) => _.map(group.items, (item) => item.skip_test ? [] : item.id)
+));
+fs.writeFileSync(path.resolve(__dirname, 'visualization_names.txt'),
+    visualization_names.join(' ')
+);
+
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
-const templateConfiguration = Object.assign({}, configuration, {
+const nginxConfiguration = _.assign({}, configuration, {
     config_file: configFile,
     control_hostname: configuration.control_host.slice(0, control_host_index),
     control_domain: configuration.control_host.slice(control_host_index + 1),
     domain: configuration.visualization_server.slice(domain_index + 1),
     internal_domain: configuration.jenkins_host.slice(internal_domain_index + 1),
-    repo_root: process.env.REPO_ROOT !== undefined ? process.env.REPO_ROOT : 'repos',
-    server_certificate: process.env.SERVER_CERTIFICATE !== undefined ?
+    repo_root: typeof process.env.REPO_ROOT !== "undefined" ?
+        process.env.REPO_ROOT : 'repos',
+    server_certificate: typeof process.env.SERVER_CERTIFICATE !== "undefined" ?
         process.env.SERVER_CERTIFICATE : configuration.auth_cert,
     user_id: process.getuid(),
     group_id: process.getgid(),
-    visualization_names: process.env.VISUALIZATION_NAMES !== undefined ? 
-        process.env.VISUALIZATION_NAMES.split(' ') :
-        fs.readFileSync(path.resolve(__dirname, 'visualization_names.txt')).toString('utf8').trim().split(' '),
+    visualization_names: visualization_names,
     join: function() {
         return function(text, render) {
             // Remove last character
@@ -63,6 +103,10 @@ const templateConfiguration = Object.assign({}, configuration, {
     error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
+const htmlConfiguration = _.assign({}, configuration, messages, { 
+    visualization_names: visualization_names,
+    groups: visualizations.groups
+});
 
 const templates = [
     'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf', 
@@ -73,7 +117,7 @@ templates.forEach((template) => {
     try {
         fs.writeFileSync(template,
             mustache.render(fs.readFileSync(`${template}.mustache`, 'utf8'),
-                templateConfiguration
+                nginxConfiguration
             )
         );
     }
@@ -108,7 +152,7 @@ mix.setPublicPath('www/')
                 loader: 'mustache-loader',
                 options: {
                     tiny: true,
-                    render: Object.assign({}, JSON.parse(fs.readFileSync(config)))
+                    render: htmlConfiguration
                 }
             } ]
         },
