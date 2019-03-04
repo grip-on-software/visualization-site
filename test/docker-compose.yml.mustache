@@ -26,6 +26,7 @@ runner:
     - "../test:/work"
     - "../{{{config_file}}}:/config.json:ro"
     - "../visualization_names.txt:/visualization_names.txt:ro"
+    - "../axe-core/:/axe-core"
   working_dir: "/work"
   links:
     - "selenium:selenium.test"

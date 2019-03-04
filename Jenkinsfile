@@ -69,6 +69,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'upload-server-certificate', variable: 'SERVER_CERTIFICATE')]) {
                     sh 'rm -rf node_modules/'
                     sh 'ln -s /usr/src/app/node_modules .'
+                    sh 'cp -r /usr/src/app/node_modules/axe-selenium-python/axe_selenium_python/node_modules/axe-core/ axe-core'
                     sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
                     sh 'SERVER_CERTIFICATE=$PWD/wwwgros.crt npm run pretest -- --env.mixfile=$PWD/webpack.mix.js'
                 }

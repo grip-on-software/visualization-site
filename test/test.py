@@ -24,6 +24,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+from axe_selenium_python import Axe
 try:
     from httplib import BadStatusLine
 except ImportError:
@@ -673,6 +674,12 @@ class IntegrationTest(unittest.TestCase):
                 with closing(response):
                     if response.getcode() != 200:
                         self.fail('Could not upload coverage data')
+
+            axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
+            axe.inject()
+            accessibility = axe.run()
+            axe.write_results(accessibility,
+                              'accessibility/{}.json'.format(self.id()))
 
             self._driver.close()
 

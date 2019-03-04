@@ -9,7 +9,9 @@ ENV NODE_ENV $NODE_ENV
 ARG NPM_REGISTRY
 RUN npm config set @gros:registry $NPM_REGISTRY
 COPY package.json webpack.mix.js /usr/src/app/
-RUN npm install && npm cache clean --force
+RUN apk --update add git && \
+	npm install && npm cache clean --force && \
+	apk del git && rm -rf /var/cache/apk/*
 COPY navbar.json navbar.*.js [c]onfig.json nginx.conf.mustache /usr/src/app/
 COPY caddy/ /usr/src/app/caddy/
 COPY lib/ /usr/src/app/lib/
