@@ -27,9 +27,9 @@ function container_logs() {
 	echo '</ul></body></html>' >> test/results/index.html
 }
 
-rm -rf test/junit test/results test/coverage test/downloads
+rm -rf test/junit test/results test/accessibility test/coverage test/downloads
 mkdir -p repos
-mkdir -p test/junit test/results test/coverage test/downloads
+mkdir -p test/junit test/results test/accessibility test/coverage test/downloads
 
 if [ -z "$REPO_ROOT" ]; then
 	REPO_ROOT="repos"
@@ -72,7 +72,7 @@ if [ -z "$TEST_CONTAINER" ]; then
 fi
 
 echo "Instances are up, performing installations"
-docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium
+docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium axe-selenium-python
 
 # Total time allocated for starting the visualizations
 if [ -z "$VISUALIZATION_MAX_SECONDS" ]; then

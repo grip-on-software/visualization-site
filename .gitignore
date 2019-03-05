@@ -9,6 +9,7 @@ nginx/*.conf
 manifest.js
 vendor.js
 node_modules
+axe-core
 repos/
 test/config.json
 test/coverage/
