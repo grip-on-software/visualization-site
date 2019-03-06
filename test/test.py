@@ -9,6 +9,7 @@ from io import BytesIO
 import json
 import linecache
 import os.path
+import re
 from socket import error as SocketError
 import time
 import unittest
@@ -218,6 +219,14 @@ class IntegrationTest(unittest.TestCase):
         cls._results_index.write('<title>Visualization test results</title>')
         cls._results_index.write('</head><body><h1>Test results</h1><ul>')
 
+    def _get_url(self, key):
+        org = os.getenv('VISUALIZATION_ORGANIZATION')
+        base = 'http://{}'.format(self._config['{}_server'.format(key)])
+        url = re.sub(r'(/)?\$organization',
+                     r'\1{}'.format(org) if org is not None else '',
+                     self._config['{}_url'.format(key)])
+        return urljoin(base, url)
+
     def setUp(self):
         self._driver = self._setup_driver()
         tries = 0
@@ -234,13 +243,8 @@ class IntegrationTest(unittest.TestCase):
         with open('/config.json') as config_file:
             self._config = json.load(config_file)
 
-        visualization = 'http://{}'.format(self._config['visualization_server'])
-        self._visualization_url = urljoin(visualization,
-                                          self._config['visualization_url'])
-
-        prediction = 'http://{}'.format(self._config['prediction_server'])
-        self._prediction_url = urljoin(prediction,
-                                       self._config['prediction_url'])
+        self._visualization_url = self._get_url('visualization')
+        self._prediction_url = self._get_url('prediction')
 
     def _wait_for(self, condition, message=''):
         return WebDriverWait(self._driver, self.WAIT_TIMEOUT,

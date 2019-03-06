@@ -60,7 +60,10 @@ fs.writeFileSync(path.resolve(__dirname, 'visualization_names.txt'),
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
-const nginxConfiguration = _.assign({}, configuration, {
+const nginxConfiguration = _.assign({}, _.mapValues(configuration,
+    (value, key) => key.endsWith('_url') ?
+        value.replace(/\/?\$organization/, '') : value
+), {
     config_file: configFile,
     control_hostname: configuration.control_host.slice(0, control_host_index),
     control_domain: configuration.control_host.slice(control_host_index + 1),
@@ -92,7 +95,8 @@ const nginxConfiguration = _.assign({}, configuration, {
         return function(text, render) {
             const url_parts = render(text).split('/');
             var server = url_parts.shift();
-            return (new URL(url_parts.join('/'), `http://${server}/`)).pathname;
+            return (new URL(url_parts.join('/'), `http://${server}/`))
+                .pathname.replace('//', '/');
         };
     },
     upstream: function() {
@@ -103,7 +107,12 @@ const nginxConfiguration = _.assign({}, configuration, {
     error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
-const htmlConfiguration = _.assign({}, configuration, messages, { 
+const htmlConfiguration = _.assign({}, _.mapValues(configuration,
+    (value, key) => key.endsWith('_url') ? value.replace(/(\/)?\$organization/,
+        typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+        "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
+    ) : value
+), messages, { 
     visualization_names: visualization_names,
     groups: visualizations.groups
 });
@@ -125,6 +134,16 @@ templates.forEach((template) => {
         throw new Error(`Could not render ${template}.mustache: ${e.message}`);
     }
 });
+
+const jsConfiguration = _.assign({}, _.pickBy(configuration,
+    (value, key) => key.endsWith('key')
+), {
+    organization:
+    typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+    process.env.VISUALIZATION_ORGANIZATION : ''
+});
+const configAlias = path.resolve(__dirname, 'config-alias.json');
+fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
@@ -175,7 +194,7 @@ mix.setPublicPath('www/')
         resolve: {
             alias: {
                 'navbar.spec$': navbar,
-                'config.json$': config
+                'config.json$': configAlias
             }
         }
     });
