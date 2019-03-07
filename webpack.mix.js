@@ -24,7 +24,7 @@ if (!fs.existsSync(config)) {
 }
 const configuration = JSON.parse(fs.readFileSync(config));
 
-const htmlConfiguration = _.assign({}, _.mapValues(configuration,
+const urlConfiguration = _.mapValues(configuration,
     (value, key) => {
         if (!key.endsWith('_url')) {
             return value;
@@ -34,10 +34,8 @@ const htmlConfiguration = _.assign({}, _.mapValues(configuration,
             "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
         );
     }
-), messages, { 
-    visualization_names: visualization_names,
-    groups: visualizations.groups
-});
+);
+    
 let visualizations = JSON.parse(fs.readFileSync('visualizations.json'));
 if (typeof process.env.VISUALIZATION_NAMES !== "undefined") {
     const names = new Set(process.env.VISUALIZATION_NAMES.split(' '));
@@ -52,9 +50,9 @@ visualizations.groups = _.map(visualizations.groups,
         title: message(`${group.id}-title`),
         items: _.map(group.items, (item) => _.assign({}, item, {
             show: typeof item.url !== "undefined" ?
-                mustache.render(item.url, htmlConfiguration) : item.id,
+                mustache.render(item.url, urlConfiguration) : item.id,
             download: typeof item.download !== "undefined" ?
-                mustache.render(item.download, htmlConfiguration) :
+                mustache.render(item.download, urlConfiguration) :
                 `${item.id}.zip`,
             icon: `<span class="icon">
                 <i class="${_.map(item.icon, (part, i) => i === 0 ? part : `fa-${part}`).join(' ')}" aria-hidden="true"></i>
@@ -141,7 +139,7 @@ templates.forEach((template) => {
 });
 
 const jsConfiguration = _.assign({}, _.pickBy(configuration,
-    (value, key) => key.endsWith('key')
+    (value, key) => key.endsWith('_url')
 ), {
     organization:
     typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
@@ -149,6 +147,11 @@ const jsConfiguration = _.assign({}, _.pickBy(configuration,
 });
 const configAlias = path.resolve(__dirname, 'config-alias.json');
 fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
+
+const htmlConfiguration = _.assign({}, urlConfiguration, messages, { 
+    visualization_names: visualization_names,
+    groups: visualizations.groups
+});
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
