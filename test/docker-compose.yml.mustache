@@ -93,20 +93,15 @@ jenkins:
     - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
     {{#visualization_names}}
     - "../{{{repo_root}}}/{{{.}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{.}}}/job/master/Visualization"
-    - "../test/sample/{{{.}}}/data:/srv/www{{{jenkins_path}}}/job/build-{{{.}}}/job/master/Visualization/data"
     {{/visualization_names}}
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"
-  links:
-    {{#visualization_names}}
-    - "{{{.}}}:{{{.}}}.{{{internal_domain}}}"
-    {{/visualization_names}}
 
 {{#visualization_names}}
 {{{.}}}:
   image: $DOCKER_REGISTRY/gros-{{{.}}}:latest
   domainname: "{{{internal_domain}}}"
-  command: "/bin/sh -exc 'rm -rf public/data/ && mkdir -p public/ && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{.}}}/webpack.mix.js'"
+  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{.}}}/webpack.mix.js; fi'"
   user: "{{{user_id}}}:{{{group_id}}}"
   volumes:
     - "../{{{repo_root}}}:$PWD/repos"
