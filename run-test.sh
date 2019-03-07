@@ -55,8 +55,19 @@ for repo in $VISUALIZATION_NAMES; do
 	else
 		echo "Updating $tree"
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git reset --hard
-		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
+		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
+		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
+		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
+		if [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/public/index.html" ]; then
+			echo "$repo is up to date, skipping build in instance."
+			touch "$tree/.skip_build"
+		else
+			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
+			echo "Build of $repo required"
+			rm -f "$tree/.skip_build"
+		fi
 	fi
+	mkdir -p "$tree/public"
 done
 
 PROXY_HOST=nginx
