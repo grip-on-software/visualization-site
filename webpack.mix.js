@@ -108,10 +108,15 @@ const nginxConfiguration = _.assign({}, _.mapValues(configuration,
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
 const htmlConfiguration = _.assign({}, _.mapValues(configuration,
-    (value, key) => key.endsWith('_url') ? value.replace(/(\/)?\$organization/,
-        typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
-        "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
-    ) : value
+    (value, key) => {
+        if (!key.endsWith('_url')) {
+            return value;
+        }
+        return value.replace(/(\/)?\$organization/,
+            typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+            "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
+        );
+    }
 ), messages, { 
     visualization_names: visualization_names,
     groups: visualizations.groups
@@ -147,7 +152,7 @@ fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? '/' : configuration.visualization_url)
+    .setResourceRoot(process.env.BRANCH_NAME !== 'master' ? '/' : htmlConfiguration.visualization_url)
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
@@ -163,7 +168,7 @@ mix.setPublicPath('www/')
     .webpackConfig({
         output: {
             path: path.resolve('www/'),
-            publicPath: process.env.BRANCH_NAME !== 'master' ? '.' : configuration.visualization_url
+            publicPath: process.env.BRANCH_NAME !== 'master' ? '.' : htmlConfiguration.visualization_url
         },
         module: {
             rules: [ {
