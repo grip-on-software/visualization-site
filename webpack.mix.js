@@ -24,6 +24,20 @@ if (!fs.existsSync(config)) {
 }
 const configuration = JSON.parse(fs.readFileSync(config));
 
+const htmlConfiguration = _.assign({}, _.mapValues(configuration,
+    (value, key) => {
+        if (!key.endsWith('_url')) {
+            return value;
+        }
+        return value.replace(/(\/)?\$organization/,
+            typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+            "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
+        );
+    }
+), messages, { 
+    visualization_names: visualization_names,
+    groups: visualizations.groups
+});
 let visualizations = JSON.parse(fs.readFileSync('visualizations.json'));
 if (typeof process.env.VISUALIZATION_NAMES !== "undefined") {
     const names = new Set(process.env.VISUALIZATION_NAMES.split(' '));
@@ -38,9 +52,9 @@ visualizations.groups = _.map(visualizations.groups,
         title: message(`${group.id}-title`),
         items: _.map(group.items, (item) => _.assign({}, item, {
             show: typeof item.url !== "undefined" ?
-                mustache.render(item.url, configuration) : item.id,
+                mustache.render(item.url, htmlConfiguration) : item.id,
             download: typeof item.download !== "undefined" ?
-                mustache.render(item.download, configuration) :
+                mustache.render(item.download, htmlConfiguration) :
                 `${item.id}.zip`,
             icon: `<span class="icon">
                 <i class="${_.map(item.icon, (part, i) => i === 0 ? part : `fa-${part}`).join(' ')}" aria-hidden="true"></i>
@@ -106,20 +120,6 @@ const nginxConfiguration = _.assign({}, _.mapValues(configuration,
     },
     error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
-});
-const htmlConfiguration = _.assign({}, _.mapValues(configuration,
-    (value, key) => {
-        if (!key.endsWith('_url')) {
-            return value;
-        }
-        return value.replace(/(\/)?\$organization/,
-            typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
-            "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
-        );
-    }
-), messages, { 
-    visualization_names: visualization_names,
-    groups: visualizations.groups
 });
 
 const templates = [
