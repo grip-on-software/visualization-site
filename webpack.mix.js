@@ -24,6 +24,8 @@ if (!fs.existsSync(config)) {
 }
 const configuration = JSON.parse(fs.readFileSync(config));
 
+// Replace organization parameter with environment variable if necessary.
+// Used for visualization links and HTML configuration
 const urlConfiguration = _.mapValues(configuration,
     (value, key) => {
         if (!key.endsWith('_url')) {
@@ -35,7 +37,9 @@ const urlConfiguration = _.mapValues(configuration,
         );
     }
 );
-    
+
+// Read list of available visualizations in groups for main page display,
+// and add variables for expansion
 let visualizations = JSON.parse(fs.readFileSync('visualizations.json'));
 if (typeof process.env.VISUALIZATION_NAMES !== "undefined") {
     const names = new Set(process.env.VISUALIZATION_NAMES.split(' '));
@@ -69,10 +73,12 @@ fs.writeFileSync(path.resolve(__dirname, 'visualization_names.txt'),
     visualization_names.join(' ')
 );
 
+// NGINX template configuration
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
 const nginxConfiguration = _.assign({}, _.mapValues(configuration,
+    // Remove any organization parameters from URLs (not injected branch setter)
     (value, key) => key.endsWith('_url') ?
         value.replace(/\/?\$organization/, '') : value
 ), {
@@ -121,7 +127,7 @@ const nginxConfiguration = _.assign({}, _.mapValues(configuration,
 });
 
 const templates = [
-    'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf', 
+    'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf',
     'nginx/prediction.conf', 'nginx/visualization.conf', 'nginx/websocket.conf',
     'caddy/docker-compose.yml', 'test/docker-compose.yml'
 ];
@@ -138,6 +144,7 @@ templates.forEach((template) => {
     }
 });
 
+// Generate configuration to import into the navbar builder
 const jsConfiguration = _.assign({}, _.pickBy(configuration,
     (value, key) => key.endsWith('_url')
 ), {
@@ -148,7 +155,8 @@ const jsConfiguration = _.assign({}, _.pickBy(configuration,
 const configAlias = path.resolve(__dirname, 'config-alias.json');
 fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
 
-const htmlConfiguration = _.assign({}, urlConfiguration, messages, { 
+// Generage configuration for HTML pages
+const htmlConfiguration = _.assign({}, urlConfiguration, messages, {
     visualization_names: visualization_names,
     groups: visualizations.groups
 });
