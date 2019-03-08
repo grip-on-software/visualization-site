@@ -17,10 +17,15 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<br
     add_header Access-Control-Allow-Origin *;
 }
 
-location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/ {
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/zip {
     {{{hub_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/*zip*/archive.zip break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([-_0-9a-zA-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$1/$2 permanent;
+}
+
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/ {
+    {{{hub_branch}}}
+    if ($branch = "") { set $branch "master"; }
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<path>show|branch/[-_0-9a-zA-Z]+)/(?P<project>[-_0-9a-zA-Z]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$path/$project permanent;
 
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[-_0-9a-zA-Z]+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$project break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[-_0-9a-zA-Z]+)/sprint/(?P<sprint>\d+|latest) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$project&sprint=$sprint break;
