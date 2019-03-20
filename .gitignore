@@ -12,6 +12,7 @@ node_modules
 axe-core
 repos/
 test/config.json
+test/accessibility/
 test/coverage/
 test/junit/
 test/results/
