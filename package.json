@@ -6,9 +6,11 @@
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "production": "cross-env NODE_ENV=production webpack --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "test": "./run-test.sh"
+    "test": "./run-test.sh",
+    "axe-report": "cross-env NODE_ENV=test node axe-report.js"
   },
   "devDependencies": {
+    "axe-reports": "^1.1.11",
     "axe-selenium-python": "git+https://github.com/mozilla-services/axe-selenium-python.git",
     "babel-loader": "^8.0.5",
     "babel-plugin-istanbul": "^5.1.1",

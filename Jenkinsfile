@@ -34,6 +34,7 @@ pipeline {
         always {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/results/', reportFiles: 'index.html', reportName: 'Results', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/accessibility/', reportFiles: 'index.html', reportName: 'Accessiblity', reportTitles: ''])
             junit 'test/junit/*.xml'
         }
     }
@@ -89,6 +90,17 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+        stage('Collect results') {
+            agent {
+                docker {
+                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'npm run axe-report'
             }
         }
         stage('SonarQube Analysis') {

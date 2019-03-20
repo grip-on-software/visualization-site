@@ -219,6 +219,12 @@ class IntegrationTest(unittest.TestCase):
         cls._results_index.write('<title>Visualization test results</title>')
         cls._results_index.write('</head><body><h1>Test results</h1><ul>')
 
+        cls._accessibility_index = open('accessibility/index.html', 'w')
+        cls._accessibility_index.write('<!doctype html><html><head>')
+        cls._accessibility_index.write('<meta charset="utf-8">')
+        cls._accessibility_index.write('<title>Accessibility results</title>')
+        cls._accessibility_index.write('</head><body><h1>Accessibility</h1>')
+
     def _get_url(self, key):
         org = os.getenv('VISUALIZATION_ORGANIZATION')
         base = 'http://{}'.format(self._config['{}_server'.format(key)])
@@ -685,12 +691,19 @@ class IntegrationTest(unittest.TestCase):
             axe.write_results(accessibility,
                               'accessibility/{}.json'.format(self.id()))
 
+            report = axe.report(accessibility["violations"])
+            section = '<h2>{0}</h2><pre>{1}</pre>'.format(self.id(), report)
+            self._accessibility_index.write(section)
+
             self._driver.close()
 
     @classmethod
     def tearDownClass(cls):
         cls._results_index.write('</ul>')
         cls._results_index.close()
+
+        cls._accessibility_index.write('</body></html>')
+        cls._accessibility_index.close()
 
         response = urlopen('http://coverage.test:8888/download')
         with closing(response):
