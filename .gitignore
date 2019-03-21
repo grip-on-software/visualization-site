@@ -1,6 +1,7 @@
 bundle.js
 bundle.js.map
 /config.json
+/config-alias.json
 /config.*.json
 caddy/docker-compose.yml
 test/docker-compose.yml
