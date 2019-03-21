@@ -197,6 +197,16 @@ mix.setPublicPath('www/')
                 inject: 'body'
             }),
             new HtmlWebpackPlugin({
+                template: 'template/401.mustache',
+                filename: '401.html',
+                inject: false
+            }),
+            new HtmlWebpackPlugin({
+                template: 'template/403.mustache',
+                filename: '403.html',
+                inject: false
+            }),
+            new HtmlWebpackPlugin({
                 template: 'template/404.mustache',
                 filename: '404.html',
                 inject: 'body'
