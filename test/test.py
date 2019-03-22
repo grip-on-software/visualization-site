@@ -5,6 +5,7 @@ Integration tests for the visualization hub proxies.
 from collections import OrderedDict
 from contextlib import closing
 import errno
+import html
 from io import BytesIO
 import json
 import linecache
@@ -691,7 +692,7 @@ class IntegrationTest(unittest.TestCase):
             axe.write_results(accessibility,
                               'accessibility/{}.json'.format(self.id()))
 
-            report = axe.report(accessibility["violations"])
+            report = html.escape(axe.report(accessibility["violations"]))
             section = '<h2>{0}</h2><pre>{1}</pre>'.format(self.id(), report)
             self._accessibility_index.write(section)
 
