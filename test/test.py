@@ -414,7 +414,7 @@ class IntegrationTest(unittest.TestCase):
 
         driver = self._driver
         driver.get('{}/heatmap'.format(self._visualization_url))
-        self.assertIn("Calendar/heatmap", driver.title)
+        self.assertIn("Heatmap", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'projectPicker')))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 2)
@@ -520,7 +520,7 @@ class IntegrationTest(unittest.TestCase):
 
         driver = self._driver
         driver.get('{}/process-flow'.format(self._visualization_url))
-        self.assertIn("Process flow", driver.title)
+        self.assertIn("Process Flow", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
