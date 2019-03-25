@@ -1,4 +1,4 @@
-const axe = require('axe-reports'),
+const axe = require('@ictu/axe-reports'),
       fs = require('fs');
 
 const directory = 'test/accessibility/';
@@ -12,7 +12,7 @@ fs.readdir(directory, {}, function(error, files) {
         if (filename.endsWith('.json')) {
             axe.processResults(
                 JSON.parse(fs.readFileSync(directory + filename)),
-                'csv', directory + 'report', newReport
+                'csv', directory + 'report.txt', newReport
             );
             newReport = false;
         }
