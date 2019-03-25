@@ -163,7 +163,10 @@ const htmlConfiguration = _.assign({}, urlConfiguration, messages, {
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
-    .setResourceRoot(process.env.BRANCH_NAME.endsWith('master') ? htmlConfiguration.visualization_url : '/')
+    .setResourceRoot(typeof process.env.BRANCH_NAME !== 'undefined' &&
+        process.env.BRANCH_NAME.endsWith('master') ?
+        htmlConfiguration.visualization_url : '/'
+    )
     .js('lib/index.js', 'www/bundle.js')
     .extract(['./lib/build.js'])
     .sass('res/main.scss', 'www/main.css')
@@ -179,7 +182,9 @@ mix.setPublicPath('www/')
     .webpackConfig({
         output: {
             path: path.resolve('www/'),
-            publicPath: process.env.BRANCH_NAME.endsWith('master') ? htmlConfiguration.visualization_url : '.'
+            publicPath: typeof process.env.BRANCH_NAME !== 'undefined' &&
+                process.env.BRANCH_NAME.endsWith('master') ?
+                htmlConfiguration.visualization_url : '.'
         },
         module: {
             rules: [ {
