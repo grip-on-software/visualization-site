@@ -688,12 +688,12 @@ class IntegrationTest(unittest.TestCase):
 
             axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
             axe.inject()
-            accessibility = axe.run({
+            accessibility = axe.run(options=json.dumps({
                 'rules': {
                     # Axe considers all anchor links to be skip links
-                    'skip-link': {'matches': 'a.skip-link'}
+                    'skip-link': {'enabled': False}
                 }
-            })
+            }))
             axe.write_results(accessibility,
                               'accessibility/{}.json'.format(self.id()))
 
