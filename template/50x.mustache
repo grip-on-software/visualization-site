@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Server error</title>
+        <title data-message="error-50x-title">Server error</title>
 
         <link rel="shortcut icon" href="/favicon.ico">
         <link rel="icon" href="/images/ICTU-LEIDEN.png">
@@ -14,14 +14,16 @@
         aria-label="main navigation" id="navbar">
         </nav>
 
-        <div class="section">
-            <div class="container has-text-centered">
-                <h1 class="title">Internal server error</h1>
+        <main role="main">
+            <div class="section">
+                <div class="container has-text-centered">
+                    <h1 class="title" data-message="error-50x-header">Internal server error</h1>
 
-                <div class="content">
-                    <p>Try again later or return to the <a href="/">home page</a>.</p>
+                    <div class="content">
+                        <p data-message="error-50x-content">Try again later or return to the <a href="/" data-message="error-return-link">home page</a>.</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </body>
 </html>

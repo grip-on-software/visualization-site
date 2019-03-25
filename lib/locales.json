@@ -2,6 +2,7 @@
     "en": {
         "language": "English",
         "messages": {
+            "index-title": "Visualizations from GROS",
             "title": "Welcome to Visualizations from GROS",
             "homepage-description": "Read an introduction to the research at the %s.",
             "homepage-link": "homepage",
@@ -27,12 +28,25 @@
             "process-flow-title": "Process Flow",
             "process-flow-content": "Overview of the software development process stages. Stories are aggregated in different states, indicating bottlenecks and main streams.",
             "sprint-report-title": "Sprint Report",
-            "sprint-report-content": "Customizable report generator which provides a summary of relevant metrics from the recent sprints of multiple projects."
+            "sprint-report-content": "Customizable report generator which provides a summary of relevant metrics from the recent sprints of multiple projects.",
+            "error-401-title": "Unauthorized",
+            "error-401-header": "Page requires authentication",
+            "error-401-content": "You must provide correct authentication credentials in order to access this page. Either you have failed to provide these credentials too many times, or your browser does not understand how to securely provide these credentials. You may attempt to reload the page to try to provide the credentials, or return to the %s.",
+            "error-403-title": "Forbidden",
+            "error-403-header": "Page not accessible",
+            "error-404-title": "Not found",
+            "error-404-header": "Page not found",
+            "error-50x-title": "Server error",
+            "error-50x-header": "Internal server error",
+            "error-50x-content": "Try again later or return to the %s.",
+            "error-return": "Return to the %s.",
+            "error-return-link": "home page"
         }
     },
     "nl": {
         "language": "Nederlands",
         "messages": {
+            "index-title": "Visualisaties van GROS",
             "title": "Welkom bij Visualisaties van GROS",
             "homepage-description": "Lees een introductie van het onderzoek op de %s.",
             "homepage-link": "homepage",
@@ -58,7 +72,19 @@
             "process-flow-title": "Procesverloop",
             "process-flow-content": "Overzicht van de stappen in het softwareontwikkelingsproces. Stories worden geaggregeerd in verschillende statussen, met aanwijzing van bottlenecks en hoofdstromen.",
             "sprint-report-title": "Sprintrapportage",
-            "sprint-report-content": "Aanpasbare rapportgenerator die een overzicht van relevante metrieken uit de recente sprints van meerdere projecten toont."
+            "sprint-report-content": "Aanpasbare rapportgenerator die een overzicht van relevante metrieken uit de recente sprints van meerdere projecten toont.",
+            "error-401-title": "Onbevoegd",
+            "error-401-header": "Pagina vereist authenticatie",
+            "error-401-content": "U moet correct authenticatie-credentials leveren om deze pagina te bereiken. U heeft ofwel deze credentials te vaak verzaakt te leveren, of uw browser begrijpt niet hoe deze credentials veilig te leveren. U kunt de pagina herladen om de credentials te proberen te leveren, of terugkeren naar de %s.",
+            "error-403-title": "Verboden",
+            "error-403-header": "Pagina niet toegankelijk",
+            "error-404-title": "Niet gevonden",
+            "error-404-header": "Pagina niet gevonden",
+            "error-50x-title": "Serverfout",
+            "error-50x-header": "Interne serverfout",
+            "error-50x-content": "U kunt het later opnieuw proberen of terugkeren naar de %s.",
+            "error-return": "U kunt terugkeren naar de %s.",
+            "error-return-link": "hoofdpagina"
         }
     }
 }

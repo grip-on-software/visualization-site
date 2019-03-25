@@ -199,12 +199,12 @@ mix.setPublicPath('www/')
             new HtmlWebpackPlugin({
                 template: 'template/401.mustache',
                 filename: '401.html',
-                inject: false
+                inject: 'body'
             }),
             new HtmlWebpackPlugin({
                 template: 'template/403.mustache',
                 filename: '403.html',
-                inject: false
+                inject: 'body'
             }),
             new HtmlWebpackPlugin({
                 template: 'template/404.mustache',

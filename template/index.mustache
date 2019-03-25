@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Visualizations from GROS</title>
+        <title data-message="index-title">Visualizations from GROS</title>
 
         <link rel="shortcut icon" href="favicon.ico">
         <link rel="icon" href="images/ICTU-LEIDEN.png">
@@ -14,80 +14,82 @@
         aria-label="main navigation" id="navbar">
         </nav>
 
-        <div class="section">
-            <div class="container">
-                <h1 class="title">{{{message-title}}}</h1>
+        <main role="main">
+            <div class="section">
+                <div class="container">
+                    <h1 class="title">{{{message-title}}}</h1>
 
-				<p class="homepage" data-message="homepage-description">Read an introduction to the research at the <a href="https://gros.liacs.nl" data-message="homepage-link">homepage</a>.</p>
+				    <p class="homepage" data-message="homepage-description">Read an introduction to the research at the <a href="https://gros.liacs.nl" data-message="homepage-link">homepage</a>.</p>
 
-                <div class="links">
-					{{#blog_url}}
-                    <a href="{{blog_url}}" class="button is-link is-outlined is-medium">
-                        {{{message-blog}}}
-                        <span class="icon is-size-7">
-                            <i class="fas fa-external-link-alt"></i>
-                        </span>
-                    </a>
-					{{/blog_url}}
-					{{#discussion_url}}
-                    <a href="{{discussion_url}}" class="button is-link is-outlined is-medium">
-                        {{{message-discussion}}}
-                        <span class="icon is-size-7">
-                            <i class="fas fa-external-link-alt"></i>
-                        </span>
-                    </a>
-					{{/discussion_url}}
-                </div>
-
-                {{#groups}}
-                <div class="container {{id}}">
-                    <h2 class="title is-6">{{{title}}}</h2>
-
-                    {{test}}
-                    <div class="columns is-multiline">
-                        {{#items}}
-                        {{test}}
-                        <div class="column is-3-desktop is-one-third-tablet">
-                            <div class="card">
-                                <a href="{{show}}" data-language="{{language_parameter}}">
-                                    <header class="card-header">
-                                        <span class="card-header-icon">
-	                                        {{{icon}}}
-                                        </span>
-                                        <p class="card-header-title">
-											{{{title}}}
-                                        </p>
-                                    </header>
-                                </a>
-                                <div class="card-content">
-                                    <div class="content">
-                                        {{{content}}}
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <a href="{{show}}" data-language="{{language_parameter}}" class="card-footer-item is-wider">{{{message-visualizations-open}}}</a>
-									{{#blog_url}}
-                                    {{#blog}}
-                                    <a href="{{blog_url}}{{fragment}}/" hreflang="{{language}}" class="card-footer-item" data-message-title="visualizations-blog">
-                                        <span class="icon">
-                                            <i class="fas fa-info"></i>
-                                        </span>
-                                    </a>
-                                    {{/blog}}
-									{{/blog_url}}
-                                    <a href="{{download}}" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download">
-                                        <span class="icon">
-                                            <i class="fas fa-download"></i>
-                                        </span>
-                                    </a>
-                                </footer>
-                            </div>
-                        </div>
-                        {{/items}}
+                    <div class="links">
+					    {{#blog_url}}
+                        <a href="{{blog_url}}" class="button is-link is-outlined is-medium">
+                            {{{message-blog}}}
+                            <span class="icon is-size-7">
+                                <i class="fas fa-external-link-alt"></i>
+                            </span>
+                        </a>
+					    {{/blog_url}}
+					    {{#discussion_url}}
+                        <a href="{{discussion_url}}" class="button is-link is-outlined is-medium">
+                            {{{message-discussion}}}
+                            <span class="icon is-size-7">
+                                <i class="fas fa-external-link-alt"></i>
+                            </span>
+                        </a>
+					    {{/discussion_url}}
                     </div>
+
+                    {{#groups}}
+                    <div class="container {{id}}">
+                        <h2 class="title is-6">{{{title}}}</h2>
+
+                        {{test}}
+                        <div class="columns is-multiline">
+                            {{#items}}
+                            {{test}}
+                            <div class="column is-3-desktop is-one-third-tablet">
+                                <div class="card">
+                                    <a href="{{show}}" data-language="{{language_parameter}}" aria-labelledby="{{id}}-title">
+                                        <header class="card-header">
+                                            <span class="card-header-icon">
+	                                            {{{icon}}}
+                                            </span>
+                                            <p class="card-header-title" id="{{id}}-title">
+											    {{{title}}}
+                                            </p>
+                                        </header>
+                                    </a>
+                                    <div class="card-content">
+                                        <div class="content">
+                                            {{{content}}}
+                                        </div>
+                                    </div>
+                                    <footer class="card-footer">
+                                        <a href="{{show}}" data-language="{{language_parameter}}" class="card-footer-item is-wider">{{{message-visualizations-open}}}</a>
+									    {{#blog_url}}
+                                        {{#blog}}
+                                        <a href="{{blog_url}}{{fragment}}/" hreflang="{{language}}" class="card-footer-item" data-message-title="visualizations-blog" data-message-aria-label="visualizations-blog">
+                                            <span class="icon">
+                                                <i class="fas fa-info"></i>
+                                            </span>
+                                        </a>
+                                        {{/blog}}
+									    {{/blog_url}}
+                                        <a href="{{download}}" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download" data-message-aria-label="visualizations-blog">
+                                            <span class="icon">
+                                                <i class="fas fa-download"></i>
+                                            </span>
+                                        </a>
+                                    </footer>
+                                </div>
+                            </div>
+                            {{/items}}
+                        </div>
+                    </div>
+                    {{/groups}}
                 </div>
-                {{/groups}}
             </div>
-        </div>
+        </main>
     </body>
 </html>

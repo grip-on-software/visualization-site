@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Forbidden</title>
+        <title data-message="error-403-title">Forbidden</title>
 
         <link rel="shortcut icon" href="/favicon.ico">
         <link rel="icon" href="/images/ICTU-LEIDEN.png">
@@ -14,14 +14,16 @@
         aria-label="main navigation" id="navbar">
         </nav>
 
-        <div class="section">
-            <div class="container has-text-centered">
-                <h1 class="title">Page not accessible</h1>
+        <main role="main">
+            <div class="section">
+                <div class="container has-text-centered">
+                    <h1 class="title" data-message="error-403-header">Page not accessible</h1>
 
-                <div class="content">
-                    <p>Return to the <a href="/">home page</a>.</p>
+                    <div class="content">
+                        <p data-message="error-return">Return to the <a href="/" data-message="error-return-link">home page</a>.</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </body>
 </html>
