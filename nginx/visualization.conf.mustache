@@ -51,10 +51,10 @@ rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[_0-9a
 
 proxy_intercept_errors on;
 
-error_page 401 /401.html;
-error_page 403 /403.html;
-error_page 404 /404.html;
-error_page 500 502 503 504 /50x.html;
+error_page 401 {{{hub_redirect}}}/401.html;
+error_page 403 {{{hub_redirect}}}/403.html;
+error_page 404 {{{hub_redirect}}}/404.html;
+error_page 500 502 503 504 {{{hub_redirect}}}/50x.html;
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
     {{{hub_branch}}}
