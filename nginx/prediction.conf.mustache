@@ -31,7 +31,7 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html?project=$project&sprint=$sprint break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[^/]+/sprint)?/(?P<path>.+) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$path break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/index.html break;
-    proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
+    proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}}$uri;
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}branches {
