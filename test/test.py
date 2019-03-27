@@ -91,6 +91,15 @@ class SprintReportFormatChart(SprintReportFormatTest):
     def test(self, runner, element):
         runner.assertEqual(len(element.find_elements_by_class_name('feature')), 3)
 
+class SprintReportFormatAreaChart(SprintReportFormatChart):
+    """
+    Test case for the area chart format.
+    """
+
+    def test(self, runner, element):
+        runner.assertEqual(len(element.find_elements_by_css_selector('.features.areas .feature')), 3)
+        runner.assertEqual(len(element.find_elements_by_css_selector('.features.lines .feature')), 3)
+
 class SprintReportFormatScatterPlot(SprintReportFormatChart):
     """
     Test case for the scatter plot format.
@@ -555,6 +564,7 @@ class IntegrationTest(unittest.TestCase):
             'table': SprintReportFormatTable(),
             'line_chart': SprintReportFormatChart(),
             'bar_chart': SprintReportFormatChart(),
+            'area_chart': SprintReportFormatAreaChart(),
             'scatter_plot': SprintReportFormatScatterPlot(),
             'sankey_chart': SprintReportFormatSankeyChart()
         }
