@@ -12,6 +12,7 @@ import linecache
 import os.path
 import re
 from socket import error as SocketError
+import sys
 import time
 import unittest
 from urllib.parse import urljoin
@@ -43,6 +44,69 @@ def skip_unless_visualization(name):
         return lambda func: func
 
     return unittest.skip("Visualization {} is not under test".format(name))
+
+class Reporter:
+    """
+    Report handler for results and accessibility.
+    """
+
+    @classmethod
+    def setup(cls):
+        """
+        Set up the reports.
+        """
+
+        cls._results_index = open('results/index.html', 'w')
+        cls._results_index.write('<!doctype html><html><head>')
+        cls._results_index.write('<meta charset="utf-8">')
+        cls._results_index.write('<title>Visualization test results</title>')
+        cls._results_index.write('</head><body><h1>Test results</h1><ul>')
+
+        cls._accessibility_index = open('accessibility/index.html', 'w')
+        cls._accessibility_index.write('<!doctype html><html><head>')
+        cls._accessibility_index.write('<meta charset="utf-8">')
+        cls._accessibility_index.write('<title>Accessibility results</title>')
+        cls._accessibility_index.write('</head><body><h1>Accessibility</h1>')
+
+    @classmethod
+    def write_result(cls, name):
+        """
+        Write a results name to the index.
+        """
+
+        cls._results_index.write('<li><a href="{0}.png">{0}</a></li>'.format(name))
+
+    @classmethod
+    def write_accessibility(cls, name, report):
+        """
+        Write an accessibility report to the index.
+        """
+
+        section = '<h2>{0}</h2><pre>{1}</pre>'.format(name, report)
+        cls._accessibility_index.write(section)
+
+    @classmethod
+    def close(cls):
+        """
+        Close the reports.
+        """
+
+        cls._results_index.write('</ul>')
+        cls._results_index.close()
+
+        cls._accessibility_index.write('</body></html>')
+        cls._accessibility_index.close()
+
+        response = urlopen('http://coverage.test:8888/download')
+        with closing(response):
+            if response.getcode() != 200:
+                print('No coverage data downloaded!')
+                for line in response:
+                    print(line)
+            else:
+                with BytesIO(response.read()) as zip_data:
+                    with ZipFile(zip_data, 'r') as zip_file:
+                        zip_file.extractall('coverage/')
 
 class SprintReportFormatTest:
     """
@@ -221,20 +285,6 @@ class IntegrationTest(unittest.TestCase):
 
             return None
 
-    @classmethod
-    def setUpClass(cls):
-        cls._results_index = open('results/index.html', 'w')
-        cls._results_index.write('<!doctype html><html><head>')
-        cls._results_index.write('<meta charset="utf-8">')
-        cls._results_index.write('<title>Visualization test results</title>')
-        cls._results_index.write('</head><body><h1>Test results</h1><ul>')
-
-        cls._accessibility_index = open('accessibility/index.html', 'w')
-        cls._accessibility_index.write('<!doctype html><html><head>')
-        cls._accessibility_index.write('<meta charset="utf-8">')
-        cls._accessibility_index.write('<title>Accessibility results</title>')
-        cls._accessibility_index.write('</head><body><h1>Accessibility</h1>')
-
     def _get_url(self, key):
         org = os.getenv('VISUALIZATION_ORGANIZATION')
         base = 'http://{}'.format(self._config['{}_server'.format(key)])
@@ -266,6 +316,46 @@ class IntegrationTest(unittest.TestCase):
         return WebDriverWait(self._driver, self.WAIT_TIMEOUT,
                              self.WAIT_FREQUENCY).until(condition, message)
 
+    def tearDown(self):
+        if self._driver is not None:
+            self._driver.save_screenshot('results/{}.png'.format(self.id()))
+            Reporter.write_result(self.id())
+
+            for entry in self._driver.get_log('browser'):
+                print(entry)
+
+            coverage = self._driver.execute_script("return window.__coverage__")
+            if coverage is not None:
+                headers = {'Content-Type': 'application/json'}
+                request = Request('http://coverage.test:8888/client',
+                                  data=json.dumps(coverage).encode('utf-8'),
+                                  headers=headers)
+                response = urlopen(request)
+                with closing(response):
+                    if response.getcode() != 200:
+                        self.fail('Could not upload coverage data')
+
+            axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
+            axe.inject()
+            accessibility = axe.run(options=json.dumps({
+                'rules': {
+                    # Axe considers all anchor links to be skip links
+                    'skip-link': {'enabled': False}
+                }
+            }))
+            axe.write_results(accessibility,
+                              'accessibility/{}.json'.format(self.id()))
+
+            report = html.escape(axe.report(accessibility["violations"]))
+            Reporter.write_accessibility(self.id(), report)
+
+            self._driver.close()
+
+class VisualizationSiteTest(IntegrationTest):
+    """
+    Integration tests for the main visualization site and related pages.
+    """
+
     def test_reachability(self):
         """
         Test whether the hubs are reachable and serve correct pages.
@@ -288,6 +378,23 @@ class IntegrationTest(unittest.TestCase):
 
         driver.get("{}/api/v1/predict/jira/TEST/sprint/latest".format(self._prediction_url))
         self.assertIn("Not found", driver.title)
+
+    def test_navbar(self):
+        """
+        Test whether the navbar is functional.
+        """
+
+        driver = self._driver
+        driver.get(self._visualization_url)
+        container = driver.find_element_by_id('navbar')
+        fullscreen = container.find_element_by_class_name('navbar-fullscreen')
+        fullscreen.click()
+        self.assertEqual(driver.get_window_position(), {'x': 0, 'y': 0})
+
+class BigboatStatusTest(IntegrationTest):
+    """
+    Integration tests for the BigBoat status visualization.
+    """
 
     @skip_unless_visualization("bigboat-status")
     def test_bigboat_status(self):
@@ -312,6 +419,11 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual(tspan.text, '26 Jun 18:31')
         self.assertEqual(focus.find_element_by_css_selector('tspan:last-child').text, 'Available IPs')
         self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')
+
+class CollaborationGraphTest(IntegrationTest):
+    """
+    Integration tests for the Collaboration graph visualization.
+    """
 
     @skip_unless_visualization("collaboration-graph")
     def test_collaboration_graph(self):
@@ -415,6 +527,11 @@ class IntegrationTest(unittest.TestCase):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
 
+class HeatmapTest(IntegrationTest):
+    """
+    Integration tests for the Heatmap visualization.
+    """
+
     @skip_unless_visualization("heatmap")
     def test_heatmap(self):
         """
@@ -446,6 +563,11 @@ class IntegrationTest(unittest.TestCase):
 
         tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'tooltip')))
         self.assertIn("April 12, 2018", tooltip.find_element_by_tag_name('h3').text)
+
+class LeaderboardTest(IntegrationTest):
+    """
+    Integration tests for the Leaderboard visualization.
+    """
 
     @skip_unless_visualization("leaderboard")
     def test_leaderboard(self):
@@ -521,6 +643,11 @@ class IntegrationTest(unittest.TestCase):
         card = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'card')))
         self.assertEqual(card.find_element_by_class_name('ellipsized-title').text, 'P1')
 
+class ProcessFlowTest(IntegrationTest):
+    """
+    Integration tests for the Process flow visualization.
+    """
+
     @skip_unless_visualization("process-flow")
     def test_process_flow(self):
         """
@@ -541,6 +668,11 @@ class IntegrationTest(unittest.TestCase):
         # There is a total of 12 links but two (Open -> Resolved Won't Fix and
         # Open -> Closed Redundant) are not shown by default.
         self.assertEqual(len(graph.find_elements_by_class_name('edge')), 10)
+
+class SprintReportTest(IntegrationTest):
+    """
+    Integration tests for the sprint report visualization.
+    """
 
     @skip_unless_visualization("sprint-report")
     def test_sprint_report(self):
@@ -579,6 +711,29 @@ class IntegrationTest(unittest.TestCase):
             element = self._wait_for(expected_conditions.visibility_of_element_located(formatter.get_test_element_locator()))
             formatter.test(self, element)
             old_display = element
+
+    @skip_unless_visualization("sprint-report")
+    def test_sprint_report_source_age(self):
+        """
+        Test the source age of the sprint report visualization.
+        """
+
+        driver = self._driver
+        driver.get('{}/sprint-report'.format(self._visualization_url))
+
+        # Select one project
+        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
+        item = items.find_element_by_css_selector('li:last-child')
+        item.click()
+
+        icon = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'a[data-toggle=sources]')))
+        icon.click()
+
+        project = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#sources th.project')))
+        self.assertEqual(project.text, 'Proj1')
+        sources = driver.find_elements_by_css_selector('#sources tbody tr')
+        self.assertEqual(len(sources), 5)
 
     @skip_unless_visualization("sprint-report")
     def test_sprint_report_details(self):
@@ -634,6 +789,11 @@ class IntegrationTest(unittest.TestCase):
             self.assertTrue(test_case.test(button),
                             test_case.get_message(exporter))
 
+class TimelineTest(IntegrationTest):
+    """
+    Integration tests for the Timeline visualization.
+    """
+
     @skip_unless_visualization("timeline")
     def test_timeline(self):
         """
@@ -665,83 +825,19 @@ class IntegrationTest(unittest.TestCase):
         burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
         self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6)
 
-    def test_navbar(self):
-        """
-        Test whether the navbar is functional.
-        """
-
-        driver = self._driver
-        driver.get(self._visualization_url)
-        container = driver.find_element_by_id('navbar')
-        fullscreen = container.find_element_by_class_name('navbar-fullscreen')
-        fullscreen.click()
-        self.assertEqual(driver.get_window_position(), {'x': 0, 'y': 0})
-
-    def tearDown(self):
-        if self._driver is not None:
-            self._driver.save_screenshot('results/{}.png'.format(self.id()))
-            self._results_index.write('<li><a href="{0}.png">{0}</a></li>'.format(self.id()))
-
-            for entry in self._driver.get_log('browser'):
-                print(entry)
-
-            coverage = self._driver.execute_script("return window.__coverage__")
-            if coverage is not None:
-                headers = {'Content-Type': 'application/json'}
-                request = Request('http://coverage.test:8888/client',
-                                  data=json.dumps(coverage).encode('utf-8'),
-                                  headers=headers)
-                response = urlopen(request)
-                with closing(response):
-                    if response.getcode() != 200:
-                        self.fail('Could not upload coverage data')
-
-            axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
-            axe.inject()
-            accessibility = axe.run(options=json.dumps({
-                'rules': {
-                    # Axe considers all anchor links to be skip links
-                    'skip-link': {'enabled': False}
-                }
-            }))
-            axe.write_results(accessibility,
-                              'accessibility/{}.json'.format(self.id()))
-
-            report = html.escape(axe.report(accessibility["violations"]))
-            section = '<h2>{0}</h2><pre>{1}</pre>'.format(self.id(), report)
-            self._accessibility_index.write(section)
-
-            self._driver.close()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._results_index.write('</ul>')
-        cls._results_index.close()
-
-        cls._accessibility_index.write('</body></html>')
-        cls._accessibility_index.close()
-
-        response = urlopen('http://coverage.test:8888/download')
-        with closing(response):
-            if response.getcode() != 200:
-                print('No coverage data downloaded!')
-                for line in response:
-                    print(line)
-            else:
-                with BytesIO(response.read()) as zip_data:
-                    with ZipFile(zip_data, 'r') as zip_file:
-                        zip_file.extractall('coverage/')
-
 def main():
     """
     Main entry point.
     """
 
-    unittest.main(
+    Reporter.setup()
+    program = unittest.main(
         testRunner=xmlrunner.XMLTestRunner(output='junit'),
         # these make sure that some options that are not applicable
         # remain hidden from the help menu.
-        failfast=False, buffer=False, catchbreak=False)
+        failfast=False, buffer=False, catchbreak=False, exit=False)
+    Reporter.close()
+    return 0 if program.result.wasSuccessful() else 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
