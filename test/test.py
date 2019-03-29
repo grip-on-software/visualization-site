@@ -404,7 +404,7 @@ class BigboatStatusTest(IntegrationTest):
 
         driver = self._driver
         driver.get('{}/bigboat-status'.format(self._visualization_url))
-        self.assertIn("Big Boat status", driver.title)
+        self.assertIn("BigBoat status", driver.title)
 
         element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'content')))
         self.assertIn("TEST", element.find_element_by_tag_name('h2').text)
