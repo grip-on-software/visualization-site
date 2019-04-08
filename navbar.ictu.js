@@ -5,36 +5,52 @@ Array.prototype.last = function() {
 };
 
 navbar.last().items.last().items.unshift({
-    "type": "link",
-    "url": {"config": "blog_url"},
-    "icon": ["fas", "rss-square"],
-    "content": {
-        "en": "Blog",
-        "nl": "Blog"
-    }
-}, {
-    "type": "link",
-    "url": {"config": "discussion_url"},
-    "icon": ["fab", "discourse"],
-    "content": {
-        "en": "Discussion",
-        "nl": "Discussie"
-    }
-}, {
-    "type": "link",
-    "url": [
-        {"config": "jira_url"},
-        "/browse/GROS"
-    ],
-    "title": {
-        "en": "View and create issues for GROS",
-        "nl": "Taken voor GROS bekijken en maken"
+    "type": "dropdown",
+    "class": "is-focus",
+    "link": {
+        "url": "mailto:leon.helwerda@ictu.nl",
+        "icon": ["fas", "envelope", "xs"],
+        "content": {
+            "en": "Contact",
+            "nl": "Contact"
+        }
     },
-    "icon": ["fas", "chalkboard", "xs"],
-    "content": {
-        "en": "JIRA",
-        "nl": "Jira"
-    }
+    "items": [
+        {
+            "type": "link",
+            "url": {"config": "blog_url"},
+            "icon": ["fas", "rss-square"],
+            "content": {
+                "en": "Blog",
+                "nl": "Blog"
+            }
+        },
+        {
+            "type": "link",
+            "url": {"config": "discussion_url"},
+            "icon": ["fab", "discourse"],
+            "content": {
+                "en": "Discussion",
+                "nl": "Discussie"
+            }
+        },
+        {
+            "type": "link",
+            "url": [
+                {"config": "jira_url"},
+                "/browse/GROS"
+            ],
+            "title": {
+                "en": "View and create issues for GROS",
+                "nl": "Taken voor GROS bekijken en maken"
+            },
+            "icon": ["fas", "chalkboard", "xs"],
+            "content": {
+                "en": "JIRA",
+                "nl": "Jira"
+            }
+        }
+    ]
 });
 navbar.last().items.last().items.push({
     "type": "link",
