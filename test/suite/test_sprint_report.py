@@ -4,6 +4,7 @@ Tests for the Sprint Report visualization.
 
 import os.path
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
@@ -190,6 +191,37 @@ class SprintReportTest(IntegrationTest):
             element = self._wait_for(expected_conditions.visibility_of_element_located(formatter.get_test_element_locator()))
             formatter.test(self, element)
             old_display = element
+
+    @skip_unless_visualization("sprint-report")
+    def test_sprint_report_focus(self):
+        """
+        Test the focus tooltip of a chart format in the sprint report
+        visualization.
+        """
+
+        driver = self._driver
+        driver.get('{}/sprint-report'.format(self._visualization_url))
+
+        # Select one project
+        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        item = items.find_element_by_css_selector('li:last-child')
+        item.click()
+
+        # Format option: Line chart
+        item = driver.find_element_by_id('format-line_chart')
+        item.click()
+
+        chart = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'chart')))
+        hover = ActionChains(driver)
+        hover.move_to_element_with_offset(chart, 200, 200).pause(0.5)
+        hover.move_to_element_with_offset(chart, 480, 250).click()
+        hover.perform()
+
+        focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'focus')))
+        details = focus.find_elements_by_tag_name('tspan')
+        # 3 sprint metadata (name, number, close date) + 3 features with
+        # 3 tspan elements each (wrapper, feature name, value)
+        self.assertEqual(len(details), 12)
 
     @skip_unless_visualization("sprint-report")
     def test_sprint_report_source_age(self):
