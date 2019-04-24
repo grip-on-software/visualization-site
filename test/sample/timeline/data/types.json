@@ -1,1 +1,1 @@
-[{"name":"sprint_start","enabled":true},{"name":"sprint_end","enabled":false},{"name":"commits","subchart":true}]
+[{"name":"sprint_start","locales":{"nl":["Start van sprint"],"en":["Sprint start"]},"enabled":true},{"name":"sprint_end","locales":{"nl":["Einde van sprint"],"en":["Sprint end"]},"enabled":false},{"name":"commits","subchart":true}]
