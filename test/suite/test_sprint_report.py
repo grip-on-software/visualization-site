@@ -51,36 +51,16 @@ class SprintReportFormatChart(SprintReportFormatTest):
     Test case for chart formats.
     """
 
+    def __init__(self, selectors):
+        super().__init__()
+        self.selectors = selectors
+
     def get_test_element_locator(self):
         return (By.CLASS_NAME, 'chart')
 
     def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_class_name('feature')), 3)
-
-class SprintReportFormatAreaChart(SprintReportFormatChart):
-    """
-    Test case for the area chart format.
-    """
-
-    def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_css_selector('.features.areas .feature')), 3)
-        runner.assertEqual(len(element.find_elements_by_css_selector('.features.lines .feature')), 3)
-
-class SprintReportFormatScatterPlot(SprintReportFormatChart):
-    """
-    Test case for the scatter plot format.
-    """
-
-    def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_css_selector('.features circle')), 1)
-
-class SprintReportFormatSankeyChart(SprintReportFormatChart):
-    """
-    Test case for the sankey chart format.
-    """
-
-    def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_css_selector('g.nodes g')), 3)
+        for selector, count in self.selectors:
+            runner.assertEqual(len(element.find_elements_by_css_selector(selector)), count)
 
 class SprintReportExportTest:
     """
@@ -174,11 +154,23 @@ class SprintReportTest(IntegrationTest):
         options = driver.find_element_by_id('format')
         formats = {
             'table': SprintReportFormatTable(),
-            'line_chart': SprintReportFormatChart(),
-            'bar_chart': SprintReportFormatChart(),
-            'area_chart': SprintReportFormatAreaChart(),
-            'scatter_plot': SprintReportFormatScatterPlot(),
-            'sankey_chart': SprintReportFormatSankeyChart()
+            'line_chart': SprintReportFormatChart([
+                ('.features.cones .feature', 3),
+                ('.features.lines .feature', 3)
+            ]),
+            'bar_chart': SprintReportFormatChart([
+                ('.features .feature', 3)
+            ]),
+            'area_chart': SprintReportFormatChart([
+                ('.features.areas .feature', 3),
+                ('.features.lines .feature', 3)
+            ]),
+            'scatter_plot': SprintReportFormatChart([
+                ('.features circle', 1)
+            ]),
+            'sankey_chart': SprintReportFormatChart([
+                ('g.nodes g', 3)
+            ])
         }
         old_display = None
         for name, formatter in formats.items():
