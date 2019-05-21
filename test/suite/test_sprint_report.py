@@ -155,7 +155,6 @@ class SprintReportTest(IntegrationTest):
         formats = {
             'table': SprintReportFormatTable(),
             'line_chart': SprintReportFormatChart([
-                ('.features.cones .feature', 3),
                 ('.features.lines .feature', 3)
             ]),
             'bar_chart': SprintReportFormatChart([
