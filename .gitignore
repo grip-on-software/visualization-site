@@ -12,10 +12,12 @@ vendor.js
 node_modules
 axe-core
 repos/
+security-tooling/
 test/config.json
 test/accessibility/
 test/coverage/
 test/junit/
+test/owasp-dep/
 test/results/
 /visualization_names.txt
 www/fonts/

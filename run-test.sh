@@ -27,9 +27,9 @@ function container_logs() {
 	echo '</ul></body></html>' >> test/results/index.html
 }
 
-rm -rf test/junit test/results test/accessibility test/coverage test/downloads
+rm -rf test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
 mkdir -p repos
-mkdir -p test/junit test/results test/accessibility test/coverage test/downloads
+mkdir -p test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
 
 if [ -z "$REPO_ROOT" ]; then
 	REPO_ROOT="repos"
@@ -41,11 +41,14 @@ if [ -z "$VISUALIZATION_NAMES" ]; then
 	VISUALIZATION_NAMES=$(cat visualization_names.txt)
 fi
 
-for repo in $VISUALIZATION_NAMES; do
-	tree="$PWD/$REPO_ROOT/$repo"
+function update_repo() {
+	tree=$1
+	shift
+	url=$1
+	shift
+	build_check=$1
 	if [ ! -d $tree ]; then
 		echo "Cloning $tree"
-		url=$(git config --get remote.origin.url | sed s/visualization-site/$repo/)
 		git clone $url $tree
 	elif [ ! -z "$has_repo_root" ]; then
 		echo "Keeping $tree intact"
@@ -58,15 +61,23 @@ for repo in $VISUALIZATION_NAMES; do
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
-		if [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/public/index.html" ]; then
+		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/public/index.html" ]; then
 			echo "$repo is up to date, skipping build in instance."
 			touch "$tree/.skip_build"
 		else
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
-			echo "Build of $repo required"
-			rm -f "$tree/.skip_build"
+			if [ ! -z "$build_check" ]; then
+				echo "Build of $repo required"
+				rm -f "$tree/.skip_build"
+			fi
 		fi
-	fi
+    fi
+}
+
+for repo in $VISUALIZATION_NAMES; do
+	tree="$PWD/$REPO_ROOT/$repo"
+	url=$(git config --get remote.origin.url | sed s/visualization-site/$repo/)
+	update_repo "$tree" "$url" 1
 	mkdir -p "$tree/public"
 done
 
@@ -125,6 +136,15 @@ status=$?
 
 container_logs
 docker-compose $COMPOSE_ARGS down
+
+if [ "$TIMER_CAUSE" != "null" ] || [ "$BRANCH_NAME" != "master" ]; then
+	update_repo "$PWD/security-tooling" "https://github.com/ICTU/security-tooling"
+	sed -i 's/\r$//' ./security-tooling/*.sh
+	cp test/suppression.xml ./security-tooling/suppression.xml
+	VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed 's/\(\S*\)/-v \1-modules:\\\/tmp\\\/src\\\/repos\\\/\1\\\/node_modules/g')
+	sed -i "s/\\(:\\/tmp\\/src\\)/\\1 $VISUALIZATION_MOUNTS -v visualization-site-modules:\\/tmp\\/src\\/node_modules -v dependency-check-data:\\/tmp\\/dependency-check\\/data/" ./security-tooling/security_dependencycheck.sh
+	bash ./security-tooling/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep" --exclude="*/public/*" --exclude="*/www/*" --exclude="*/test/*" --exclude="*/security-tooling/*" --exclude="*/axe-core/*" --exclude="*/.git/*"
+fi
 
 if [ $status -ne 0 ]; then
 	exit 2

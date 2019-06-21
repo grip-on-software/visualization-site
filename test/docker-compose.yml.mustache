@@ -105,6 +105,7 @@ jenkins:
   user: "{{{user_id}}}:{{{group_id}}}"
   volumes:
     - "../{{{repo_root}}}:$PWD/repos"
+    - "{{{.}}}-modules:/usr/src/app/node_modules"
     - "../test/sample/{{{.}}}/data:/data"
   working_dir: "$PWD/repos/{{{.}}}"
   expose:
