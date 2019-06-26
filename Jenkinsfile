@@ -5,6 +5,7 @@ pipeline {
         IMAGE_TAG = env.BRANCH_NAME.replaceFirst('^master$', 'latest')
         GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
         SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+        TIMER_CAUSE = currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause)
     }
 
     options {
@@ -35,6 +36,7 @@ pipeline {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/results/', reportFiles: 'index.html', reportName: 'Results', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/accessibility/', reportFiles: 'index.html', reportName: 'Accessiblity', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/owasp-dep/', reportFiles: 'dependency-check-report.html', reportName: 'Dependencies', reportTitles: ''])
             junit 'test/junit/*.xml'
         }
     }
@@ -64,6 +66,7 @@ pipeline {
                 docker {
                     image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
                     reuseNode true
+                    args '-v visualization-site-modules:/usr/src/app/node_modules'
                 }
             }
             steps {
