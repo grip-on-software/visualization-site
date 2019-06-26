@@ -5,7 +5,6 @@ pipeline {
         IMAGE_TAG = env.BRANCH_NAME.replaceFirst('^master$', 'latest')
         GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
         SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-        TIMER_CAUSE = currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause)
     }
 
     options {
