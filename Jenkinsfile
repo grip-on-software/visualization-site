@@ -80,15 +80,17 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sshagent(['gitlab-clone-auth']) {
-                    script {
-                        def ret = sh returnStatus: true, script: './run-test.sh'
-                        if (ret == 2) {
-                            currentBuild.result = 'UNSTABLE'
-                        }
-                        else if (ret != 0) {
-                            currentBuild.result = 'FAILURE'
-                            error("Test stage failed with exit code ${ret}")
+                withCredentials([file(credentialsId: 'prediction-site-config', variable: 'PREDICTION_CONFIGURATION')]) {
+                    sshagent(['gitlab-clone-auth']) {
+                        script {
+                            def ret = sh returnStatus: true, script: './run-test.sh'
+                            if (ret == 2) {
+                                currentBuild.result = 'UNSTABLE'
+                            }
+                            else if (ret != 0) {
+                                currentBuild.result = 'FAILURE'
+                                error("Test stage failed with exit code ${ret}")
+                            }
                         }
                     }
                 }
@@ -109,6 +111,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
+                    sh 'if [ -d repos/prediction-site ]; then ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=master -Dsonar.projectBaseDir=repos/prediction-site; fi'
                 }
             }
         }

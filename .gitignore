@@ -10,6 +10,7 @@ test/docker-compose.yml
 test/docker-compose.shm.yml
 /nginx.conf
 nginx/*.conf
+lib/test.py
 manifest.js
 vendor.js
 node_modules

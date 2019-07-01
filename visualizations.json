@@ -46,7 +46,8 @@
                     "url": "{{{prediction_url}}}show",
                     "language_parameter": "lang",
                     "download": "{{{prediction_url}}}show/zip",
-                    "skip_test": true
+                    "nginx": false,
+                    "repo": "prediction-site"
                 },
                 {
                     "id": "bigboat-status",
