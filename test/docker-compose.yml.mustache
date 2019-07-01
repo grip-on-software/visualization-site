@@ -91,26 +91,32 @@ jenkins:
           }
   volumes:
     - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
-    {{#visualization_names}}
-    - "../{{{repo_root}}}/{{{.}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{.}}}/job/master/Visualization"
-    {{/visualization_names}}
+    {{#groups}}
+    {{#items}}
+    - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/master/Visualization"
+    {{/items}}
+    {{/groups}}
+    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastSuccessfulBuild/artifact/output"
+    - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"
 
-{{#visualization_names}}
-{{{.}}}:
-  image: $DOCKER_REGISTRY/gros-{{{.}}}:latest
+{{#groups}}
+{{#items}}
+{{{repo}}}:
+  image: $DOCKER_REGISTRY/gros-{{{repo}}}:latest
   domainname: "{{{internal_domain}}}"
-  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{.}}}/webpack.mix.js; fi'"
+  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{repo}}}/webpack.mix.js; fi'"
   user: "{{{user_id}}}:{{{group_id}}}"
   volumes:
     - "../{{{repo_root}}}:$PWD/repos"
-    - "{{{.}}}-modules:/usr/src/app/node_modules"
-    - "../test/sample/{{{.}}}/data:/data"
-  working_dir: "$PWD/repos/{{{.}}}"
+    - "{{{repo}}}-modules:/usr/src/app/node_modules"
+    - "../test/sample/{{{repo}}}/data:/data"
+  working_dir: "$PWD/repos/{{{repo}}}"
   expose:
     - "3000"
-{{/visualization_names}}
+{{/items}}
+{{/groups}}
 
 blog:
   domainname: "{{{domain}}}"

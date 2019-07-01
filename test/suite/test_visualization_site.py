@@ -29,7 +29,7 @@ class VisualizationSiteTest(IntegrationTest):
             driver.get(self._config['discussion_url'])
             self.assertIn("GROS Discussion", driver.title)
 
-        driver.get("{}/api/v1/predict/jira/TEST/sprint/latest".format(self._prediction_url))
+        driver.get("{}/foobar".format(self._prediction_url))
         self.assertIn("Not found", driver.title)
 
     def test_navbar(self):

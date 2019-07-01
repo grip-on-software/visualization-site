@@ -52,7 +52,10 @@ if (typeof process.env.VISUALIZATION_NAMES !== "undefined") {
 visualizations.groups = _.map(visualizations.groups,
     (group) => _.assign({}, group, {
         title: message(`${group.id}-title`),
-        items: _.map(group.items, (item) => _.assign({}, item, {
+        items: _.map(group.items, (item) => _.assign({}, {
+            nginx: true,
+            repo: item.id
+        }, item, {
             show: typeof item.url !== "undefined" ?
                 mustache.render(item.url, urlConfiguration) : item.id,
             download: typeof item.download !== "undefined" ?
@@ -67,17 +70,20 @@ visualizations.groups = _.map(visualizations.groups,
     })
 );
 const visualization_names = _.flattenDeep(_.map(visualizations.groups,
-    (group) => _.map(group.items, (item) => item.skip_test ? [] : item.id)
+    (group) => _.map(group.items, (item) => item.repo || item.id)
+));
+const visualization_nginx = _.flattenDeep(_.map(visualizations.groups,
+    (group) => _.map(group.items, (item) => item.nginx ? item.id : [])
 ));
 fs.writeFileSync(path.resolve(__dirname, 'visualization_names.txt'),
     visualization_names.join(' ')
 );
 
-// NGINX template configuration
+// NGINX and Docker-compose service template configuration
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
-const nginxConfiguration = _.assign({}, _.mapValues(configuration,
+const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     // Remove any organization parameters from URLs (not injected branch setter)
     (value, key) => key.endsWith('_url') ?
         value.replace(/\/?\$organization/, '') : value
@@ -93,7 +99,7 @@ const nginxConfiguration = _.assign({}, _.mapValues(configuration,
         process.env.SERVER_CERTIFICATE : configuration.auth_cert,
     user_id: process.getuid(),
     group_id: process.getgid(),
-    visualization_names: visualization_names,
+    visualization_names: visualization_nginx,
     join: function() {
         return function(text, render) {
             // Remove last character
@@ -135,7 +141,7 @@ templates.forEach((template) => {
     try {
         fs.writeFileSync(template,
             mustache.render(fs.readFileSync(`${template}.mustache`, 'utf8'),
-                nginxConfiguration
+                srvConfiguration
             )
         );
     }
@@ -156,10 +162,9 @@ const configAlias = path.resolve(__dirname, 'config-alias.json');
 fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
 
 // Generage configuration for HTML pages
-const htmlConfiguration = _.assign({}, urlConfiguration, messages, {
-    visualization_names: visualization_names,
-    groups: visualizations.groups
-});
+const htmlConfiguration = _.assign({}, urlConfiguration, messages,
+    visualizations
+);
 
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')

@@ -81,6 +81,17 @@ for repo in $VISUALIZATION_NAMES; do
 	mkdir -p "$tree/public"
 done
 
+if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
+	tree="$PWD/$REPO_ROOT/prediction-site"
+	cmp -s $PREDICTION_CONFIGURATION "$tree/config.json"
+	if [ $? -ne 0 ]; then
+		echo "Including new configuration file for prediction-site (rebuild)"
+		cp $PREDICTION_CONFIGURATION "$tree/config.json"
+		rm -f "$tree/.skip_build"
+	fi
+	mkdir -p "$tree/test/junit" "$tree/test/coverage" "$tree/test/suite"
+fi
+
 PROXY_HOST=nginx
 
 docker-compose $COMPOSE_ARGS pull
@@ -136,6 +147,17 @@ status=$?
 
 container_logs
 docker-compose $COMPOSE_ARGS down
+
+echo "# Let SonarQube know we have Python tests" > lib/test.py
+if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
+	tree="$PWD/$REPO_ROOT/prediction-site"
+	grep -E "sonar\.(tests|test|python|javascript)\." sonar-project.properties >> "$tree/sonar-project.properties"
+	cp test/junit/TEST-suite.test_prediction_site.*.xml "$tree/test/junit/"
+	cp test/coverage/lcov.info "$tree/test/coverage/"
+	cp test/test.py "$tree/test/"
+	cp test/suite/test_prediction_site.py "$tree/test/suite/"
+	echo "# Let SonarQube know we have Python tests" > "$tree/lib/test.py"
+fi
 
 update_repo "$PWD/security-tooling" "https://github.com/ICTU/security-tooling"
 sed -i 's/\r$//' ./security-tooling/*.sh
