@@ -17,6 +17,7 @@
     "jenkins_host": "www.jenkins.gros.test",
     "jenkins_path": "",
     "files_host": "www.owncloud.gros.test",
+    "files_share_id": "",
     "control_host": "control.gros.test",
     "websocket_server": "ws.gros.example",
     "proxy_range": "192.168.0.0/16",

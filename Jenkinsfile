@@ -110,8 +110,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
                     sh 'if [ -d repos/prediction-site ]; then ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=master -Dsonar.projectBaseDir=repos/prediction-site; fi'
+                    sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
                 }
             }
         }
