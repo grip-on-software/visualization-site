@@ -89,6 +89,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 		cp $PREDICTION_CONFIGURATION "$tree/config.json"
 		rm -f "$tree/.skip_build"
 	fi
+	rm -rf "$tree/test"
 	mkdir -p "$tree/test/junit" "$tree/test/coverage" "$tree/test/suite"
 fi
 
