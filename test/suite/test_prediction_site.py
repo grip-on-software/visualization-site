@@ -14,12 +14,13 @@ class PredictionSiteTest(IntegrationTest):
     @skip_unless_visualization("prediction-site")
     def test_prediction_site(self):
         """
-        Test the prediction site.
+        Test the prediction site index.
         """
 
         driver = self._driver
         driver.get(self._prediction_url)
         self.assertIn("Prediction", driver.title)
+
         navigation = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
         self.assertEqual(len(navigation.find_elements_by_tag_name('li')), 3)
         recent = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#filter input')))
@@ -28,6 +29,9 @@ class PredictionSiteTest(IntegrationTest):
 
         branches = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'branches-dropdown')))
         self.assertEqual(len(branches.find_elements_by_css_selector('#branches a')), 2)
+
+        files = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'files')))
+        self.assertEqual(len(files.find_elements_by_css_selector('div.card')), 2)
 
     @skip_unless_visualization("prediction-site")
     def test_prediction_site_project(self):

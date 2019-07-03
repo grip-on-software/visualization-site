@@ -17,6 +17,7 @@ nginx:
     - "jenkins:{{{jenkins_host}}}"
     - "jenkins:{{{blog_host}}}"
     - "jenkins:{{{discussion_host}}}"
+    - "jenkins:{{{files_host}}}"
 
 runner:
   image: python:3.6-alpine
@@ -67,6 +68,7 @@ jenkins:
     - "2368"
     - "3000"
     - "8080"
+    - "80"
   environment:
       CONFIG: |
           :8080 {
@@ -89,6 +91,12 @@ jenkins:
               gzip
               root /srv/discussion
           }
+          :80 {
+              tls off
+              errors stdout
+              root /srv/owncloud
+              mime .php application/json
+          }
   volumes:
     - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
     {{#groups}}
@@ -100,6 +108,7 @@ jenkins:
     - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"
+    - "../test/sample/owncloud:/srv/owncloud/index.php/apps/files_sharing/ajax"
 
 {{#groups}}
 {{#items}}
