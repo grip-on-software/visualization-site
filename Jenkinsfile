@@ -109,6 +109,10 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
+                withPythonEnv('System-CPython-3') {
+                    pysh 'python -m pip install pylint'
+                    pysh 'python -m pylint test/suite --exit-zero --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" -d duplicate-code > pylint-report.txt'
+                }
                 withSonarQubeEnv('SonarQube') {
                     sh 'if [ -d repos/prediction-site ]; then ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=master -Dsonar.projectBaseDir=repos/prediction-site; fi'
                     sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.branch=$BRANCH_NAME -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
