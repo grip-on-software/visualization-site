@@ -69,6 +69,7 @@ function update_repo() {
 			if [ ! -z "$build_check" ]; then
 				echo "Build of $repo required"
 				rm -f "$tree/.skip_build"
+				docker volume rm -f "$repo-modules"
 			fi
 		fi
     fi
