@@ -162,11 +162,11 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 fi
 
 update_repo "$PWD/security-tooling" "https://github.com/ICTU/security-tooling"
-sed -i 's/\r$//' ./security-tooling/*.sh
+sed -i "" -e 's/\r$//' ./security-tooling/*.sh
 cp test/suppression.xml ./security-tooling/suppression.xml
 VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed 's/\(\S*\)/-v \1-modules:\\\/tmp\\\/src\\\/repos\\\/\1\\\/node_modules/g')
-sed -i "s/\\(:\\/tmp\\/src\\)/\\1 $VISUALIZATION_MOUNTS -v visualization-site-modules:\\/tmp\\/src\\/node_modules -v dependency-check-data:\\/tmp\\/dependency-check\\/data/" ./security-tooling/security_dependencycheck.sh
-PROJECT_NAME="Visualizations" bash ./security-tooling/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep" --exclude "**/public/**" --exclude "**/www/**" --exclude "**/test/**" --exclude "**/security-tooling/**" --exclude "**/axe-core/**" --exclude "**/.git/**"
+sed -i "" -e "s/\\(:\\/tmp\\/src\\)/\\1 $VISUALIZATION_MOUNTS -v visualization-site-modules:\\/tmp\\/src\\/node_modules -v dependency-check-data:\\/tmp\\/dependency-check\\/data/" -e "s/|| true/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security-tooling\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" || true/" ./security-tooling/security_dependencycheck.sh
+PROJECT_NAME="Visualizations" bash ./security-tooling/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
 
 if [ $status -ne 0 ]; then
 	exit 2
