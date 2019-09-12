@@ -57,6 +57,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
                     sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
+                    sh 'docker volume rm -f visualization-site-modules'
                 }
             }
         }
