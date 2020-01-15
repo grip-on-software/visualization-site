@@ -59,4 +59,5 @@ class TimelineTest(IntegrationTest):
         hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
 
         burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
+        self._wait_for(expected_conditions.staleness_of(tooltip))
         self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6)
