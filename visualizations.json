@@ -67,6 +67,10 @@
                     "id": "sprint-report",
                     "icon": ["fas", "book-open"],
                     "language_parameter": "lang"
+                },
+                {
+                    "id": "backlog-burndown",
+                    "index": false
                 }
             ]
         }

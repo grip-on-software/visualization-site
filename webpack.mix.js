@@ -53,6 +53,7 @@ visualizations.groups = _.map(visualizations.groups,
     (group) => _.assign({}, group, {
         title: message(`${group.id}-title`),
         items: _.map(group.items, (item) => _.assign({}, {
+            index: true,
             nginx: true,
             repo: item.id
         }, item, {
