@@ -71,7 +71,7 @@ visualizations.groups = _.map(visualizations.groups,
     })
 );
 const visualization_names = _.flattenDeep(_.map(visualizations.groups,
-    (group) => _.map(group.items, (item) => item.repo || item.id)
+    (group) => _.map(group.items, (item) => item.index ? item.repo : [])
 ));
 const visualization_nginx = _.flattenDeep(_.map(visualizations.groups,
     (group) => _.map(group.items, (item) => item.nginx ? item.id : [])
