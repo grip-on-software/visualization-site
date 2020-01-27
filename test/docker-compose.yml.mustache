@@ -112,6 +112,7 @@ jenkins:
 
 {{#groups}}
 {{#items}}
+{{#index}}
 {{{repo}}}:
   image: $DOCKER_REGISTRY/gros-{{{repo}}}:latest
   domainname: "{{{internal_domain}}}"
@@ -124,6 +125,7 @@ jenkins:
   working_dir: "$PWD/repos/{{{repo}}}"
   expose:
     - "3000"
+{{/index}}
 {{/items}}
 {{/groups}}
 
