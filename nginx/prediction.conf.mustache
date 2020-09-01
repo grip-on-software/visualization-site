@@ -1,9 +1,7 @@
 # Handle prediction data from Jenkins.
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
-    {{{hub_branch}}}
-    if ($branch = "") {
-        set $branch "master";
-    }
+    {{{prediction_branch}}}
+    if ($branch = "") { set $branch "master"; }
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest)$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$organization/$project/$sprint.json break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprints$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$organization/$project/sprints.json break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$organization/projects.json break;
@@ -18,12 +16,12 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<br
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/zip {
-    {{{hub_branch}}}
+    {{{prediction_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$organization/*zip*/archive.zip break;
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/ {
-    {{{hub_branch}}}
+    {{{prediction_branch}}}
     if ($branch = "") { set $branch "master"; }
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<path>show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$path/$project permanent;
 
@@ -65,7 +63,7 @@ error_page 404 {{{hub_redirect}}}/404.html;
 error_page 500 502 503 504 {{{hub_redirect}}}/50x.html;
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}} {
-    {{{hub_branch}}}
+    {{{prediction_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+\.css|.+\.js.*) {{{jenkins_path}}}/job/build-prediction-site/job/$branch/Visualization/$file break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/$file break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
