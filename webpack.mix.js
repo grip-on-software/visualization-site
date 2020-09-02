@@ -85,7 +85,9 @@ const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
 const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
-    // Remove any organization parameters from URLs (not injected branch setter)
+    // Remove any organization parameters from URLs
+    // The injected branch setter (hub_regex with associated configuration) is
+    // not adjusted and is responsible for routing the correct organization(s)
     (value, key) => key.endsWith('_url') ?
         value.replace(/\/?\$organization/, '') : value
 ), {
