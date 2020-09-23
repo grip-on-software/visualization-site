@@ -29,7 +29,9 @@ function container_logs() {
 
 rm -rf test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
 mkdir -p repos
-mkdir -p test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
+mkdir -p test/junit test/results test/accessibility test/coverage test/downloads
+mkdir -p -m 0777 "$HOME/OWASP-Dependency-Check/data/cache"
+mkdir -p -m 0777 test/owasp-dep
 
 if [ -z "$REPO_ROOT" ]; then
 	REPO_ROOT="repos"
@@ -168,8 +170,6 @@ fi
 update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
 sed --in-place="" -e 's/\r$//' ./security/*.sh
 cp test/suppression.xml security/suppression.xml
-mkdir -p -m 0777 "$HOME/OWASP-Dependency-Check/data/cache"
-mkdir -p -m 0777 "$PWD/test/owasp-dep"
 VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed 's/\(\S*\)/-v \1-modules:\\\/tmp\\\/src\\\/repos\\\/\1\\\/node_modules/g')
 sed --in-place="" -e "s/\\(:\\/tmp\\/src\\)/\\1 $VISUALIZATION_MOUNTS -v visualization-site-modules:\\/tmp\\/src\\/node_modules -v dependency-check-data:\\/tmp\\/dependency-check\\/data/" -e "s/--out \\/report/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --out \\/report/" ./security/security_dependencycheck.sh
 PROJECT_NAME="Visualizations" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
