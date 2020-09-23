@@ -9,7 +9,7 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
 # Publisher plugin, with the name "Visualization" and an index page of
 # index.html.
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
-    {{{hub_branch}}}
+    {{{visualization_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)\.zip$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/*zip*/$name.zip break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/index.html break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/$file break;

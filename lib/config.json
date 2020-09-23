@@ -14,6 +14,7 @@
     "hub_regex": "",
     "hub_redirect": "",
     "hub_branch": "if ($branch = \"\") { set $branch \"master\"; }",
+    "visualization_branch": "if ($branch = \"\") { set $branch \"master\"; }",
     "prediction_branch": "if ($branch = \"\") { set $branch \"master\"; }",
     "jenkins_host": "www.jenkins.gros.test",
     "jenkins_path": "",
