@@ -19,7 +19,5 @@ COPY nginx/ /usr/src/app/nginx/
 COPY res/ /usr/src/app/res/
 COPY template/ /usr/src/app/template/
 COPY test/ /usr/src/app/test/
-ARG NAVBAR_SCOPE
-ARG BRANCH_NAME
 
 CMD ["npm", "start"]

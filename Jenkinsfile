@@ -1,6 +1,12 @@
 pipeline {
     agent { label 'docker' }
 
+    parameters {
+        string(name: 'VISUALIZATION_ORGANIZATION', defaultValue: "${env.VISUALIZATION_ORGANIZATION}", description: 'Organization to build for')
+        string(name: 'NAVBAR_SCOPE', defaultValue: "", description: 'Organization scope to use in navigation bar (keep empty to use generic style)')
+        booleanParam(name: 'VISUALIZATION_COMBINED', defaultValue: true, description: 'Build for combined visualization')
+    }
+
     environment {
         IMAGE_TAG = env.BRANCH_NAME.replaceFirst('^master$', 'latest')
         GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
@@ -56,7 +62,7 @@ pipeline {
                 checkout scm
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
-                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG . --build-arg NPM_REGISTRY=$NPM_REGISTRY --build-arg NAVBAR_SCOPE=$NAVBAR_SCOPE --build-arg BRANCH_NAME=$BRANCH_NAME'
+                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
                     sh 'docker volume rm -f visualization-site-modules'
                 }
             }
@@ -75,7 +81,7 @@ pipeline {
                     sh 'ln -s /usr/src/app/node_modules .'
                     sh 'cp -r /usr/src/app/node_modules/axe-core/ axe-core'
                     sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
-                    sh 'SERVER_CERTIFICATE=$PWD/wwwgros.crt npm run pretest -- --env.mixfile=$PWD/webpack.mix.js'
+                    sh "SERVER_CERTIFICATE=$WORKSPACE/wwwgros.crt VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run pretest -- --env.mixfile=$WORKSPACE/webpack.mix.js"
                 }
             }
         }
@@ -131,7 +137,7 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
-                sh 'npm run production -- --env.mixfile=$PWD/webpack.mix.js'
+                sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run production -- --env.mixfile=$WORKSPACE/webpack.mix.js"
             }
         }
         stage('Push') {

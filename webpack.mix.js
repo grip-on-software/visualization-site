@@ -31,6 +31,9 @@ const urlConfiguration = _.mapValues(configuration,
         if (!key.endsWith('_url')) {
             return value;
         }
+        if (process.env.VISUALIZATION_COMBINED === "true") {
+            return value.replace("/$organization", "/combined");
+        }
         return value.replace(/(\/)?\$organization/,
             typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
             "$1" + process.env.VISUALIZATION_ORGANIZATION : ''
