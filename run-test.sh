@@ -167,7 +167,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	echo "# Let SonarQube know we have Python tests" > "$tree/lib/test.py"
 fi
 
-if [ -d "$PWD/security" ];
+if [ -d "$PWD/security" ]; then
 	GIT_DIR="$PWD/security/.git" GIT_WORK_TREE="$PWD/security" git checkout -- security_dependencycheck.sh
 fi
 update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
