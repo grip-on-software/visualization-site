@@ -3,6 +3,7 @@
     "prediction_url": "/prediction/",
     "blog_url": "/blog/",
     "discussion_url": "/discussion/",
+    "download_url": "./",
     "jira_url": "jira.example",
     "blog_host": "www.blog.gros.test",
     "blog_server": "blog.gros.example",

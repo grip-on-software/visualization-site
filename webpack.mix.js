@@ -64,7 +64,7 @@ visualizations.groups = _.map(visualizations.groups,
                 mustache.render(item.url, urlConfiguration) : item.id,
             download: typeof item.download !== "undefined" ?
                 mustache.render(item.download, urlConfiguration) :
-                `${item.id}.zip`,
+                `${urlConfiguration.download_url}${item.id}.zip`,
             icon: `<span class="icon">
                 <i class="${_.map(item.icon, (part, i) => i === 0 ? part : `fa-${part}`).join(' ')}" aria-hidden="true"></i>
             </span>`,
