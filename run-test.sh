@@ -93,7 +93,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	cmp -s $PREDICTION_CONFIGURATION "$tree/config.json"
 	if [ $? -ne 0 ]; then
 		echo "Including new configuration file for prediction-site (rebuild)"
-		cp $PREDICTION_CONFIGURATION "$tree/config.json"
+		cp -f --no-preserve=mode,ownership $PREDICTION_CONFIGURATION "$tree/config.json"
 		rm -f "$tree/.skip_build"
 	fi
 	rm -rf "$tree/test"
