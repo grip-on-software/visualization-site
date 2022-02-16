@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker' }
+    agent { label 'docker-compose' }
 
     parameters {
         string(name: 'VISUALIZATION_ORGANIZATION', defaultValue: "${env.VISUALIZATION_ORGANIZATION}", description: 'Organization to build for')
@@ -9,6 +9,7 @@ pipeline {
 
     environment {
         IMAGE_TAG = env.BRANCH_NAME.replaceFirst('^master$', 'latest')
+        VISUALIZATION_IMAGE = "gros-visualization-site:$IMAGE_TAG"
         GITLAB_TOKEN = credentials('visualization-site-gitlab-token')
         SCANNER_HOME = tool name: 'SonarQube Scanner 3', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
     }
@@ -62,15 +63,25 @@ pipeline {
                 checkout scm
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
-                    sh 'docker build -t $DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
+                    sh 'docker build -t $DOCKER_REPOSITORY/$VISUALIZATION_IMAGE . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
                     sh 'docker volume rm -f visualization-site-modules'
+                }
+            }
+        }
+        stage('Push') {
+            when { branch 'master' }
+            steps {
+                withDockerRegistry(credentialsId: 'docker-credentials', url: env.DOCKER_URL) {
+                    sh 'docker push $DOCKER_REPOSITORY/$VISUALIZATION_IMAGE'
                 }
             }
         }
         stage('Build test') {
             agent {
                 docker {
-                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
+                    image '$VISUALIZATION_IMAGE'
+                    registryUrl "${env.DOCKER_URL}"
+                    registryCredentialsId 'docker-credentials'
                     reuseNode true
                     args '-v visualization-site-modules:/usr/src/app/node_modules'
                 }
@@ -88,15 +99,17 @@ pipeline {
         stage('Test') {
             steps {
                 withCredentials([file(credentialsId: 'prediction-site-config', variable: 'PREDICTION_CONFIGURATION')]) {
-                    sshagent(['gitlab-clone-auth']) {
-                        script {
-                            def ret = sh returnStatus: true, script: './run-test.sh'
-                            if (ret == 2) {
-                                currentBuild.result = 'UNSTABLE'
-                            }
-                            else if (ret != 0) {
-                                currentBuild.result = 'FAILURE'
-                                error("Test stage failed with exit code ${ret}")
+                    withDockerRegistry(credentialsId: 'docker-credentials', url: env.DOCKER_URL) {
+                        sshagent(['gitlab-clone-auth']) {
+                            script {
+                                def ret = sh returnStatus: true, script: './run-test.sh'
+                                if (ret == 2) {
+                                    currentBuild.result = 'UNSTABLE'
+                                }
+                                else if (ret != 0) {
+                                    currentBuild.result = 'FAILURE'
+                                    error("Test stage failed with exit code ${ret}")
+                                }
                             }
                         }
                     }
@@ -106,7 +119,9 @@ pipeline {
         stage('Collect results') {
             agent {
                 docker {
-                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
+                    image '$VISUALIZATION_IMAGE'
+                    registryUrl "${env.DOCKER_URL}"
+                    registryCredentialsId 'docker-credentials'
                     reuseNode true
                 }
             }
@@ -130,7 +145,9 @@ pipeline {
             when { branch '*master' }
             agent {
                 docker {
-                    image '$DOCKER_REGISTRY/gros-visualization-site:$IMAGE_TAG'
+                    image '$VISUALIZATION_IMAGE'
+                    registryUrl "${env.DOCKER_URL}"
+                    registryCredentialsId 'docker-credentials'
                     reuseNode true
                 }
             }
@@ -138,12 +155,6 @@ pipeline {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
                 sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run production -- --env.mixfile=$WORKSPACE/webpack.mix.js"
-            }
-        }
-        stage('Push') {
-            when { branch 'master' }
-            steps {
-                sh 'docker push $DOCKER_REGISTRY/gros-visualization-site:latest'
             }
         }
         stage('Status') {

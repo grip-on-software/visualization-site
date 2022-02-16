@@ -53,7 +53,7 @@ selenium:
   working_dir: "/work"
 
 coverage:
-  image: $DOCKER_REGISTRY/gros-coverage-collector:latest
+  image: $DOCKER_REPOSITORY/gros-coverage-collector:latest
   domainname: test
   expose:
     - "8888"
@@ -116,7 +116,7 @@ jenkins:
 {{#items}}
 {{#index}}
 {{{repo}}}:
-  image: $DOCKER_REGISTRY/gros-{{{repo}}}:latest
+  image: $DOCKER_REPOSITORY/gros-{{{repo}}}:latest
   domainname: "{{{internal_domain}}}"
   command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env.mixfile=$PWD/repos/{{{repo}}}/webpack.mix.js; fi'"
   user: "{{{user_id}}}:{{{group_id}}}"
