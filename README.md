@@ -12,7 +12,8 @@ webservers (separate Docker instances, a Jenkins setup and/or direct access).
 The reverse proxies are as follows:
 
 - [Caddy](https://caddyserver.com/) for transparent proxy access from a BigBoat 
-  dashboard. Several subinstances handle specific domain names.
+  dashboard. Several subinstances handle specific domain names. This is only 
+  used in an environment where access has to be routed through several VLANs.
 - [NGINX](https://www.nginx.com/) for proxy access and static file hosting from 
   a central server listening on specific ports as well as using Host-based 
   proxying.
@@ -50,3 +51,128 @@ a screenshot is made of the page, so that there is a visual reference of the
 state of the page in case a test fails. Finally, an accessibility testing 
 engine is used to verify if the contents of the page conform to various WCAG 
 rules. All of these results are combined as well into a report.
+
+## Configuration
+
+The visualization dashboard, connections to other servers as well as common 
+elements such as a navigation bar, are all configured in this repository. The 
+main configuration point is the `config.json` file, which can be copied from 
+`lib/config.json` to the root of the repository in order to make local 
+adjustments. The following configuration items (all strings, unless noted 
+otherwise) are known:
+
+- `visualization_url`: The URL to the visualizations. This may include 
+  a protocol and domain name, but does not need to in case all the resources 
+  are hosted on the same domain. The remainder is a path to the root of the 
+  visualizations, where the dashboard is found and every visualization (except 
+  predictions) has sub-paths below it.
+- `prediction_url`: The URL to the prediction site. This may include 
+  a protocol and domain name, but does not need to in case all the resources 
+  are hosted on the same domain. The remainder is a path to the root of the 
+  predictions (without any specific paths below it).
+- `blog_url`: The URL to the blog. This may include a protocol and domain name, 
+  but does not need to in case all the resources are hosted on the same domain. 
+  The remainder is a path to the root of the blog. If this is empty, then no 
+  blog is available.
+- `discussion_url`: The URL to the discussion forum. This may include 
+  a protocol and domain name, but does not need to in case all the resources 
+  are hosted on the same domain. The remainder is a path to the root of the 
+  forum. If this is empty, then no forum is available.
+- `download_url`: The URL to default download links on the dashboard. This can 
+  be overwritten by specific download URLs by the visualizations and does not 
+  work with the NGINX redirection, so care should be taken when adjusting this. 
+  This may be helpful when direct access to downloads are available. If this is 
+  empty, then no download links are shown.
+- `jira_url`: URL that is used in some navigation bars to link to a Jira 
+  instance.
+- `blog_host`: Domain name of an internal server where the blog is hosted.
+- `blog_server`: Domain name of an external server that provides access to the 
+  blog. This name should point (possibly via a Caddy proxy) toward the NGINX 
+  proxy that makes the server available.
+- `discussion_host`: Domain name of an internal server where the discussion 
+  forum is hosted.
+- `discussion_server`: Domain name of an external server that provides access 
+  to the discussion forum. This name should point (possibly via a Caddy proxy) 
+  toward the NGINX proxy that makes the server available.
+- `visualization_server`: Domain name of an external server that provides 
+  access to the visualization dashboard and every visualization (except 
+  predictions). This name should point (possibly via a Caddy proxy) toward the 
+  NGINX proxy that makes the server available.
+- `www_server`: Domain name of an external server that listens on a "www" 
+  address. This server redirects to the visualization server. This name should 
+  point (possibly via a Caddy proxy) toward the NGINX proxy that makes the 
+  redirection service available.
+- `prediction_server`: Domain name of an external server that provides access 
+  to the predictions. This name should point (possibly via a Caddy proxy) 
+  toward the NGINX proxy that makes the server available.
+- `hub_regex`: When multiple organizations are hosted in the same environment, 
+  a regular expression can be used to match the organization name which must 
+  occur at the start of the path, and place the matched parts into variables 
+  for later use in the NGINX rewrites.
+- `hub_redirect`: When multiple organizations are hosted in the same 
+  environment, variables from a matched organization at the start of the path 
+  using `hub_regex` can be used in a rewrite that redirects to another URL.
+- `hub_branch`: Inject some processing steps in the NGINX configuration for 
+  visualizations and predictions. This should at least determine the branch of 
+  a Jenkins build to use for a visualization or prediction. When multiple 
+  organizations are hosted in the same environment, variables from a matched 
+  organization at the start of the path using `hub_regex` can be used in 
+  further processing.
+- `jenkins_host`: Domain name of an internal server where the Jenkins build 
+  system is hosted.
+- `jenkins_path`: Path that the Jenkins build system is hosted below. This is 
+  useful in situations where Jenkins is hosted on the same domain as other 
+  resources and is therefore within a path rather than directly at the root of 
+  a domain.
+- `jenkins_direct`: Filesystem path of a location where a copy of the 
+  visualizations and predictions are available. If this is not empty, the 
+  structure within the path must follow that which the `copy.sh` script makes 
+  and supported requests are internally rewritten to this path. If this is 
+  empty, then requests for visualizations and predictions are proxied to the 
+  Jenkins server.
+- `jenkins_direct_url`: URL through which the Jenkins server is available from 
+  the location of the build (a Jenkins node with the 'publish' tag, most likely 
+  the server itself), when the visualizations and predictions are copied.
+- `jenkins_direct_cert`: Filesystem path to a certificate used for validating 
+  a HTTPS connection to the Jenkins server, when the visualizations and 
+  predictions are copied (for branch information).
+- `jenkins_api_token`: Encrypted token that can be used for basic authorization 
+  against the Jenkins API for at least branch details of builds.
+- `files_host`: Domain name of an internal server where an ownCloud instance is 
+  hosted.
+- `files_share_id`: Identifier of a publish share on an ownCloud instance with 
+  files that are made available in addition to the prediction resources.
+- `control_host`: Domain name of an internal server where secure resources are 
+  hosted, including encryption services and access control checks. This domain 
+  must be accessible through HTTPS from the NGINX proxy.
+- `websocket_server`: Domain name of an external server where a WebSocket for 
+  real-time updates of access log analytics is hosted. This name should 
+  point (possibly via a Caddy proxy) toward the NGINX proxy that makes the 
+  WebSocket service available (via the GoAccess script).
+- `proxy_range`: CIDR range of trusted IP addresses that may host the first 
+  layer of proxies in front of the NGINX proxy (for example the Caddy proxies). 
+  Requests from these addresses may provide headers with the real IP address of 
+  the original request, which are used instead of the proxy's IP address.
+- `auth_cert`: Filesystem path to a certificate used for validating the HTTPS 
+  connection to the `control_host`. If a `SERVER_CERTIFICATE` environment is 
+  not set, then this is also used as the path on the Docker host machine during 
+  the `docker-compose` tests to provide this path within the Docker instance.
+- `allow_range` (array): CIDR ranges of IP addresses that are allowed to access 
+  the access log analytics.
+- `primary_dns`: IP address of an external DNS server that allows Docker 
+  instances during the `docker-compose` tests to look up external domain names, 
+  aside from those used for the Docker instances. Proper DNS resolution may be 
+  necessary to properly set up the visualizations under test.
+
+Configuration items that have keys ending in `_url` may be processed to direct 
+toward an organization-specific path, in case multiple organizations are hosted 
+in the same environment. The value is searched for the substring 
+`$organization`, possibly after slashes. These can be replaced with the actual 
+organization that the build is for. In some cases, it is removed only to allow 
+NGINX rules to add it in front of the path using `hub_regex`.
+
+Note that configuration items that have keys ending in `_host` or `_server` may 
+be set to "fake" values when only a portion of the final NGINX configuration is 
+actually used, for example when some resources are not made available. The 
+configuration values should still be set to valid domain names so that they can 
+be used within the tests.

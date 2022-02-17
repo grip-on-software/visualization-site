@@ -19,6 +19,8 @@
     "prediction_branch": "if ($branch = \"\") { set $branch \"master\"; }",
     "jenkins_host": "www.jenkins.gros.test",
     "jenkins_path": "",
+    "jenkins_direct": "",
+    "jenkins_api_token": "",
     "files_host": "www.owncloud.gros.test",
     "files_share_id": "",
     "control_host": "control.gros.test",

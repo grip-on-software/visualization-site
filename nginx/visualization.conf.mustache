@@ -10,10 +10,13 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
 # index.html.
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
     {{{visualization_branch}}}
+    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{#jenkins_report}}$name/$branch/index.html{{/jenkins_report}} break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{#jenkins_report}}$name/$branch/$file{{/jenkins_report}} break;
+# ZIP download only available from Jenkins directly for now.
+{{^jenkins_direct}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)\.zip$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/*zip*/$name.zip break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/index.html break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/$file break;
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
+{{/jenkins_direct}}
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt {
@@ -59,13 +62,17 @@ error_page 500 502 503 504 {{{hub_redirect}}}/50x.html;
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
     {{{hub_branch}}}
     add_header Access-Control-Allow-Origin *;
-    rewrite {{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/$file break;
+    rewrite {{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
+{{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
+{{/jenkins_direct}}
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {
     {{{hub_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/$file break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {{{jenkins_path}}}/job/build-visualization-site/job/$branch/Visualization/index.html break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {{#jenkins_report}}visualization-site/$branch/index.html{{/jenkins_report}} break;
+{{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
+{{/jenkins_direct}}
 }

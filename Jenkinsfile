@@ -25,11 +25,9 @@ pipeline {
 
     post {
         success {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
             archiveArtifacts 'nginx.conf,nginx/*.conf,caddy/*.yml'
         }
         unstable {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
             archiveArtifacts 'nginx.conf,nginx/*.conf,caddy/*.yml'
         }
         failure {
@@ -93,6 +91,7 @@ pipeline {
                     sh 'cp -r /usr/src/app/node_modules/axe-core/ axe-core'
                     sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
                     sh "SERVER_CERTIFICATE=$WORKSPACE/wwwgros.crt VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run pretest -- --env.mixfile=$WORKSPACE/webpack.mix.js"
+                    stash includes: 'visualization_names.txt', name: 'visualization_names'
                 }
             }
         }
@@ -155,6 +154,21 @@ pipeline {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
                 sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run production -- --env.mixfile=$WORKSPACE/webpack.mix.js"
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
+            }
+        }
+        stage('Copy') {
+            when { branch 'master' }
+            agent {
+                label 'publish'
+            }
+            steps {
+                checkout scm
+                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
+                    sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
+                    unstash 'visualization_names'
+                    sh './copy.sh'
+                }
             }
         }
         stage('Status') {
