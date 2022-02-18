@@ -23,6 +23,10 @@ if (!fs.existsSync(config)) {
     config = path.resolve(__dirname, configFile);
 }
 const configuration = JSON.parse(fs.readFileSync(config));
+if (process.env.NODE_ENV === 'test') {
+    // Always use jenkins proxy URLs in test
+    configuration.jenkins_direct = '';
+}
 
 // Replace organization parameter with environment variable if necessary.
 // Used for visualization links and HTML configuration
@@ -134,6 +138,33 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
             return `$${text}`;
         };
     },
+    jenkins_report: function() {
+        return function(text, render) {
+            const url_parts = render(text).split('/');
+            const job = url_parts.shift();
+            const branch = url_parts.shift();
+            const file = url_parts.join('/');
+            if (configuration.jenkins_direct) {
+                return `${configuration.jenkins_direct}/${branch}/${job}/${file}`;
+            }
+            return `${configuration.jenkins_path}/job/build-${job}/job/${branch}/Visualization/${file}`;
+        };
+    },
+    jenkins_artifact: function() {
+        return function(text, render) {
+            const url_parts = render(text).split('/');
+            const job = url_parts.shift();
+            const branch = url_parts.shift();
+            const file = url_parts.join('/');
+            if (configuration.jenkins_direct) {
+                return `${configuration.jenkins_direct}/${branch}/${job}/${file}`;
+            }
+            return `${configuration.jenkins_path}/job/create-${job}/job/${branch}/lastSuccessfulBuild/artifact/${file}`;
+        };
+    },
+    jenkins_branches: configuration.jenkins_direct ?
+        `${configuration.jenkins_direct}/branches.json` :
+        `${configuration.jenkins_path}/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]]`,
     error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });
