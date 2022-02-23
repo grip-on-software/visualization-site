@@ -29,7 +29,7 @@ function container_logs() {
 
 rm -rf test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
 mkdir -p repos
-mkdir -p test/junit test/results test/accessibility test/coverage test/downloads
+mkdir -p test/junit test/results test/accessibility test/coverage/output test/downloads
 mkdir -p -m 0777 "$HOME/OWASP-Dependency-Check/data/cache"
 mkdir -p -m 0777 test/owasp-dep
 
@@ -98,7 +98,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 		rm -f "$tree/.skip_build"
 	fi
 	rm -rf "$tree/test"
-	mkdir -p "$tree/test/junit" "$tree/test/coverage" "$tree/test/suite"
+	mkdir -p "$tree/test/junit" "$tree/test/coverage/output" "$tree/test/suite"
 fi
 
 PROXY_HOST=nginx
@@ -162,7 +162,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
 	grep -E "sonar\.(tests|test|python|javascript)\." sonar-project.properties >> "$tree/sonar-project.properties"
 	cp test/junit/TEST-suite.test_prediction_site.*.xml "$tree/test/junit/"
-	cp test/coverage/lcov.info "$tree/test/coverage/"
+	cp test/coverage/output/*.json "$tree/test/coverage/output/"
 	cp test/test.py "$tree/test/"
 	cp test/suite/test_prediction_site.py "$tree/test/suite/"
 	echo "# Let SonarQube know we have Python tests" > "$tree/lib/test.py"

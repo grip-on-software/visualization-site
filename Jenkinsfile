@@ -37,7 +37,7 @@ pipeline {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'canceled'
         }
         always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'lcov-report/index.html', reportName: 'Coverage', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/coverage/', reportFiles: 'index.html', reportName: 'Coverage', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/results/', reportFiles: 'index.html', reportName: 'Results', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/accessibility/', reportFiles: 'index.html', reportName: 'Accessiblity', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: 'test/owasp-dep/', reportFiles: 'dependency-check-report.html', reportName: 'Dependencies', reportTitles: ''])
@@ -126,6 +126,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'npm run nyc-report'
                 sh 'npm run axe-report'
             }
         }

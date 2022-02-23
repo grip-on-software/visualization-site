@@ -59,13 +59,21 @@ class Reporter:
         cls._accessibility_index.write('</body></html>')
         cls._accessibility_index.close()
 
-        response = urlopen('http://coverage.test:8888/download')
-        with closing(response):
-            if response.getcode() != 200:
-                print('No coverage data downloaded!')
-                for line in response:
-                    print(line)
+        zip_response = urlopen('http://coverage.test:8888/download')
+        with closing(zip_response):
+            if zip_response.getcode() != 200:
+                print('No coverage HTML report downloaded!')
+                print('\n'.join(zip_reponse))
             else:
-                with BytesIO(response.read()) as zip_data:
+                with BytesIO(zip_response.read()) as zip_data:
                     with ZipFile(zip_data, 'r') as zip_file:
                         zip_file.extractall('coverage/')
+
+        json_reposnse = urlopen('http://coverage.test:8888/object')
+        with closing(json_reposnse):
+            if json_response.getcode() != 200:
+                print('No coverage JSON data downloaded!')
+                print('\n'.join(json_response))
+            else:
+                with open('coverage/output/out.json', 'w') as json_file:
+                    json_file.write(json_response.read())
