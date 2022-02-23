@@ -118,7 +118,7 @@ jenkins:
 {{{repo}}}:
   image: $DOCKER_REPOSITORY/gros-{{{repo}}}:latest
   domainname: "{{{internal_domain}}}"
-  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && npm run pretest -- --env MIX_FILE=$PWD/repos/{{{repo}}}/webpack.mix.js; fi'"
+  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && MIX_FILE=$PWD/repos/{{{repo}}}/webpack.mix.js npm run pretest; fi'"
   user: "{{{user_id}}}:{{{group_id}}}"
   volumes:
     - "../{{{repo_root}}}:$PWD/repos"

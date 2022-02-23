@@ -91,7 +91,7 @@ pipeline {
                     sh 'ln -s /usr/src/app/node_modules .'
                     sh 'cp -r /usr/src/app/node_modules/axe-core/ axe-core'
                     sh 'cp $SERVER_CERTIFICATE wwwgros.crt'
-                    sh "SERVER_CERTIFICATE=$WORKSPACE/wwwgros.crt VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run pretest -- --env MIX_FILE=$WORKSPACE/webpack.mix.js"
+                    sh "SERVER_CERTIFICATE=$WORKSPACE/wwwgros.crt VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} MIX_FILE=$WORKSPACE/webpack.mix.js npm run pretest"
                     stash includes: 'visualization_names.txt', name: 'visualization_names'
                 }
             }
@@ -154,7 +154,7 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
-                sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} npm run production -- --env MIX_FILE=$WORKSPACE/webpack.mix.js"
+                sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} MIX_FILE=$WORKSPACE/webpack.mix.js npm run production"
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
             }
         }
