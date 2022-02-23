@@ -136,7 +136,7 @@ pipeline {
                     pysh 'python -m pylint test/suite --exit-zero --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" -d duplicate-code > pylint-report.txt'
                 }
                 withSonarQubeEnv('SonarQube') {
-                    sh 'if [ -d repos/prediction-site ]; then ${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=prediction-site:master -Dsonar.projectName="Prediction site master" -Dsonar.projectBaseDir=repos/prediction-site; fi'
+                    sh 'if [ -d repos/prediction-site ]; then ${SCANNER_HOME}/bin/sonar-scanner -Dprojet.settings=repos/prediction-site/sonar-project.properties -Dsonar.projectKey=prediction-site:master -Dsonar.projectName="Prediction site master" -Dsonar.projectBaseDir=repos/prediction-site; fi'
                     sh '${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=visualization-site:$BRANCH_NAME -Dsonar.projectName="Visualization site $BRANCH_NAME" -Dsonar.sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`'
                 }
             }
