@@ -62,7 +62,8 @@ pipeline {
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
                     sh 'docker build -t $DOCKER_REPOSITORY/$VISUALIZATION_IMAGE . --build-arg NPM_REGISTRY=$NPM_REGISTRY'
-                    sh 'docker volume rm -f visualization-site-modules'
+                    sh 'docker ps -q --filter "volume=$BRANCH_NAME-visualization-site-modules" | xargs --no-run-if-empty docker stop'
+                    sh 'docker volume rm -f "$BRANCH_NAME-visualization-site-modules"'
                 }
             }
         }

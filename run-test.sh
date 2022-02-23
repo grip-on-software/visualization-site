@@ -75,7 +75,8 @@ function update_repo() {
 			if [ ! -z "$build_check" ]; then
 				echo "Build of $repo required"
 				rm -f "$tree/.skip_build"
-				docker volume rm -f "$repo-modules"
+				docker ps -q -a --filter "volume=$BRANCH_NAME-$repo-modules" | xargs --no-run-if-empty docker stop
+				docker volume rm -f "$BRANCH_NAME-$repo-modules"
 			fi
 		fi
     fi
@@ -173,8 +174,8 @@ fi
 update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
 sed --in-place="" -e 's/\r$//' ./security/*.sh
 cp test/suppression.xml security/suppression.xml
-VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed 's/\(\S*\)/-v \1-modules:\\\/src\\\/repos\\\/\1\\\/node_modules/g')
-sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 $VISUALIZATION_MOUNTS -v visualization-site-modules:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" \\1/" ./security/security_dependencycheck.sh
+VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\\\/src\\\\/repos\\\\/\\1\\\\/node_modules/g")
+sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 $VISUALIZATION_MOUNTS -v $BRANCH_NAME-visualization-site-modules:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" \\1/" ./security/security_dependencycheck.sh
 PROJECT_NAME="Visualizations" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
 
 if [ $status -ne 0 ]; then
