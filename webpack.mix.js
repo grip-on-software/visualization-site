@@ -211,7 +211,7 @@ mix.setPublicPath('www/')
         htmlConfiguration.visualization_url : '/'
     )
     .js('lib/index.js', 'www/bundle.js')
-    .extract(['./lib/build.js'])
+    .js('./lib/build.js', 'www/vendor.js')
     .sass('res/main.scss', 'www/main.css')
     .sass('res/navbar.scss', 'www/navbar.css')
     .browserSync({
