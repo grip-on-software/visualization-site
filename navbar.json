@@ -90,7 +90,7 @@
                                     "heatmap?lang=",
                                     {"locale": "lang"}
                                 ],
-                                "icon": ["fas", "th-large"],
+                                "icon": ["fas", "grip"],
                                 "content": {
                                     "en": "Heat map",
                                     "nl": "Heatmap"

@@ -14,7 +14,7 @@
                 },
                 {
                     "id": "heatmap",
-                    "icon": ["fas", "th-large"],
+                    "icon": ["fas", "grip"],
                     "language_parameter": "lang",
                     "blog": {
                         "fragment": "heatmap-van-projectactiviteit",

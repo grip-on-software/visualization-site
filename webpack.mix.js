@@ -1,4 +1,5 @@
 const fs = require('fs'),
+      path = require('path'),
       { URL } = require('url'),
       mix = require('laravel-mix'),
       _ = require('lodash'),
