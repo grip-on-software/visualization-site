@@ -69,7 +69,7 @@ class Reporter:
                     with ZipFile(zip_data, 'r') as zip_file:
                         zip_file.extractall('coverage/')
 
-        json_reposnse = urlopen('http://coverage.test:8888/object')
+        json_response = urlopen('http://coverage.test:8888/object')
         with closing(json_reposnse):
             if json_response.getcode() != 200:
                 print('No coverage JSON data downloaded!')
