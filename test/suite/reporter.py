@@ -75,5 +75,5 @@ class Reporter:
                 print('No coverage JSON data downloaded!')
                 print('\n'.join(json_response))
             else:
-                with open('coverage/output/out.json', 'w') as json_file:
+                with open('coverage/output/out.json', 'wb') as json_file:
                     json_file.write(json_response.read())
