@@ -18,6 +18,7 @@ axe-core
 repos/
 security-tooling/
 test/config.json
+test/pylint-report.txt
 test/accessibility/
 test/coverage/
 test/downloads/

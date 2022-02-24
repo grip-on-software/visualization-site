@@ -79,7 +79,7 @@ function update_repo() {
 				docker volume rm -f "$BRANCH_NAME-$repo-modules"
 			fi
 		fi
-    fi
+	fi
 }
 
 for repo in $VISUALIZATION_NAMES; do
@@ -99,6 +99,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	fi
 	rm -rf "$tree/test"
 	mkdir -p "$tree/test/junit" "$tree/test/coverage/output" "$tree/test/suite"
+	mkdir -p -m 0777 "$tree/test/owasp-dep"
 fi
 
 PROXY_HOST=nginx
@@ -160,10 +161,11 @@ docker-compose $COMPOSE_ARGS down
 echo "# Let SonarQube know we have Python tests" > lib/test.py
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
-	grep -E "sonar\.(tests|test|python|javascript)\." sonar-project.properties >> "$tree/sonar-project.properties"
+	grep -E "sonar\.(scm|tests|test|python\.xunit|javascript|dependencyCheck)[\.=]" sonar-project.properties >> "$tree/sonar-project.properties"
 	cp test/junit/TEST-suite.test_prediction_site.*.xml "$tree/test/junit/"
 	cp test/coverage/output/*.json "$tree/test/coverage/output/"
 	cp test/test.py "$tree/test/"
+	grep "test_prediction_site" test/suite/__init__.py > "$tree/test/suite/__init__.py"
 	cp test/suite/test_prediction_site.py "$tree/test/suite/"
 	echo "# Let SonarQube know we have Python tests" > "$tree/lib/test.py"
 fi
@@ -174,9 +176,14 @@ fi
 update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
 sed --in-place="" -e 's/\r$//' ./security/*.sh
 cp test/suppression.xml security/suppression.xml
-VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\\\\\/src\\\\\\/repos\\\\\\/\\1\\\\\\/node_modules/g")
-sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 $VISUALIZATION_MOUNTS -v $BRANCH_NAME-visualization-site-modules:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" \\1/" ./security/security_dependencycheck.sh
+VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\/src\\/repos\\/\\1\\/node_modules/g")
+SITE_MOUNT="$BRANCH_NAME-visualization-site-modules"
+sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 \$VISUALIZATION_MOUNTS -v \$SITE_MOUNT:/src/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --project \"\$PROJECT_NAME\" \\1/" ./security/security_dependencycheck.sh
 PROJECT_NAME="Visualizations" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
+if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
+	tree="$PWD/$REPO_ROOT/prediction-site"
+	PROJECT_NAME="Prediction site" VISUALIZATION_MOUNTS="" SITE_MOUNT="$BRANCH_NAME-prediction-site-modules" bash ./security/security_dependencycheck.sh "$tree" "$tree/test/owasp-dep"
+fi
 
 if [ $status -ne 0 ]; then
 	exit 2
