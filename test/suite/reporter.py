@@ -63,14 +63,14 @@ class Reporter:
         with closing(zip_response):
             if zip_response.getcode() != 200:
                 print('No coverage HTML report downloaded!')
-                print('\n'.join(zip_reponse))
+                print('\n'.join(zip_response))
             else:
                 with BytesIO(zip_response.read()) as zip_data:
                     with ZipFile(zip_data, 'r') as zip_file:
                         zip_file.extractall('coverage/')
 
         json_response = urlopen('http://coverage.test:8888/object')
-        with closing(json_reposnse):
+        with closing(json_response):
             if json_response.getcode() != 200:
                 print('No coverage JSON data downloaded!')
                 print('\n'.join(json_response))
