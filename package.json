@@ -7,7 +7,7 @@
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "production": "cross-env NODE_ENV=production webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
     "test": "./run-test.sh",
-    "nyc-report": "cross-env NODE_ENV=test nyc --temp-dir test/coverage/output --reporter lcov --report-dir test/coverage",
+    "nyc-report": "cross-env NODE_ENV=test nyc report --temp-dir test/coverage/output --reporter lcov --report-dir test/coverage",
     "axe-report": "cross-env NODE_ENV=test node axe-report.js && tr '\\r' '\\n' < test/accessibility/report.txt.csv > test/accessibility/report.csv"
   },
   "devDependencies": {
