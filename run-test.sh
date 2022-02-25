@@ -161,7 +161,7 @@ docker-compose $COMPOSE_ARGS down
 echo "# Let SonarQube know we have Python tests" > lib/test.py
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
-	grep -E "sonar\.(scm|tests|test|python\.xunit|javascript|dependencyCheck)[\.=]" sonar-project.properties >> "$tree/sonar-project.properties"
+	grep -E "sonar\.(scm|tests|test|python|javascript|dependencyCheck)[\.=]" sonar-project.properties >> "$tree/sonar-project.properties"
 	cp test/junit/TEST-suite.test_prediction_site.*.xml "$tree/test/junit/"
 	cp test/coverage/output/*.json "$tree/test/coverage/output/"
 	cp test/test.py "$tree/test/"
