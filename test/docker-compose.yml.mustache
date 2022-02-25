@@ -99,6 +99,9 @@ jenkins:
           }
   volumes:
     - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
+    {{#visualization_organizations}}
+    - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/{{{.}}}/Visualization"
+    {{/visualization_organizations}}
     {{#groups}}
     {{#items}}
     {{#index}}
@@ -107,6 +110,10 @@ jenkins:
     {{/items}}
     {{/groups}}
     - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastSuccessfulBuild/artifact/output"
+    {{#prediction_organizations}}
+    - "../{{{repo_root}}}/prediction-site/public:/srv/www{{{jenkins_path}}}/job/build-prediction-site/job/{{{.}}}/Visualization"
+    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{.}}}/lastSuccessfulBuild/artifact/output"
+    {{/prediction_organizations}}
     - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
     - "../test/sample/blog:/srv/blog"
     - "../test/sample/discussion:/srv/discussion"

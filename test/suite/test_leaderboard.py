@@ -78,7 +78,7 @@ class LeaderboardTest(IntegrationTest):
                          list(sorted(features.keys(),
                                      key=lambda name: features[name][1])))
 
-        icon = cards.find_element_by_css_selector('a.card-header-icon')
+        icon = cards.find_element_by_css_selector('.card-header-icon a')
         icon.click()
 
         self._wait_for(expected_conditions.staleness_of(icon))

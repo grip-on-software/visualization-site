@@ -105,6 +105,13 @@ otherwise) are known:
 - `prediction_server`: Domain name of an external server that provides access 
   to the predictions. This name should point (possibly via a Caddy proxy) 
   toward the NGINX proxy that makes the server available.
+- `hub_organizations` (array): When multiple organizations are hosted in the 
+  same environment, an array of objects containing organizations and branch 
+  names can be used to provide a build and dummy data for visualizations on 
+  multiple branches. Currently, only the `visualization-site` and 
+  `prediction-site` visualizations are considered as keys in each object, and 
+  they should provide a branch name that the `visualization_branch` and 
+  `prediction_branch` may point to, respectively.
 - `hub_regex`: When multiple organizations are hosted in the same environment, 
   a regular expression can be used to match the organization name which must 
   occur at the start of the path, and place the matched parts into variables 
@@ -112,12 +119,22 @@ otherwise) are known:
 - `hub_redirect`: When multiple organizations are hosted in the same 
   environment, variables from a matched organization at the start of the path 
   using `hub_regex` can be used in a rewrite that redirects to another URL.
-- `hub_branch`: Inject some processing steps in the NGINX configuration for 
-  visualizations and predictions. This should at least determine the branch of 
-  a Jenkins build to use for a visualization or prediction. When multiple 
-  organizations are hosted in the same environment, variables from a matched 
-  organization at the start of the path using `hub_regex` can be used in 
-  further processing.
+- `hub_branch`: Inject some processing steps in the NGINX configuration for the 
+  visualizations hub. This should at least determine the branch of a Jenkins 
+  build to use for the visualization site. When multiple organizations are 
+  hosted in the same environment, variables from a matched organization at the 
+  start of the path using `hub_regex` can be used in further processing.
+- `visualization_branch`: Inject some processing steps in the NGINX 
+  configuration for a visualization. This should at least determine the branch 
+  of a Jenkins build to use for a visualization. When multiple organizations 
+  are hosted in the same environment, variables from a matched organization at 
+  the start of the path using `hub_regex` can be used in further processing.
+- `prediction_branch`: Inject some processing steps in the NGINX configuration 
+  for the prediction site. This should at least determine the branch of 
+  a Jenkins build to use for the visualization or prediction site. When 
+  multiple organizations are hosted in the same environment, variables from 
+  a matched organization at the start of the path using `hub_regex` can be used 
+  in further processing.
 - `jenkins_host`: Domain name of an internal server where the Jenkins build 
   system is hosted.
 - `jenkins_path`: Path that the Jenkins build system is hosted below. This is 

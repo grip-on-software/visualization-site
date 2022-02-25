@@ -111,6 +111,9 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     user_id: process.getuid(),
     group_id: process.getgid(),
     visualization_names: visualization_nginx,
+    prediction_organizations: _.includes(visualization_names, 'prediction-site') ?
+        _.map(configuration.hub_organizations, 'prediction-site') : [],
+    visualization_organizations: _.map(configuration.hub_organizations, 'visualization-site'),
     join: function() {
         return function(text, render) {
             // Remove last character

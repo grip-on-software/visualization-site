@@ -14,5 +14,9 @@
 <dd>{{index .Config.Labels "com.docker.compose.service"}}.{{.Config.Domainname}}</dd>
 <dt>IP address</dt>
 <dd>{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}</dd>
+<dt>Working directory</dt>
+<dd>{{.Config.WorkingDir}}</dd>
+<dt>Mounts</dt>
+{{range .Mounts}}<dd>{{.Source}} -&gt; {{.Destination}}</dd>{{end}}
 </dl>
 <h2>Log</h2>
