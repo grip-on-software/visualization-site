@@ -95,7 +95,8 @@ const internal_domain_index = configuration.jenkins_host.indexOf('.');
 const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     // Remove any organization parameters from URLs
     // The injected branch setter (hub_regex with associated configuration) is
-    // not adjusted and is responsible for routing the correct organization(s)
+    // not adjusted and is responsible for routing the correct organization(s),
+    // or in the case of redirects and error pages, the hub_redirect variable
     (value, key) => key.endsWith('_url') ?
         value.replace(/\/?\$organization/, '') : value
 ), {
@@ -134,7 +135,7 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
             const url_parts = render(text).split('/');
             var server = url_parts.shift();
             return (new URL(url_parts.join('/'), `http://${server}/`))
-                .pathname.replace('//', '/');
+                .pathname.replace('//', '/').replace(/^\/\$/, '$');
         };
     },
     upstream: function() {

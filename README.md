@@ -118,7 +118,8 @@ otherwise) are known:
   for later use in the NGINX rewrites.
 - `hub_redirect`: When multiple organizations are hosted in the same 
   environment, variables from a matched organization at the start of the path 
-  using `hub_regex` can be used in a rewrite that redirects to another URL.
+  using `hub_regex` can be used in a rewrite that redirects to another URL. It 
+  is assumed that this configuration value produces an absolute URL.
 - `hub_branch`: Inject some processing steps in the NGINX configuration for the 
   visualizations hub. This should at least determine the branch of a Jenkins 
   build to use for the visualization site. When multiple organizations are 
@@ -192,4 +193,4 @@ Note that configuration items that have keys ending in `_host` or `_server` may
 be set to "fake" values when only a portion of the final NGINX configuration is 
 actually used, for example when some resources are not made available. The 
 configuration values should still be set to valid domain names so that they can 
-be used within the tests.
+be used within the `docker-compose` network during the tests.

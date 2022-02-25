@@ -66,10 +66,10 @@ rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}zip$ {{#url}}{{{pr
 
 proxy_intercept_errors on;
 
-error_page 401 {{{hub_redirect}}}/401.html;
-error_page 403 {{{hub_redirect}}}/403.html;
-error_page 404 {{{hub_redirect}}}/404.html;
-error_page 500 502 503 504 {{{hub_redirect}}}/50x.html;
+error_page 401 {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}401.html;
+error_page 403 {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}403.html;
+error_page 404 {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}404.html;
+error_page 500 502 503 504 {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}50x.html;
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}} {
     {{{prediction_branch}}}
