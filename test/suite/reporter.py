@@ -62,9 +62,9 @@ class Reporter:
 
             for line in log:
                 try:
-                    timestamp = datetime.fromtimestamp(log['timestamp'] / 1000)
+                    timestamp = datetime.fromtimestamp(line['timestamp'] / 1000)
                 except ValueError:
-                    timestamp = log['timestamp']
+                    timestamp = line['timestamp']
                 results_log.write('<tr><td>{0}</td><td>{level}</td><td>{source}</td><td>{message}</td></tr>'.format(timestamp, **line))
 
             results_log.write('</tbody></table></body></html>')
