@@ -72,12 +72,16 @@ function update_repo() {
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rm .gitattributes
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git add -A
 		fi
+		if [ -f "$tree/.skip_build" ]; then
+			previous_env=$(cat "$tree/.skip_build")
+		fi
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git reset --hard
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
-		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/.skip_build" ] && [ "$VISUALIZATION_ENV" = "$(< $tree/.skip_build)" ]; then
+		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/.skip_build" ] && [ "$VISUALIZATION_ENV" = "$previous_env" ]; then
 			echo "$repo is up to date, skipping build in instance."
+			echo "$VISUALIZATION_ENV" > "$tree/.skip_build"
 		else
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
 			if [ ! -z "$build_check" ]; then
