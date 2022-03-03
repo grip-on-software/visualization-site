@@ -66,6 +66,7 @@ class Reporter:
                 except ValueError:
                     timestamp = line['timestamp']
                 results_log.write('<tr><td>{0}</td><td>{level}</td><td>{source}</td><td>{message}</td></tr>'.format(timestamp, **line))
+                results_log.write('<!-- {0} -->'.format(repr(line).replace('--', '\u2014')))
 
             results_log.write('</tbody></table></body></html>')
 
