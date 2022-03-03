@@ -102,7 +102,7 @@ pipeline {
                     withDockerRegistry(credentialsId: 'docker-credentials', url: env.DOCKER_URL) {
                         sshagent(['gitlab-clone-auth']) {
                             script {
-                                def ret = sh returnStatus: true, script: './run-test.sh'
+                                def ret = sh returnStatus: true, script: "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} ./run-test.sh"
                                 if (ret == 2) {
                                     currentBuild.result = 'UNSTABLE'
                                 }
