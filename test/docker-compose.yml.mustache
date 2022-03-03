@@ -132,6 +132,9 @@ jenkins:
     - "../{{{repo_root}}}:$PWD/repos"
     - "{{{repo}}}-modules:/usr/src/app/node_modules"
     - "../test/sample/{{{repo}}}/data:/data"
+  environment:
+    - VISUALIZATION_ORGANIZATION
+    - VISUALIZATION_COMBINED
   working_dir: "$PWD/repos/{{{repo}}}"
   expose:
     - "3000"

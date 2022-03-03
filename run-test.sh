@@ -50,6 +50,8 @@ if [ -z "$VISUALIZATION_NAMES" ]; then
 	VISUALIZATION_NAMES=$(cat visualization_names.txt)
 fi
 
+VISUALIZATION_ENV=$(env -i VISUALIZATION_ORGANIZATION=$VISUALIZATION_ORGANIZATION VISUALIZATION_COMBINED=$VISUALIZATION_COMBINED)
+
 function update_repo() {
 	tree=$1
 	shift
@@ -74,9 +76,8 @@ function update_repo() {
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
-		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/public/index.html" ]; then
+		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ -f "$tree/.skip_build" ] && [ "$VISUALIZATION_ENV" = "$(< $tree/.skip_build)" ]; then
 			echo "$repo is up to date, skipping build in instance."
-			touch "$tree/.skip_build"
 		else
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
 			if [ ! -z "$build_check" ]; then
@@ -141,7 +142,7 @@ for name in $VISUALIZATION_NAMES; do
 			exit 1
 		fi
 
-		# Check if port 3000 is opened by the visualization
+		# Check if the visualization is done building
 		running=$(docker inspect -f '{{.State.Running}}' $container 2>&1)
 		exitcode=$?
 		if [ $exitcode -ne 0 ]; then
@@ -165,6 +166,11 @@ status=$?
 
 container_logs
 docker-compose $COMPOSE_ARGS down
+
+# Note the successful build with the environment used to build it
+for repo in $VISUALIZATION_NAMES; do
+	echo "$VISUALIZATION_ENV" > "$tree/.skip_build"
+done
 
 echo "# Let SonarQube know we have Python tests" > lib/test.py
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
