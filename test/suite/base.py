@@ -78,10 +78,17 @@ class IntegrationTest(unittest.TestCase):
 
     def _get_url(self, key):
         org = os.getenv('VISUALIZATION_ORGANIZATION')
+        combined = os.getenv('VISUALIZATION_COMBINED')
         base = 'http://{}'.format(self._config['{}_server'.format(key)])
-        url = re.sub(r'(/)?\$organization',
-                     r'\1{}'.format(org) if org is not None else '',
-                     self._config['{}_url'.format(key)])
+
+        if combined == "true":
+            url = self._config['{}_url'.format(key)].replace('/$organization',
+                                                             '/combined')
+        else:
+            url = re.sub(r'(/)?\$organization',
+                         r'\1{}'.format(org) if org is not None else '',
+                         self._config['{}_url'.format(key)])
+
         return urljoin(base, url)
 
     def setUp(self):
