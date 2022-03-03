@@ -98,7 +98,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                withCredentials([file(credentialsId: 'prediction-site-config', variable: 'PREDICTION_CONFIGURATION')]) {
+                withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION'), file(credentialsId: 'prediction-site-config', variable: 'PREDICTION_CONFIGURATION')]) {
                     withDockerRegistry(credentialsId: 'docker-credentials', url: env.DOCKER_URL) {
                         sshagent(['gitlab-clone-auth']) {
                             script {

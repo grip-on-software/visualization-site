@@ -26,6 +26,20 @@ creates an analytics dashboard.
 Separate documentation exists for more details on how the second proxy layer 
 works.
 
+## Dependencies
+
+While the build of the visualization site may work with simply having Docker 
+installed, the test and production environments will need a more full-fledged 
+installation of other dependencies.
+
+For the tests, a Jenkins installation is assumed with proper OpenJDK Java 8+ 
+and Python 3.6+ (including `distutils` and `virtualenv`). The agent that 
+performs the tests must have `docker-compose`. In addition, tools such as Git, 
+`jq`, `bash`, `awk`, `sed` and `grep` must be available. The server agent that 
+performs the publishing must have `curl` as well. Details for configuring 
+Jenkins servers and agents are outside the scope of this documentation, 
+although some details may be available in other GROS documentation.
+
 ## Tests
 
 This repository contains integration tests for the visualizations. The entire 

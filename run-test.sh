@@ -1,8 +1,10 @@
 #!/bin/bash
 
-CONFIG="config.json"
-if [ ! -f "$CONFIG" ]; then
-    CONFIG="lib/config.json"
+if [ -z "$VISUALIZATION_SITE_CONFIGURATION" ]; then
+    VISUALIZATION_SITE_CONFIGURATION="config.json"
+    if [ ! -f "$VISUALIZATION_SITE_CONFIGURATION" ]; then
+        VISUALIZATION_SITE_CONFIGURATION="lib/config.json"
+    fi
 fi
 
 # Comparable integer format for versions - https://stackoverflow.com/a/37939589
@@ -96,7 +98,7 @@ done
 
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
-	sed -e "s/\\(\"visualization_url\"\\):\\s\\+\"\\//\\1: \"http:\\/\\/$(jq -r .visualization_server $CONFIG)\\//" $PREDICTION_CONFIGURATION > test/prediction-config.json
+	sed -e "s/\\(\"visualization_url\"\\):\\s\\+\"\\//\\1: \"http:\\/\\/$(jq -r .visualization_server $VISUALIZATION_SITE_CONFIGURATION)\\//" $PREDICTION_CONFIGURATION > test/prediction-config.json
 	cmp -s test/prediction-config.json "$tree/config.json"
 	if [ $? -ne 0 ]; then
 		echo "Including new configuration file for prediction-site (rebuild)"
