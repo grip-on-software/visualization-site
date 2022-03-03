@@ -52,8 +52,22 @@ class Reporter:
         Write a file with a browser log of a test result.
         """
 
-        with open('results/{0}.txt'.format(name), 'w') as results_log:
-            results_log.write(log)
+        with open('results/{0}.html'.format(name), 'w') as results_log:
+            results_log.write('<!doctype html><html><head>')
+            results_log.write('<meta charset="utf-8">')
+            results_log.write('<style type="text/css">table,th,td{border:.1rem solid #aaa;border-collapse:collapse}</style>')
+            results_log.write('<title>Browser logs for {0}</title>'.format(name))
+            results_log.write('</head><body><h1>Browser logs for {0}</h1>'.format(name))
+            results_log.write('<table><thead><tr><th>Timestamp</th><th>Level</th><th>Source</th><th>Message</th></tr></thead><tbody>')
+
+            for line in log:
+                try:
+                    timestamp = datetime.fromtimestamp(log['timestamp'] / 1000)
+                except ValueError:
+                    timestamp = log['timestamp']
+                results_log.write('<tr><td>{0}</td><td>{level}</td><td>{source}</td><td>{message}</td></tr>'.format(timestamp, **line))
+
+            results_log.write('</tbody></table></body></html>')
 
         cls._browser_logs[name] = len(log)
 
@@ -74,7 +88,7 @@ class Reporter:
 
         cls._results_index.write('</ul><h2>Browser logs</h2><ul>')
         for name, size in cls._browser_logs.items():
-            cls._results_index.write('<li><a href="results/{0}.txt">{0} ({1} bytes)</a></li>'.format(name, size))
+            cls._results_index.write('<li><a href="results/{0}.html">{0} ({1} lines)</a></li>'.format(name, size))
 
         # Docker container logs are appended to the index by run-tests.sh
         # Do not close the HTML here
