@@ -130,7 +130,7 @@ jenkins:
   user: "{{{user_id}}}:{{{group_id}}}"
   volumes:
     - "../{{{repo_root}}}:$PWD/repos"
-    - "{{{repo}}}-modules:/usr/src/app/node_modules"
+    - "{{{branch_name}}}-{{{repo}}}-modules:/usr/src/app/node_modules"
     - "../test/sample/{{{repo}}}/data:/data"
   environment:
     - VISUALIZATION_ORGANIZATION

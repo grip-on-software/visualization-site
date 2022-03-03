@@ -109,6 +109,8 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
         process.env.REPO_ROOT : 'repos',
     server_certificate: typeof process.env.SERVER_CERTIFICATE !== "undefined" ?
         process.env.SERVER_CERTIFICATE : configuration.auth_cert,
+    branch_name: typeof process.env.BRANCH_NAME !== "undefined" ?
+        process.env.BRANCH_NAME : '',
     user_id: process.getuid(),
     group_id: process.getgid(),
     visualization_names: visualization_nginx,
