@@ -112,8 +112,8 @@ class IntegrationTest(unittest.TestCase):
             self._driver.save_screenshot('results/{}.png'.format(self.id()))
             Reporter.write_result(self.id())
 
-            for entry in self._driver.get_log('browser'):
-                print(entry)
+            Reporter.write_log(self.id(),
+                               '\n'.join(self._driver.get_log('browser')))
 
             coverage = self._driver.execute_script("return window.__coverage__")
             if coverage is not None:

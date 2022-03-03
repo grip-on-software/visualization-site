@@ -15,7 +15,7 @@ else
 fi
 
 function container_logs() {
-	echo '<h1>Logs</h1><ul>' >> test/results/index.html
+	echo '<h2>Docker container logs</h2><ul>' >> test/results/index.html
 
 	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/bash -c '
 		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_{}.html
