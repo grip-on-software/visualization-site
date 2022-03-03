@@ -1,5 +1,10 @@
 #!/bin/bash
 
+CONFIG="config.json"
+if [ ! -f "$CONFIG" ]; then
+    CONFIG="lib/config.json"
+fi
+
 # Comparable integer format for versions - https://stackoverflow.com/a/37939589
 function version() {
 	echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
@@ -91,10 +96,11 @@ done
 
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
-	cmp -s $PREDICTION_CONFIGURATION "$tree/config.json"
+	sed -e "s/\\(\"visualization_url\"\\):\\s\\+\"\\//\\1: \"http:\\/\\/$(jq -r .visualization_server $CONFIG)\\//" $PREDICTION_CONFIGURATION > test/prediction-config.json
+	cmp -s test/prediction-config.json "$tree/config.json"
 	if [ $? -ne 0 ]; then
 		echo "Including new configuration file for prediction-site (rebuild)"
-		cp -f --no-preserve=mode,ownership $PREDICTION_CONFIGURATION "$tree/config.json"
+		cp -f --no-preserve=mode,ownership test/prediction-config.json "$tree/config.json"
 		rm -f "$tree/.skip_build"
 	fi
 	rm -rf "$tree/test"
