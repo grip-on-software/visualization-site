@@ -30,6 +30,7 @@ runner:
     - "../axe-core/:/axe-core"
   environment:
     - VISUALIZATION_ORGANIZATION
+    - VISUALIZATION_COMBINED
   working_dir: "/work"
   links:
     - "selenium:selenium.test"
