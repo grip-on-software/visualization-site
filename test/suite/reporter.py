@@ -27,7 +27,7 @@ class Reporter:
         cls._results_index.write('<meta charset="utf-8">')
         cls._results_index.write('<title>Visualization test results</title>')
         cls._results_index.write('</head><body><h1>Test results</h1>')
-        cls._results_index.write('<p>Started: {0}</p>'.format(datetime.now()))
+        cls._results_index.write('<p>Started: {0}</p>'.format(datetime.now().astimezone()))
         cls._results_index.write('<h2>Browser screenshots</h2><ul>')
 
         cls._accessibility_index = open('accessibility/index.html', 'w')
