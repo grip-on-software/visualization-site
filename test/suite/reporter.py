@@ -55,7 +55,7 @@ class Reporter:
         with open('results/{0}.html'.format(name), 'w') as results_log:
             results_log.write('<!doctype html><html><head>')
             results_log.write('<meta charset="utf-8">')
-            results_log.write('<style type="text/css">table,th,td{border:.1rem solid #aaa;border-collapse:collapse}</style>')
+            results_log.write('<link rel="stylesheet" type="text/css" href="log.css">')
             results_log.write('<title>Browser logs for {0}</title>'.format(name))
             results_log.write('</head><body><h1>Browser logs for {0}</h1>'.format(name))
             results_log.write('<table><thead><tr><th>Timestamp</th><th>Level</th><th>Source</th><th>Message</th></tr></thead><tbody>')
@@ -86,9 +86,12 @@ class Reporter:
         Close the reports.
         """
 
+        with open('results/log.css', 'w') as log_stylesheet:
+            log_stylesheet.write('table,th,td{border:.1rem solid #aaa;border-collapse:collapse}')
+
         cls._results_index.write('</ul><h2>Browser logs</h2><ul>')
         for name, size in cls._browser_logs.items():
-            cls._results_index.write('<li><a href="results/{0}.html">{0} ({1} lines)</a></li>'.format(name, size))
+            cls._results_index.write('<li><a href="{0}.html">{0} ({1} lines)</a></li>'.format(name, size))
 
         # Docker container logs are appended to the index by run-tests.sh
         # Do not close the HTML here
