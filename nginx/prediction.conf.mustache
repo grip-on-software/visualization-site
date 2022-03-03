@@ -72,7 +72,7 @@ error_page 404 {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_u
 error_page 500 502 503 504 {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}50x.html;
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}} {
-    {{{prediction_branch}}}
+    {{{hub_branch}}}
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+\.css|.+\.js.*) {{#jenkins_report}}prediction-site/$branch/$file{{/jenkins_report}} break;
     rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
 {{^jenkins_direct}}
