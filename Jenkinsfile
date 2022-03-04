@@ -82,7 +82,7 @@ pipeline {
                     registryUrl "${env.DOCKER_URL}"
                     registryCredentialsId 'docker-credentials'
                     reuseNode true
-                    args '-v visualization-site-modules:/usr/src/app/node_modules'
+                    args '-v $BRANCH_NAME-visualization-site-modules:/usr/src/app/node_modules'
                 }
             }
             steps {
