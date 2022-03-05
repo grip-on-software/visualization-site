@@ -130,6 +130,7 @@ if [ -z "$TEST_CONTAINER" ]; then
 fi
 
 echo "Instances are up, performing installations"
+docker exec $TEST_CONTAINER apk --update add gcc musl-dev libffi-dev
 docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium axe-selenium-python
 
 # Total time allocated for starting the visualizations
