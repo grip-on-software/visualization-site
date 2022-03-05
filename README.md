@@ -18,6 +18,10 @@ The reverse proxies are as follows:
   a central server listening on specific ports as well as using Host-based 
   proxying.
 
+Many of the configuration files and web files use 
+[Mustache](https://www.npmjs.com/package/mustache) in order to use 
+configuration items and functions to adjust to other environments. 
+
 Additionally, this repository contains a Shell script `goaccess-report.sh` that 
 can be run periodically to generate a server statistics report. It requires 
 installation of [GoAccess](https://goaccess.io/) which analyzes logs and 
@@ -201,10 +205,56 @@ toward an organization-specific path, in case multiple organizations are hosted
 in the same environment. The value is searched for the substring 
 `$organization`, possibly after slashes. These can be replaced with the actual 
 organization that the build is for. In some cases, it is removed only to allow 
-NGINX rules to add it in front of the path using `hub_regex`.
+NGINX rules to add it in front of the path using `hub_regex`. The environment 
+variables `$VISUALIZATION_ORGANIZATION` and `$VISUALIZATION_COMBINED` determine 
+what happens with the substring, as it can also become "/combined" for the 
+latter. The environment variables can also play a role elsewhere, such as in 
+the proxy server configuration and test environment.
 
 Note that configuration items that have keys ending in `_host` or `_server` may 
 be set to "fake" values when only a portion of the final NGINX configuration is 
 actually used, for example when some resources are not made available. The 
 configuration values should still be set to valid domain names so that they can 
 be used within the `docker-compose` network during the tests.
+
+Whereas the configuration file is likely necessary to be copied and changed, 
+there are other files within the repository that can be modified to adjust what 
+is available on the visualization site. We will briefly introduce these files, 
+as adjustments should be considered more like code changes.
+
+The navigation bar is configured in `navbar.json` as well as 
+`navbar.$VISUALIZATION_ORGANIZATION.js`. The format is defined in the 
+`@gros/visualization-ui` package for the `Navbar` class, with the addition that 
+strings can have `$organization` substrings replaced.
+
+The available visualizations are configured in `visualizations.json`. The 
+structure is based on the layout of the dashboard, but the items defined in it 
+also determine which visualizations are actually made available in the proxy 
+server configuration as well as within the tests. The JSON object is used as 
+a Mustache structure within the index template, and so they may contain 
+Mustache items to refer to configuration items.
+
+Localization of the visualization site is in `lib/locales.json`. The messages 
+in it are only used when referred from JavaScript code using the `Locales` 
+class from the `@gros/visualization-ui` package, or when using the 
+`data-message` attribute within HTML.
+
+## Running
+
+The visualization can be built using Node.js and `npm` by running `npm install` 
+and then either `npm run watch` to start a development server that also 
+refreshes browsers upon code changes, or `npm run production` to create 
+a minimized bundle. The resulting HTML, CSS and JavaScript is made available in 
+the `www` directory.
+
+JavaScript in order to build a navigation bar is separated from the main 
+JavaScript bundle in `vendor.js`. The visualizations and prediction site also 
+refer to this file to display the navigation bar.
+
+A full production environment uses the generated proxy server configuration in 
+order to deploy the reverse proxy layer(s) that allow access to all the 
+visualizations and other resources. Either the `caddy` docker compose file can 
+be set up, and the main `nginx.conf` plus the files generated in the `nginx` 
+directory can be supplied to the NGINX service, or a subset of these files may 
+be used, for example to host all under one domain, with additional local 
+configuration.
