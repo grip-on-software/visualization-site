@@ -47,15 +47,15 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}branches {
 {{/jenkins_direct}}
 }
 
-location ~ {{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) /index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1? break;
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) /index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1? break;
     proxy_hide_header Content-Disposition;
     proxy_intercept_errors on;
     proxy_pass http://{{#upstream}}owncloud{{/upstream}};
 }
 
-location ~ ^{{#path}}{{{prediction_url}}}{{/path}}files {
-    rewrite ^{{#path}}{{{prediction_url}}}{{/path}}files /index.php/apps/files_sharing/ajax/list.php?t={{{files_share_id}}}&dir=%2F&sort=name&sortdirection=asc break;
+location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}files {
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}files /index.php/apps/files_sharing/ajax/list.php?t={{{files_share_id}}}&dir=%2F&sort=name&sortdirection=asc break;
     add_header Access-Control-Allow-Origin *;
     proxy_pass http://{{#upstream}}owncloud{{/upstream}};
 }

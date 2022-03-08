@@ -68,7 +68,9 @@ class Reporter:
                 results_log.write('<tr><td>{0}</td><td>{level}</td><td>{source}</td><td>{message}</td></tr>'.format(timestamp, **line))
                 results_log.write('<!-- {0} -->'.format(repr(line).replace('--', '\u2014')))
 
-            results_log.write('</tbody></table></body></html>')
+            results_log.write('</tbody></table>')
+            results_log.write('<p>Finished: {0}</p>'.format(datetime.now().astimezone()))
+            results_log.write('</body></html>')
 
         cls._browser_logs[name] = len(log)
 

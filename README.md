@@ -39,10 +39,11 @@ installation of other dependencies.
 For the tests, a Jenkins installation is assumed with proper OpenJDK Java 8+ 
 and Python 3.6+ (including `distutils` and `virtualenv`). The agent that 
 performs the tests must have `docker-compose`. In addition, tools such as Git, 
-`jq`, `bash`, `awk`, `sed` and `grep` must be available. The server agent that 
-performs the publishing must have `curl` as well. Details for configuring 
-Jenkins servers and agents are outside the scope of this documentation, 
-although some details may be available in other GROS documentation.
+`jq`, `bash`, `awk`, `sed` and `grep` must be available. A SonarQube Scanner 
+must be registered in Jenkins. The server agent that performs the publishing 
+must have `curl` as well. Details for configuring Jenkins servers and agents 
+are outside the scope of this documentation, although some details may be 
+available in other GROS documentation.
 
 ## Tests
 
@@ -247,9 +248,16 @@ refreshes browsers upon code changes, or `npm run production` to create
 a minimized bundle. The resulting HTML, CSS and JavaScript is made available in 
 the `www` directory.
 
-JavaScript in order to build a navigation bar is separated from the main 
-JavaScript bundle in `vendor.js`. The visualizations and prediction site also 
-refer to this file to display the navigation bar.
+As mentioned in the [dependencies](#dependencies), this repository also 
+contains a `Dockerfile` specification for a Docker image that can perform the 
+installation of the app and dependencies, which allows building the 
+visualization site within there, removing the need for a global Node.js 
+installation. The `Jenkinsfile` contains appropriate steps for a Jenkins CI 
+deployment, including the tests, visualization building and publishing.
+
+During the build, JavaScript in order to construct a common navigation bar is 
+separated from the main JavaScript bundle in `vendor.js`. The visualizations 
+and prediction site also refer to this file to display the navigation bar.
 
 A full production environment uses the generated proxy server configuration in 
 order to deploy the reverse proxy layer(s) that allow access to all the 
