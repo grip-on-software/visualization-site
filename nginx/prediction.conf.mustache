@@ -21,7 +21,7 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<br
 {{^jenkins_direct}}
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/zip {
     {{{prediction_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastSuccessfulBuild/artifact/output/$organization/*zip*/archive.zip break;
+    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastStableBuild/artifact/output/$organization/*zip*/archive.zip break;
 }
 {{/jenkins_direct}}
 

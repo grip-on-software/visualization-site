@@ -115,7 +115,7 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     group_id: process.getgid(),
     visualization_names: visualization_nginx,
     prediction_organizations: _.includes(visualization_names, 'prediction-site') ?
-        _.map(configuration.hub_organizations, 'prediction-site') : [],
+        configuration.hub_organizations : [],
     visualization_organizations: _.map(configuration.hub_organizations, 'visualization-site'),
     join: function() {
         return function(text, render) {
@@ -166,12 +166,12 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
             if (configuration.jenkins_direct) {
                 return `${configuration.jenkins_direct}/${branch}/${job}/${file}`;
             }
-            return `${configuration.jenkins_path}/job/create-${job}/job/${branch}/lastSuccessfulBuild/artifact/${file}`;
+            return `${configuration.jenkins_path}/job/create-${job}/job/${branch}/lastStableBuild/artifact/${file}`;
         };
     },
     jenkins_branches: configuration.jenkins_direct ?
         `${configuration.jenkins_direct}/branches.json` :
-        `${configuration.jenkins_path}/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]]`,
+        `${configuration.jenkins_path}/job/create-prediction/api/json?tree=jobs[name,lastStableBuild[description,duration,timestamp]]`,
     error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
     rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
 });

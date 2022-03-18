@@ -34,7 +34,7 @@ done
 curl -g -H 'Accept: application/json' \
     -H "Authorization: Basic $(jq -r .jenkins_api_token $CONFIG)" \
     --cacert $(jq -r .jenkins_direct_cert $CONFIG) \
-    "$(jq -r .jenkins_direct_url $CONFIG)/job/create-prediction/api/json?tree=jobs[name,color,lastSuccessfulBuild[timestamp]]" > "$TARGET/branches.json"
+    "$(jq -r .jenkins_direct_url $CONFIG)/job/create-prediction/api/json?tree=jobs[name,lastStableBuild[description,duration,timestamp]]" > "$TARGET/branches.json"
 
 for path in $JOBS_PATH/create-prediction/branches/*; do
 	# Prediction builds do not archive new artifacts in they are UNSTABLE

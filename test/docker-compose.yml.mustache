@@ -110,10 +110,11 @@ jenkins:
     {{/index}}
     {{/items}}
     {{/groups}}
-    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastSuccessfulBuild/artifact/output"
+    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastStableBuild/artifact/output"
     {{#prediction_organizations}}
-    - "../{{{repo_root}}}/prediction-site/public:/srv/www{{{jenkins_path}}}/job/build-prediction-site/job/{{{.}}}/Visualization"
-    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{.}}}/lastSuccessfulBuild/artifact/output"
+    - "../{{{repo_root}}}/prediction-site/public:/srv/www{{{jenkins_path}}}/job/build-prediction-site/job/{{{prediction-site}}}/Visualization"
+    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output"
+    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output/{{{organization}}}"
     {{/prediction_organizations}}
     - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
     - "../test/sample/blog:/srv/blog"
