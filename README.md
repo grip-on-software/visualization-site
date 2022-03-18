@@ -38,12 +38,16 @@ installation of other dependencies.
 
 For the tests, a Jenkins installation is assumed with proper OpenJDK Java 8+ 
 and Python 3.6+ (including `distutils` and `virtualenv`). The agent that 
-performs the tests must have `docker-compose`. In addition, tools such as Git, 
-`jq`, `bash`, `awk`, `sed` and `grep` must be available. A SonarQube Scanner 
-must be registered in Jenkins. The server agent that performs the publishing 
-must have `curl` as well. Details for configuring Jenkins servers and agents 
-are outside the scope of this documentation, although some details may be 
-available in other GROS documentation.
+performs the tests must have `docker-compose`. In addition, tools such as Bash, 
+Git, `jq`, `awk`, `sed` and `grep` must be available. A SonarQube Scanner must 
+be registered in Jenkins. The server agent that performs the publishing must 
+have `curl` and `rsync` as well. Details for configuring Jenkins servers and 
+agents are outside the scope of this documentation, although some details may 
+be available in other GROS documentation.
+
+The deployment assumes an NGINX service and potentially a Docker Compose 
+installation some which can be set up using (some of) the configuration files 
+that we build from the templates in this repository.
 
 ## Tests
 
