@@ -74,6 +74,32 @@
                                 "type": "link",
                                 "url": [
                                     {"config": "visualization_url"},
+                                    "sprint-report?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "icon": ["fas", "book-open"],
+                                "content": {
+                                    "en": "Sprint report",
+                                    "nl": "Sprintrapportage"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": [
+                                    {"config": "prediction_url"},
+                                    "show/?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "icon": ["fas", "percent"],
+                                "content": {
+                                    "en": "Prediction",
+                                    "nl": "Voorspelling"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": [
+                                    {"config": "visualization_url"},
                                     "timeline?",
                                     {"locale": "lang"}
                                 ],
@@ -81,32 +107,6 @@
                                 "content": {
                                     "en": "Timeline",
                                     "nl": "Tijdslijn"
-                                }
-                            },
-                            {
-                                "type": "link",
-                                "url": [
-                                    {"config": "visualization_url"},
-                                    "heatmap?lang=",
-                                    {"locale": "lang"}
-                                ],
-                                "icon": ["fas", "grip"],
-                                "content": {
-                                    "en": "Heat map",
-                                    "nl": "Heatmap"
-                                }
-                            },
-                            {
-                                "type": "link",
-                                "url": [
-                                    {"config": "visualization_url"},
-                                    "collaboration-graph?lang=",
-                                    {"locale": "lang"}
-                                ],
-                                "icon": ["far", "circle"],
-                                "content": {
-                                    "en": "Collaboration graph",
-                                    "nl": "Samenwerkingsgraaf"
                                 }
                             },
                             {
@@ -142,27 +142,14 @@
                             {
                                 "type": "link",
                                 "url": [
-                                    {"config": "prediction_url"},
-                                    "show/?lang=",
-                                    {"locale": "lang"}
-                                ],
-                                "icon": ["fas", "percent"],
-                                "content": {
-                                    "en": "Prediction",
-                                    "nl": "Voorspelling"
-                                }
-                            },
-                            {
-                                "type": "link",
-                                "url": [
                                     {"config": "visualization_url"},
-                                    "bigboat-status?lang=",
+                                    "collaboration-graph?lang=",
                                     {"locale": "lang"}
                                 ],
-                                "icon": ["fab", "docker"],
+                                "icon": ["far", "circle"],
                                 "content": {
-                                    "en": "BigBoat status",
-                                    "nl": "BigBoat-status"
+                                    "en": "Collaboration graph",
+                                    "nl": "Samenwerkingsgraaf"
                                 }
                             },
                             {
@@ -182,13 +169,26 @@
                                 "type": "link",
                                 "url": [
                                     {"config": "visualization_url"},
-                                    "sprint-report?lang=",
+                                    "heatmap?lang=",
                                     {"locale": "lang"}
                                 ],
-                                "icon": ["fas", "book-open"],
+                                "icon": ["fas", "grip"],
                                 "content": {
-                                    "en": "Sprint report",
-                                    "nl": "Sprintrapportage"
+                                    "en": "Heat map",
+                                    "nl": "Heatmap"
+                                }
+                            },
+                            {
+                                "type": "link",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "bigboat-status?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "icon": ["fab", "docker"],
+                                "content": {
+                                    "en": "BigBoat status",
+                                    "nl": "BigBoat-status"
                                 }
                             }
                         ]

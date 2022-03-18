@@ -16,35 +16,40 @@ $subtitle-weight: $weight-light;
 @import "node_modules/bulma/sass/layout/_all";
 
 @mixin fullscreen {
-	*|*:-moz-full-screen {
-		@content
-	}
-	*|*:-webkit-full-screen {
-		@content
-	}
-	*|*:fullscreen {
-		@content
-	}
+    *|*:-moz-full-screen {
+        @content
+    }
+    *|*:-webkit-full-screen {
+        @content
+    }
+    *|*:fullscreen {
+        @content
+    }
 }
 @include touch {
-	.navbar .navbar-fullscreen {
-		display: none;
-	}
+    .navbar .navbar-fullscreen {
+        display: none;
+    }
 }
 @include fullscreen {
-	.navbar {
-		width: auto;
-		float: right;
-	}
-	.navbar .navbar-menu,
-	.navbar .navbar-item {
-		display: none;
-	}
-	.navbar .navbar-fullscreen {
-		display: flex;
-	}
+    .navbar {
+        width: auto;
+        float: right;
+
+        .navbar-menu,
+        .navbar-item {
+            display: none;
+        }
+        .navbar-fullscreen {
+            display: flex;
+        }
+    }
 }
 
+.navbar .navbar-dropdown .navbar-item .icon:only-child {
+    margin-left: 0;
+    margin-right: 0;
+}
 .tabs ul {
-	width: 100%;
+    width: 100%;
 }
