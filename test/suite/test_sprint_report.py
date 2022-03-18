@@ -3,6 +3,7 @@ Tests for the Sprint Report visualization.
 """
 
 import os.path
+import unittest
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -263,6 +264,7 @@ class SprintReportTest(IntegrationTest):
         self.assertEqual([row.find_element_by_css_selector('td:last-child').text for row in rows], ["2", "5", "0.5"])
 
     @skip_unless_visualization("sprint-report")
+    @unittest.skip("Selenium Chromium browser is not properly downloading the files")
     def test_sprint_report_export(self):
         """
         Test the export mechanism of the sprint report visualization.
