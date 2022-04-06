@@ -107,6 +107,9 @@ jenkins:
     {{#items}}
     {{#index}}
     - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/master/Visualization"
+    {{#visualization_organizations}}
+    - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/{{{.}}}/Visualization"
+    {{/visualization_organizations}}
     {{/index}}
     {{/items}}
     {{/groups}}
