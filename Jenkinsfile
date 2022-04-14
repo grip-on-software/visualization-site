@@ -78,7 +78,7 @@ pipeline {
         stage('Build test') {
             agent {
                 docker {
-                    image '$VISUALIZATION_IMAGE'
+                    image "${env.VISUALIZATION_IMAGE}"
                     registryUrl "${env.DOCKER_URL}"
                     registryCredentialsId 'docker-credentials'
                     reuseNode true
@@ -119,7 +119,7 @@ pipeline {
         stage('Collect results') {
             agent {
                 docker {
-                    image '$VISUALIZATION_IMAGE'
+                    image "${env.VISUALIZATION_IMAGE}"
                     registryUrl "${env.DOCKER_URL}"
                     registryCredentialsId 'docker-credentials'
                     reuseNode true
@@ -146,7 +146,7 @@ pipeline {
             when { branch '*master' }
             agent {
                 docker {
-                    image '$VISUALIZATION_IMAGE'
+                    image "${env.VISUALIZATION_IMAGE}"
                     registryUrl "${env.DOCKER_URL}"
                     registryCredentialsId 'docker-credentials'
                     reuseNode true
