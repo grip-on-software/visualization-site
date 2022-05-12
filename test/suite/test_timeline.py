@@ -35,10 +35,12 @@ class TimelineTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/timeline'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/timeline')
         self.assertIn("Timeline", driver.title)
 
-        labels = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#chart-holder svg .labels')))
+        labels = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#chart-holder svg .labels')
+        ))
         self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1)
 
         # Test the weekday scale selector.
@@ -54,9 +56,13 @@ class TimelineTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/timeline'.format(self._visualization_url))
-        x_axis = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#chart-holder svg .x-axis')))
-        sprint = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'line-drop-0-0')))
+        driver.get(f'{self._visualization_url}/timeline')
+        x_axis = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#chart-holder svg .x-axis')
+        ))
+        sprint = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'line-drop-0-0')
+        ))
         zoom_out = driver.find_element_by_css_selector('[data-zoom="-1"]')
         zooms = 0
         while zooms < 5 and sprint.location['x'] < x_axis.location['x']:
@@ -67,12 +73,16 @@ class TimelineTest(IntegrationTest):
         hover = ActionChains(driver)
         hover.move_to_element_with_offset(sprint, 1, 1).perform()
 
-        tooltip = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'tooltip')))
+        tooltip = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CLASS_NAME, 'tooltip')
+        ))
         self.assertIn("Start", tooltip.find_element_by_tag_name('h3').text)
 
         hover = ActionChains(driver)
         hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
 
-        burndown = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#subchart-holder .burndown-chart')))
+        burndown = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#subchart-holder .burndown-chart')
+        ))
         self._wait_for(expected_conditions.staleness_of(tooltip))
         self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6)

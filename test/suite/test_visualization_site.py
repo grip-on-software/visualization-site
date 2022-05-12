@@ -33,7 +33,7 @@ class VisualizationSiteTest(IntegrationTest):
         driver.get(self._visualization_url)
         self.assertIn("Visualizations from GROS", driver.title)
 
-        driver.get('http://{}'.format(self._config['www_server']))
+        driver.get(f'http://{self._config["www_server"]}')
         self.assertIn("Visualizations from GROS", driver.title)
 
         if 'blog_url' in self._config and self._config['blog_url']:
@@ -44,7 +44,7 @@ class VisualizationSiteTest(IntegrationTest):
             driver.get(self._config['discussion_url'])
             self.assertIn("GROS Discussion", driver.title)
 
-        driver.get("{}/foobar".format(self._prediction_url))
+        driver.get(f"{self._prediction_url}/foobar")
         self.assertIn("Not found", driver.title)
 
     def test_navbar(self):

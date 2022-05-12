@@ -34,10 +34,12 @@ class LeaderboardTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/leaderboard'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/leaderboard')
         self.assertIn("Leaderboard", driver.title)
 
-        element = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        element = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'navigation')
+        ))
         self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
 
     @skip_unless_visualization("leaderboard")
@@ -47,9 +49,11 @@ class LeaderboardTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/leaderboard'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/leaderboard')
 
-        cards = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'cards')))
+        cards = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'cards')
+        ))
         self.assertEqual(len(cards.find_elements_by_class_name('card')), 15)
 
         num_sprints = 9.
@@ -73,7 +77,10 @@ class LeaderboardTest(IntegrationTest):
             ("Fix Versions", ("jira", 5 / num_sprints)),
             ("Build Jobs", ("jenkins", 2))
         ])
-        titles = lambda cards: [title.text for title in cards.find_elements_by_class_name('card-title')]
+        titles = lambda cards: [
+            title.text
+            for title in cards.find_elements_by_class_name('card-title')
+        ]
 
         self.assertEqual(titles(cards), list(features.keys()))
 
@@ -97,6 +104,11 @@ class LeaderboardTest(IntegrationTest):
         icon.click()
 
         self._wait_for(expected_conditions.staleness_of(icon))
-        self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '.radio input[value="project"]'))).click()
-        card = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'card')))
+        project = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.radio input[value="project"]')
+        ))
+        project.click()
+        card = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CLASS_NAME, 'card')
+        ))
         self.assertEqual(card.find_element_by_class_name('ellipsized-title').text, 'P1')

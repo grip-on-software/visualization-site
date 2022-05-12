@@ -1,5 +1,5 @@
 """
-Integration tests for the visualization hub proxies.
+Test result handler.
 
 Copyright 2017-2020 ICTU
 Copyright 2017-2022 Leiden University
@@ -17,25 +17,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sys
-import suite
-from suite.program import Program
+from xmlrunner.result import _XMLTestResult
 
-def load_tests(loader, tests, pattern):
+class Result(_XMLTestResult):
     """
-    Load tests from the test suite.
+    Test result that handles auxiliary result reporting.
     """
 
-    tests.addTests(loader.loadTestsFromModule(suite, pattern))
-    return tests
-
-def main():
-    """
-    Main entry point.
-    """
-
-    program = Program(catchbreak=False, exit=False)
-    return 0 if program.result.wasSuccessful() else 1
-
-if __name__ == "__main__":
-    sys.exit(main())
+    def __init__(self, stream, descriptions, verbosity, reporter):
+        super().__init__(stream, descriptions, verbosity)
+        self.reporter = reporter

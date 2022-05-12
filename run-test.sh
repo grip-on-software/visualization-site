@@ -152,7 +152,7 @@ if [ -z "$TEST_CONTAINER" ]; then
 fi
 
 echo "Instances are up, performing installations"
-docker exec $TEST_CONTAINER pip install unittest-xml-reporting selenium axe-selenium-python
+docker exec $TEST_CONTAINER pip install -r /work/requirements.txt
 
 # Total time allocated for starting the visualizations
 if [ -z "$VISUALIZATION_MAX_SECONDS" ]; then
