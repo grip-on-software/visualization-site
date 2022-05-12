@@ -197,6 +197,7 @@ docker-compose $COMPOSE_ARGS down
 
 # Note the successful build with the environment used to build it
 for repo in $VISUALIZATION_NAMES; do
+	tree="$PWD/$REPO_ROOT/$repo"
 	echo "$VISUALIZATION_ENV" > "$tree/.skip_build"
 done
 
