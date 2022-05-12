@@ -1,17 +1,33 @@
 """
 Base classes for the integration test suite for the visualizations.
+
+Copyright 2017-2020 ICTU
+Copyright 2017-2022 Leiden University
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from contextlib import closing
 import errno
 import html
 import json
-import os.path
+import os
 import re
 import linecache
 from socket import error as SocketError
 import time
 import unittest
+from urllib.error import URLError
 from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 from selenium.webdriver import Remote
@@ -19,7 +35,6 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from axe_selenium_python import Axe
-from .reporter import Reporter
 
 try:
     from httplib import BadStatusLine
@@ -36,7 +51,7 @@ def skip_unless_visualization(name):
     if name in visualization_names.rstrip().split(' '):
         return lambda func: func
 
-    return unittest.skip("Visualization {} is not under test".format(name))
+    return unittest.skip(f"Visualization {name} is not under test")
 
 class IntegrationTest(unittest.TestCase):
     """
@@ -79,15 +94,15 @@ class IntegrationTest(unittest.TestCase):
     def _get_url(self, key):
         org = os.getenv('VISUALIZATION_ORGANIZATION')
         combined = os.getenv('VISUALIZATION_COMBINED')
-        base = 'http://{}'.format(self._config['{}_server'.format(key)])
+        base = f"http://{self._config[f'{key}_server']}"
 
         if combined == "true":
-            url = self._config['{}_url'.format(key)].replace('/$organization',
-                                                             '/combined')
+            url = self._config[f'{key}_url'].replace('/$organization',
+                                                     '/combined')
         else:
             url = re.sub(r'(/)?\$organization',
-                         r'\1{}'.format(org) if org is not None else '',
-                         self._config['{}_url'.format(key)])
+                         rf'\1{org}' if org is not None else '',
+                         self._config[f'{key}_url'])
 
         return urljoin(base, url)
 
@@ -104,7 +119,7 @@ class IntegrationTest(unittest.TestCase):
 
         self._driver.set_window_size(1366, 768)
 
-        with open('/config.json') as config_file:
+        with open('/config.json', encoding='utf-8') as config_file:
             self._config = json.load(config_file)
 
         self._visualization_url = self._get_url('visualization')
@@ -115,35 +130,44 @@ class IntegrationTest(unittest.TestCase):
                              self.WAIT_FREQUENCY).until(condition, message)
 
     def tearDown(self):
-        if self._driver is not None:
-            self._driver.save_screenshot('results/{}.png'.format(self.id()))
-            Reporter.write_result(self.id())
+        if self._driver is None or self._outcome is None or \
+            self._outcome.result is None or \
+            getattr(self._outcome.result, 'reporter', None) is None:
+            return
 
-            Reporter.write_log(self.id(), self._driver.get_log('browser'))
+        reporter = self._outcome.result.reporter
+        self._driver.save_screenshot(f'results/{self.id()}.png')
+        reporter.write_result(self.id())
 
-            coverage = self._driver.execute_script("return window.__coverage__")
-            if coverage is not None:
-                headers = {'Content-Type': 'application/json'}
-                request = Request('http://coverage.test:8888/client',
-                                  data=json.dumps(coverage).encode('utf-8'),
-                                  headers=headers)
-                response = urlopen(request)
-                with closing(response):
-                    if response.getcode() != 200:
-                        self.fail('Could not upload coverage data')
+        reporter.write_log(self.id(), self._driver.get_log('browser'))
 
-            axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
-            axe.inject()
-            accessibility = axe.run(options=json.dumps({
-                'rules': {
-                    # Axe considers all anchor links to be skip links
-                    'skip-link': {'enabled': False}
-                }
-            }))
-            axe.write_results(accessibility,
-                              'accessibility/{}.json'.format(self.id()))
+        coverage = self._driver.execute_script("return window.__coverage__")
+        if coverage is not None:
+            headers = {'Content-Type': 'application/json'}
+            request = Request('http://coverage.test:8888/client',
+                              data=json.dumps(coverage).encode('utf-8'),
+                              headers=headers)
+            try:
+                with closing(urlopen(request)) as response:
+                    status_code = response.getcode()
+                    if status_code != 200:
+                        self.fail('Could not upload coverage data: server '
+                                  f'responsed with status code {status_code}')
+            except URLError as error:
+                self.fail(f'Could not upload coverage data: {error}')
 
-            report = html.escape(axe.report(accessibility["violations"]))
-            Reporter.write_accessibility(self.id(), report)
+        axe = Axe(self._driver, script_url='/axe-core/axe.min.js')
+        axe.inject()
+        accessibility = axe.run(options=json.dumps({
+            'rules': {
+                # Axe considers all anchor links to be skip links
+                'skip-link': {'enabled': False}
+            }
+        }))
+        axe.write_results(accessibility,
+                          f'accessibility/{self.id()}.json')
 
-            self._driver.close()
+        report = html.escape(axe.report(accessibility["violations"]))
+        reporter.write_accessibility(self.id(), report)
+
+        self._driver.close()

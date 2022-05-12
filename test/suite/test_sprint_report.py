@@ -1,8 +1,23 @@
 """
 Tests for the Sprint Report visualization.
+
+Copyright 2017-2020 ICTU
+Copyright 2017-2022 Leiden University
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
-import os.path
+from pathlib import Path
 import unittest
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
@@ -42,10 +57,14 @@ class SprintReportFormatTable(SprintReportFormatTest):
     def test(self, runner, element):
         runner.assertEqual(len(element.find_elements_by_tag_name('tbody')), 1)
         project = element.find_element_by_class_name('project')
-        runner.assertEqual(len(project.find_elements_by_class_name('sprint')), 1)
-        runner.assertEqual(project.find_element_by_class_name('board').text, 'Proj1')
-        runner.assertEqual(project.find_element_by_class_name('display-name').text, 'Project1')
-        runner.assertEqual(len(element.find_elements_by_class_name('feature')), 3)
+        runner.assertEqual(len(project.find_elements_by_class_name('sprint')),
+                           1)
+        runner.assertEqual(project.find_element_by_class_name('board').text,
+                           'Proj1')
+        runner.assertEqual(project.find_element_by_class_name('display-name').text,
+                           'Project1')
+        runner.assertEqual(len(element.find_elements_by_class_name('feature')),
+                           3)
 
 class SprintReportFormatChart(SprintReportFormatTest):
     """
@@ -91,7 +110,7 @@ class SprintReportExportFilename(SprintReportExportTest):
     """
 
     def __init__(self, driver, options):
-        super(SprintReportExportFilename, self).__init__(driver)
+        super().__init__(driver)
         self.options = {
             'filename': 'sprint-report',
             'path': '/work/downloads',
@@ -101,18 +120,21 @@ class SprintReportExportFilename(SprintReportExportTest):
         self.options.update(options)
 
     def test(self, button):
-        path = os.path.join(self.options['path'], self.options['filename'])
+        path = Path(self.options['path']) / self.options['filename']
         wait = WebDriverWait(self._driver, self.options['timeout'],
                              self.options['poll_frequency'])
         try:
-            wait.until(lambda driver: os.path.exists(path))
+            wait.until(lambda driver: path.exists())
         except TimeoutException:
             return False
 
         return True
 
     def get_message(self, exporter):
-        return '{path}/{filename} exists within {timeout} seconds after clicking {export} export'.format(export=exporter, **self.options)
+        return (
+            f'{self.options["path"]}/{self.options["filename"]} exists within'
+            f'{self.options["timeout"]} seconds after {exporter} export'
+        )
 
 class SprintReportExportAttribute(SprintReportExportTest):
     """
@@ -120,7 +142,7 @@ class SprintReportExportAttribute(SprintReportExportTest):
     """
 
     def __init__(self, driver, attribute, value):
-        super(SprintReportExportAttribute, self).__init__(driver)
+        super().__init__(driver)
         self.attribute = attribute
         self.value = value
 
@@ -128,7 +150,7 @@ class SprintReportExportAttribute(SprintReportExportTest):
         return button.get_attribute(self.attribute) == self.value
 
     def get_message(self, exporter):
-        return '{} export has attribute {}={}'.format(exporter, self.attribute, self.value)
+        return f'{exporter} export has attribute {self.attribute}={self.value}'
 
 class SprintReportTest(IntegrationTest):
     """
@@ -142,11 +164,13 @@ class SprintReportTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/sprint-report'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/sprint-report')
         self.assertIn("Sprint report", driver.title)
 
         # Select one project
-        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        items = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'navigation')
+        ))
         self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
@@ -174,13 +198,15 @@ class SprintReportTest(IntegrationTest):
         }
         old_display = None
         for name, formatter in formats.items():
-            item = options.find_element_by_id('format-{}'.format(name))
+            item = options.find_element_by_id(f'format-{name}')
             item.click()
 
             if old_display is not None:
                 self._wait_for(expected_conditions.staleness_of(old_display))
 
-            element = self._wait_for(expected_conditions.visibility_of_element_located(formatter.get_test_element_locator()))
+            element = self._wait_for(expected_conditions.visibility_of_element_located(
+                formatter.get_test_element_locator()
+            ))
             formatter.test(self, element)
             old_display = element
 
@@ -192,10 +218,12 @@ class SprintReportTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/sprint-report'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/sprint-report')
 
         # Select one project
-        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        items = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'navigation')
+        ))
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
@@ -203,13 +231,17 @@ class SprintReportTest(IntegrationTest):
         item = driver.find_element_by_id('format-line_chart')
         item.click()
 
-        chart = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'chart')))
+        chart = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CLASS_NAME, 'chart')
+        ))
         hover = ActionChains(driver)
         hover.move_to_element_with_offset(chart, 200, 200).pause(0.5)
         hover.move_to_element_with_offset(chart, 480, 250).click()
         hover.perform()
 
-        focus = self._wait_for(expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'focus')))
+        focus = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CLASS_NAME, 'focus')
+        ))
         details = focus.find_elements_by_tag_name('tspan')
         # 3 sprint metadata (name, number, close date) + 3 features with
         # 3 tspan elements each (wrapper, feature name, value)
@@ -222,18 +254,24 @@ class SprintReportTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/sprint-report'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/sprint-report')
 
         # Select one project
-        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        items = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'navigation')
+        ))
         self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
-        icon = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'a[data-toggle=sources]')))
+        icon = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'a[data-toggle=sources]')
+        ))
         icon.click()
 
-        project = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#sources th.project')))
+        project = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#sources th.project')
+        ))
         self.assertEqual(project.text, 'Proj1')
         sources = driver.find_elements_by_css_selector('#sources tbody tr')
         self.assertEqual(len(sources), 5)
@@ -245,23 +283,35 @@ class SprintReportTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/sprint-report'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/sprint-report')
         self.assertIn("Sprint report", driver.title)
 
-        items = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'navigation')))
+        items = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'navigation')
+        ))
         self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
         item = items.find_element_by_css_selector('li:last-child')
         item.click()
 
-        table = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#format-content table')))
+        table = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#format-content table')
+        ))
         expand = table.find_element_by_css_selector('.fa-expand')
         expand.click()
 
-        details = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'table.details')))
+        details = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'table.details')
+        ))
         rows = details.find_elements_by_css_selector('tr.detail')
         self.assertEqual(len(rows), 3)
-        self.assertEqual([row.find_element_by_css_selector('td:first-child a').text for row in rows], ["P1-198", "P1-224", "P1-301"])
-        self.assertEqual([row.find_element_by_css_selector('td:last-child').text for row in rows], ["2", "5", "0.5"])
+        self.assertEqual([
+            row.find_element_by_css_selector('td:first-child a').text
+            for row in rows
+        ], ["P1-198", "P1-224", "P1-301"])
+        self.assertEqual([
+            row.find_element_by_css_selector('td:last-child').text
+            for row in rows
+        ], ["2", "5", "0.5"])
 
     @skip_unless_visualization("sprint-report")
     @unittest.skip("Selenium Chromium browser is not properly downloading the files")
@@ -271,12 +321,16 @@ class SprintReportTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/sprint-report'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/sprint-report')
 
-        icon = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'a[data-toggle=export]')))
+        icon = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'a[data-toggle=export]')
+        ))
         icon.click()
 
-        export = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'export')))
+        export = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.ID, 'export')
+        ))
         exports = {
             'csv': SprintReportExportFilename(driver, {
                 'filename': 'sprint-report.csv'
@@ -288,7 +342,7 @@ class SprintReportTest(IntegrationTest):
                                                 'Copied link to the clipboard')
         }
         for exporter, test_case in exports.items():
-            button = export.find_element_by_id('export-{}'.format(exporter))
+            button = export.find_element_by_id(f'export-{exporter}')
             button.click()
             self.assertTrue(test_case.test(button),
                             test_case.get_message(exporter))

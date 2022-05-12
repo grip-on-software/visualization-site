@@ -25,6 +25,7 @@ test/downloads/
 test/junit/
 test/owasp-dep/
 test/results/
+env/
 /visualization_names.txt
 www/fonts/
 www/mix-manifest.json

@@ -1,5 +1,20 @@
 """
 Tests for the Collaboration Graph visualization.
+
+Copyright 2017-2020 ICTU
+Copyright 2017-2022 Leiden University
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 import time
@@ -19,10 +34,12 @@ class CollaborationGraphTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/collaboration-graph')
         self.assertIn("Collaboration Graph", driver.title)
 
-        links = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .links')))
+        links = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'svg#graph .links')
+        ))
         self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
@@ -34,9 +51,11 @@ class CollaborationGraphTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/collaboration-graph')
 
-        nodes = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes')))
+        nodes = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'svg#graph .nodes')
+        ))
         circle = nodes.find_elements_by_tag_name('circle')[2]
 
         button = driver.find_element_by_css_selector('.regular-option')
@@ -52,9 +71,11 @@ class CollaborationGraphTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/collaboration-graph')
 
-        nodes = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes')))
+        nodes = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'svg#graph .nodes')
+        ))
         circles = nodes.find_elements_by_tag_name('circle')
 
         search = driver.find_element_by_css_selector('input.regular-option')
@@ -70,14 +91,18 @@ class CollaborationGraphTest(IntegrationTest):
         """
 
         driver = self._driver
-        driver.get('{}/collaboration-graph'.format(self._visualization_url))
+        driver.get(f'{self._visualization_url}/collaboration-graph')
 
-        button = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#options .button')))
+        button = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#options .button')
+        ))
         button.click()
 
         self.assertEqual(len(driver.find_elements_by_css_selector('.regular-option[disabled]')), 2)
 
-        buttons = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#options .buttons')))
+        buttons = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#options .buttons')
+        ))
         pause = buttons.find_element_by_id('pauseButton')
         slower = buttons.find_element_by_css_selector('.slower')
         faster = buttons.find_element_by_css_selector('.faster')
@@ -95,7 +120,9 @@ class CollaborationGraphTest(IntegrationTest):
         slower.click()
         self.assertFalse(faster.get_attribute("disabled"))
 
-        title = self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, '#options h3')))
+        title = self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, '#options h3')
+        ))
         self.assertEqual(title.text, "August 2017")
 
         links = driver.find_element_by_css_selector('svg#graph .links')
@@ -103,11 +130,15 @@ class CollaborationGraphTest(IntegrationTest):
         nodes = driver.find_element_by_css_selector('svg#graph .nodes')
         self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 3)
 
-        self._wait_for(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.fa-stop')))
+        self._wait_for(expected_conditions.presence_of_element_located(
+            (By.CSS_SELECTOR, '.fa-stop')
+        ))
         self.assertEqual(pause.get_attribute("data-tooltip"), "Stopped")
 
         button.click()
-        self._wait_for(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, 'svg#graph .nodes .node:nth-child(5)')))
+        self._wait_for(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, 'svg#graph .nodes .node:nth-child(5)')
+        ))
 
         links = driver.find_element_by_css_selector('svg#graph .links')
         self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
