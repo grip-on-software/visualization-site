@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 # Copy visualization artifacts to a published site for direct access.
 #
 # Copyright 2017-2020 ICTU
@@ -27,22 +27,53 @@ fi
 JOBS_PATH="$JENKINS_HOME/jobs"
 TARGET=$(jq -r .jenkins_direct $CONFIG)
 COPY="rsync -au --delete"
+COPY_APPEND="rsync -au"
 
 if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
     echo "No target for copy specified"
     exit 0
 fi
 
-for visualization in $VISUALIZATION_NAMES visualization-site; do
-    for path in $JOBS_PATH/build-$visualization/branches/*master; do
+for visualization in $VISUALIZATION_NAMES prediction visualization-site; do
+	build="lastSuccessfulBuild"
+	branches="*master"
+	if [[ $visualization == "prediction" ]]; then
+		config="prediction"
+		# Include all branches
+		branches="*"
+		# Prediction builds do not archive new artifacts if they are UNSTABLE
+		build="lastStableBuild"
+	elif [[ $visualization == "prediction-site" ]]; then
+		default_organization="combined"
+		config="prediction"
+	elif [[ $visualization == "visualization-site" ]]; then
+		default_organization="combined"
+	else
+		default_organization=$(jq -r ".hub_mapping.hub.organization.default // \"combined\"" $CONFIG)
+		config="visualization"
+	fi
+
+    for path in $JOBS_PATH/build-$visualization/branches/$branches; do
 		# Retrieve most recent build (even if tests make it UNSTABLE)
-        ID=$(sed -n "/lastSuccessfulBuild /s/lastSuccessfulBuild //p" $path/builds/permalinks)
+        ID=$(sed -n "/$build /s/$build //p" $path/builds/permalinks)
         branch=$(basename $path)
-        mkdir -p "$TARGET/$branch/"
-        if [ -d "$path/builds/$ID/htmlreports/Visualization" ]; then
-            $COPY "$path/builds/$ID/htmlreports/Visualization/" "$TARGET/$branch/$visualization/"
+		if [[ $branch == "master" ]]; then
+			organization=$default_organization
+		else
+			organization=$(jq -r ".hub_organizations | .[] | select(.[\"$config-site\"] == \"$branch\") | .organization" $CONFIG)
+		fi
+		target="$(jq -r .${config}_url $CONFIG | sed -e s/\\/*\$organization/$organization/)"
+        mkdir -p "$TARGET/$target"
+		origin="$path/builds/$ID/htmlreports/Visualization"
+        if [ ! -d "$origin" ]; then
+			origin="$path/htmlreports/Visualization/"
+		fi
+		if [[ $visualization == "visualization-site" ]]; then
+            $COPY_APPEND "$origin/" "$TARGET/$target"
+		elif [[ $visualization == "prediction" ]]; then
+			$COPY "$path/builds/$ID/archive/" "$TARGET/prediction/$branch"
         else
-            $COPY "$path/htmlreports/Visualization/" "$TARGET/$branch/$visualization/"
+            $COPY "$origin" "$TARGET/$target"
         fi
     done
 done
@@ -51,11 +82,3 @@ curl -g -H 'Accept: application/json' \
     -H "Authorization: Basic $(jq -r .jenkins_api_token $CONFIG)" \
     --cacert $(jq -r .jenkins_direct_cert $CONFIG) \
     "$(jq -r .jenkins_direct_url $CONFIG)/job/create-prediction/api/json?tree=jobs[name,lastStableBuild[description,duration,timestamp]]" > "$TARGET/branches.json"
-
-for path in $JOBS_PATH/create-prediction/branches/*; do
-	# Prediction builds do not archive new artifacts in they are UNSTABLE
-    ID=$(sed -n "/lastStableBuild /s/lastStableBuild //p" $path/builds/permalinks)
-    branch=$(basename $path)
-    mkdir -p "$TARGET/$branch/"
-    $COPY "$path/builds/$ID/archive/" "$TARGET/$branch/prediction/"
-done

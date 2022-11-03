@@ -1,3 +1,7 @@
+# vim: set filetype=nginx nofoldenable:
+
+# Configuration for the GROS visualiation site.
+
 location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
     return 403;
 }
@@ -10,26 +14,24 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}login {
 # index.html.
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}({{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip) {
     {{{visualization_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{#jenkins_report}}$name/$branch/index.html{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{#jenkins_report}}$name/$branch/$file{{/jenkins_report}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/$ {{#jenkins_report}}$name/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)/(?P<file>.+) {{#jenkins_report}}$name/$branch/$file{{/jenkins_report}}{{/jenkins_rewrite}}
 # ZIP download only available from Jenkins directly for now.
 {{^jenkins_direct}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)\.zip$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/*zip*/$name.zip break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[^/]+)\.zip$ {{{jenkins_path}}}/job/build-$name/job/$branch/Visualization/*zip*/$name.zip{{/jenkins_rewrite}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 {{/jenkins_direct}}
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt {
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt /auth/encrypt.py break;
-    proxy_pass "https://{{{control_host}}}";
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt https://{{{control_host}}}/auth/encrypt.py{{/proxy_rewrite}}
     proxy_ssl_verify on;
     proxy_ssl_trusted_certificate {{{auth_cert}}};
     add_header Access-Control-Allow-Origin *;
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}access {
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}access /auth/access.py break;
-    proxy_pass "https://{{{control_host}}}";
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}access https://{{{control_host}}}/auth/access.py{{/proxy_rewrite}}
     proxy_ssl_verify on;
     proxy_ssl_trusted_certificate {{{auth_cert}}};
     add_header Access-Control-Allow-Origin *;
@@ -48,9 +50,9 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}analytics {
     access_log /var/log/nginx/analytics_access.log;
 }
 
-rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}} permanent;
-rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}} permanent;
-rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}$name/ permanent;
+{{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
+{{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
+{{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<name>[_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}$name/{{/jenkins_redirect}}
 
 proxy_intercept_errors on;
 
@@ -62,7 +64,7 @@ error_page 500 502 503 504 {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/) {
     {{{hub_branch}}}
     add_header Access-Control-Allow-Origin *;
-    rewrite {{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}}{{/jenkins_rewrite}}
 {{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 {{/jenkins_direct}}
@@ -70,8 +72,8 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.j
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {
     {{{hub_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}} {{#jenkins_report}}visualization-site/$branch/index.html{{/jenkins_report}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}} {{#jenkins_report}}visualization-site/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
 {{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 {{/jenkins_direct}}

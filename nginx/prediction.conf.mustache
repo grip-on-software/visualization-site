@@ -1,16 +1,20 @@
+# vim: set filetype=nginx nofoldenable:
+
+# Configuration for the GROS prediction site.
+
 # Handle prediction data from Jenkins.
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<branch>[-_0-9a-zA-Z]+))?)/ {
     {{{prediction_branch}}}
     if ($branch = "") { set $branch "master"; }
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/$sprint.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprints$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/sprints.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{#jenkins_artifact}}prediction/$branch/output/$organization/projects.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{#jenkins_artifact}}prediction/$branch/output/$organization/projects_meta.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{#jenkins_artifact}}prediction/$branch/output/$organization/configuration.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(?P<locale>descriptions|tags|units|short_units|sources|metadata)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$locale.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/sources.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)/sprint/latest$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/links.json{{/jenkins_artifact}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)/sprint/(?P<sprint>\d+)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/links.$sprint.json{{/jenkins_artifact}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/$sprint.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/(?P<project>[^/]+)/sprints$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/sprints.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{#jenkins_artifact}}prediction/$branch/output/$organization/projects.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{#jenkins_artifact}}prediction/$branch/output/$organization/projects_meta.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{#jenkins_artifact}}prediction/$branch/output/$organization/configuration.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(?P<locale>descriptions|tags|units|short_units|sources|metadata)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$locale.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/sources.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)/sprint/latest$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/links.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/(?P<project>[^/]+)/sprint/(?P<sprint>\d+)$ {{#jenkins_artifact}}prediction/$branch/output/$organization/$project/links.$sprint.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
 {{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 {{/jenkins_direct}}
@@ -21,19 +25,19 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?P<br
 {{^jenkins_direct}}
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?P<branch>[-_0-9a-zA-Z]+))/zip {
     {{{prediction_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastStableBuild/artifact/output/$organization/*zip*/archive.zip break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{{jenkins_path}}}/job/create-prediction/job/$branch/lastStableBuild/artifact/output/$organization/*zip*/archive.zip{{/jenkins_rewrite}}
 }
 {{/jenkins_direct}}
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/ {
     {{{prediction_branch}}}
     if ($branch = "") { set $branch "master"; }
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<path>show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$path/$project permanent;
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<path>show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$path/$project{{/jenkins_redirect}}
 
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$project{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$project&sprint=$sprint{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[^/]+/sprint)?/(?P<path>.+) {{#jenkins_report}}prediction-site/$branch/$path{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{#jenkins_report}}prediction-site/$branch/index.html{{/jenkins_report}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$project{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/(?P<project>[^/]+)/sprint/(?P<sprint>\d+|latest) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$project&sprint=$sprint{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)(/[^/]+/sprint)?/(?P<path>.+) {{#jenkins_report}}prediction-site/$branch/$path{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{#jenkins_report}}prediction-site/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
 {{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}}$uri;
 {{/jenkins_direct}}
@@ -47,22 +51,22 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}branches {
 {{/jenkins_direct}}
 }
 
+{{#files_share_id}}
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/.*$ {
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) /index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1? break;
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) http://{{#upstream}}owncloud{{/upstream}}/index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1?{{/proxy_rewrite}}
     proxy_hide_header Content-Disposition;
     proxy_intercept_errors on;
-    proxy_pass http://{{#upstream}}owncloud{{/upstream}};
 }
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}files {
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}files /index.php/apps/files_sharing/ajax/list.php?t={{{files_share_id}}}&dir=%2F&sort=name&sortdirection=asc break;
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}files http://{{#upstream}}owncloud{{/upstream}}/index.php/apps/files_sharing/ajax/list.php?t={{{files_share_id}}}&dir=%2F&sort=name&sortdirection=asc{{/proxy_rewrite}}
     add_header Access-Control-Allow-Origin *;
-    proxy_pass http://{{#upstream}}owncloud{{/upstream}};
 }
+{{/files_share_id}}
 
 autoindex off;
-rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(index\.html|show|papers/?)?$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/ permanent;
-rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}zip$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/zip permanent;
+{{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(index\.html|show|papers/?)?$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/{{/jenkins_redirect}}
+{{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}zip$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/zip{{/jenkins_redirect}}
 
 proxy_intercept_errors on;
 
@@ -73,8 +77,8 @@ error_page 500 502 503 504 {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{
 
 location ~ ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}} {
     {{{hub_branch}}}
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+\.css|.+\.js.*) {{#jenkins_report}}prediction-site/$branch/$file{{/jenkins_report}} break;
-    rewrite ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}} break;
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+\.css|.+\.js.*) {{#jenkins_report}}prediction-site/$branch/$file{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(?P<file>.+) {{#jenkins_report}}visualization-site/$branch/$file{{/jenkins_report}}{{/jenkins_rewrite}}
 {{^jenkins_direct}}
     proxy_pass http://{{#upstream}}jenkins:8080{{/upstream}};
 {{/jenkins_direct}}

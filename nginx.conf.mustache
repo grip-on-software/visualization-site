@@ -58,7 +58,7 @@ http {
         server_name  "{{{blog_server}}}";
         set $blog "{{{blog_host}}}";
 
-        port_in_redirect off;
+        port_in_redirect {{#port}}{{/port}};
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -80,7 +80,9 @@ http {
         set $jenkins "{{{jenkins_host}}}";
         root /srv/visualization-site/www;
 
-        port_in_redirect off;
+        port_in_redirect {{#port}}{{/port}};
+        charset utf-8;
+        source_charset utf-8;
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -94,7 +96,7 @@ http {
         server_name  {{{discussion_server}}};
         set $discourse "{{{discussion_host}}}";
 
-        port_in_redirect off;
+        port_in_redirect {{#port}}{{/port}};
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -110,7 +112,9 @@ http {
         set $owncloud "{{{files_host}}}";
         root         /srv/visualization-site/www;
 
-        port_in_redirect off;
+        port_in_redirect {{#port}}{{/port}};
+        charset utf-8;
+        source_charset utf-8;
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;

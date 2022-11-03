@@ -1,0 +1,69 @@
+# vim: set filetype=apache nofoldenable:
+
+# Configuration for the GROS visualiation site.
+
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}>
+    {{{hub_branch}}}
+
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}([_0-9a-zA-Z-]+)$ {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}$1/{{/jenkins_redirect}}
+
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/.+) {{#jenkins_report}}visualization-site/$branch/$1{{/jenkins_report}} [ENV=CORS:true]{{/jenkins_rewrite}}
+
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt "https://{{{control_host}}}/auth/encrypt.py" [ENV=CORS:true]{{/proxy_rewrite}}
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}access "https://{{{control_host}}}/auth/access.py" [ENV=CORS:true]{{/proxy_rewrite}}
+
+    Header set Access-Control-Allow-Origin * env=CORS
+
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(.+) {{#jenkins_report}}visualization-site/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}$ {{#jenkins_report}}visualization-site/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
+</LocationMatch>
+
+<Location {{#path}}{{{visualization_url}}}{{/path}}login>
+    Require all denied
+</Location>
+
+# Handle visualizations from Jenkins. The job name must start with
+# "build-" and the remainder is the name in the URL path. The job is
+# a multibranch pipeline job which generates an HTML report for the
+# master branch, using the publishHTML post build step from the HTML
+# Publisher plugin, with the name "Visualization" and an index page of
+# index.html.
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?<name>{{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip)>
+    {{{visualization_branch}}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}[^/]+/$ {{#jenkins_report}}$name/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}[^/]+/(.+) {{#jenkins_report}}$name/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
+# ZIP download only available from Jenkins directly for now.
+{{^jenkins_direct}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}([^/]+)\.zip$ {{#jenkins_report}}$1/$branch/*zip*/$1.zip{{/jenkins_report}}{{/jenkins_rewrite}}
+{{/jenkins_direct}}
+</LocationMatch>
+
+# For control host encrypt/access proxy
+SSLProxyEngine on
+SSLProxyCACertificateFile {{{auth_cert}}}
+SSLProxyVerifyDepth 0
+SSLProxyVerify none
+SSLProxyCheckPeerCN off
+SSLProxyCheckPeerName off
+
+RemoteIPInternalProxy {{{proxy_range}}}
+RemoteIPHeader X-Forwarded-For
+<LocationMatch ^{{#path}}{{{visualization_url}}}{{/path}}analytics/>
+    Require ip{{#allow_range}} {{{.}}}{{/allow_range}}
+    Options Indexes
+    RewriteRule ^{{#path}}{{{visualization_url}}}{{/path}}analytics/ /srv/goaccess-report [L]
+    #CustomLog analytics_access.log main
+</LocationMatch>
+
+ProxyErrorOverride On
+# ErrorDocuments must start with a slash (before expression expansion) in order
+# for it to be considered a local path URL (and not a string).
+ErrorDocument 401 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}401.html
+ErrorDocument 403 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}403.html
+ErrorDocument 404 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}404.html
+ErrorDocument 500 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}50x.html
+ErrorDocument 502 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}50x.html
+ErrorDocument 503 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}50x.html
+ErrorDocument 504 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}50x.html

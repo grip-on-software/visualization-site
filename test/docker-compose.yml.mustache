@@ -1,14 +1,20 @@
-# vim: set filetype=yaml :
+# vim: set filetype=yaml nofoldenable:
 
-nginx:
-  image: bradjonesllc/nginx-dnsmasq:latest
+proxy:
+  image: {{#proxy_nginx}}bradjonesllc/nginx-dnsmasq:latest{{/proxy_nginx}}{{^proxy_nginx}}httpd:2.4-alpine{{/proxy_nginx}}
   hostname: "{{{control_hostname}}}"
   domainname: "{{{control_domain}}}"
   dns: "{{{primary_dns}}}"
   volumes:
     - "../www:/srv/visualization-site/www"
+{{#proxy_nginx}}
     - "../nginx.conf:/etc/nginx/nginx.conf:ro"
     - "../nginx:/etc/nginx/nginx"
+{{/proxy_nginx}}
+{{^proxy_nginx}}
+    - "../httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
+    - "../httpd:/usr/local/apache2/conf/httpd"
+{{/proxy_nginx}}
     - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
   expose:
     - "2368"
@@ -150,39 +156,39 @@ blog:
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"
 
 discourse:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"
 
 www:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"
 
 visualization:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"
 
 prediction:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"
 
 ws:
   domainname: "{{{domain}}}"
   environment:
     - GODEBUG=netdns=cgo
   links:
-    - "nginx:{{{control_host}}}"
+    - "proxy:{{{control_host}}}"

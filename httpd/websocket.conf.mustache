@@ -1,0 +1,11 @@
+# vim: set filetype=apache nofoldenable:
+
+RemoteIPInternalProxy {{{proxy_range}}}
+RemoteIPHeader X-Forwarded-For
+<Location />
+    Require ip{{#allow_range}} {{{.}}}{{/allow_range}}
+</Location>
+
+CustomLog analytics_access.log main
+
+ProxyPass / ws://127.0.0.1:7890

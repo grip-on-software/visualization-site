@@ -25,10 +25,10 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts 'nginx.conf,nginx/*.conf,caddy/*.yml'
+            archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,caddy/*.yml'
         }
         unstable {
-            archiveArtifacts 'nginx.conf,nginx/*.conf,caddy/*.yml'
+            archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,caddy/*.yml'
         }
         failure {
             updateGitlabCommitStatus name: env.JOB_NAME, state: 'failed'

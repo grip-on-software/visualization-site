@@ -1,3 +1,5 @@
+# vim: set filetype=nginx nofoldenable:
+
 location ~ ^/ {
     proxy_pass http://{{#upstream}}blog:2368{{/upstream}};
 }

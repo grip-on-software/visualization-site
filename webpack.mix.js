@@ -43,8 +43,9 @@ if (!fs.existsSync(config)) {
 }
 const configuration = JSON.parse(fs.readFileSync(config));
 if (process.env.NODE_ENV === 'test') {
-    // Always use jenkins proxy URLs in test
+    // Always use jenkins and owncloud proxy URLs in test
     configuration.jenkins_direct = '';
+    configuration.files_share_id = 'test';
 }
 
 // Replace organization parameter with environment variable if necessary.
@@ -106,7 +107,79 @@ fs.writeFileSync(path.resolve(__dirname, 'visualization_names.txt'),
     visualization_names.join(' ')
 );
 
-// NGINX and Docker-compose service template configuration
+// NGINX/Apache and Docker-compose service template configuration
+const proxy_logs = {
+    nginx: {
+        error: {
+            'test': 'notice',
+            'development': 'warn',
+            'production': 'error'
+        },
+        rewrite: {
+            'test': 'on',
+            'development': 'off',
+            'production': 'off'
+        }
+    },
+    httpd: {
+        error: {
+            'test': 'trace4',
+            'development': 'debug',
+            'production': 'error'
+        },
+        rewrite: {
+            'test': 'trace6',
+            'development': 'trace3',
+            'production': 'warn'
+        }
+    }
+};
+const httpdRewrite = (pattern, path, flags) => [
+    `RewriteCond %{REQUEST_URI} ${pattern}`,
+    `RewriteRule ^ ${path.replace(/\$(\d+)/g, '%$1')} [${flags.join(',')}]`
+].join('\n    ');
+const httpdMatch = (_, match) => `%{ENV:MATCH_${match.toUpperCase()}}`;
+const convertMatches = function(job, branch, file) {
+    if (configuration.proxy_nginx) {
+        return [job, branch, file];
+    }
+    const group = job == "visualization-site" ? "hub" :
+        (job.startsWith("prediction") ? "prediction" : "visualization");
+    return _.map([job, branch, file], (env) => replaceMatches(group, env));
+};
+const replaceMatches = (group, path) => configuration.proxy_nginx ? path :
+    path.replace(/\$([_a-zA-Z]+)/g, (substring, match) => {
+        const mapping = configuration.hub_mapping[group][match];
+        if (mapping) {
+            const mapInput = mapping.input.replace(/\$([_a-zA-Z]+)/g,
+                httpdMatch
+            );
+            const mapDefault = mapping["default"] ?
+                mapping["default"].replace(/\$([_a-zA-Z]+)/g, httpdMatch) :
+                "";
+            return `\${${group}_${match}:${mapInput}|${mapDefault}}`;
+        }
+        return httpdMatch(substring, match);
+    });
+const createBranchMaps = function(group) {
+    if (configuration.proxy_nginx) {
+        return configuration[`${group}_branch`];
+    }
+    return _.map(configuration.hub_mapping[group], (mapping, env) => {
+        const mapPath = `${group}_${env}`;
+        fs.writeFileSync(path.resolve(__dirname, `httpd/${mapPath}.txt`),
+            _.map(mapping.output, (value, key) => `${key} ${value}`).join('\n')
+        );
+        // TODO: Optionally use dbm:...map and another path for deployment
+        return `RewriteMap ${group}_${env} txt:conf/httpd/${mapPath}.txt`;
+    }).join('\n');
+};
+const nginxRewrite = (pattern, path, redirect=false) => redirect ?
+    `rewrite ${pattern} ${path} permanent;` : (path instanceof URL ? [
+        `rewrite ${pattern} ${path.pathname} break;`,
+        `proxy_pass ${path.origin};`
+    ].join('\n    ') : `rewrite ${pattern} ${path} break;`);
+
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
@@ -151,26 +224,108 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
         };
     },
     url: function() {
+        // Generate an absolute path URL
         return function(text, render) {
             const url_parts = render(text).split('/');
             var server = url_parts.shift();
             return (new URL(url_parts.join('/'), `http://${server}/`))
-                .pathname.replace('//', '/').replace(/^\/\$/, '$');
+                .pathname.replace('//', '/').replace(/^\/\$/, '$')
+                .replace(/(?:^\/)?%%7B(ENV:MATCH_[_a-zA-Z]+)%7D/g, '%{$1}');
         };
     },
     upstream: function() {
         return function(text, render) {
-            return `$${text}`;
+            if (configuration.proxy_nginx) {
+                return `$${render(text)}`;
+            }
+            const host_parts = render(text).split(':');
+            const server = host_parts.shift();
+            const host = configuration[`${server}_host`];
+            const port = host_parts.join(':');
+            return `${host}${port ? ':' : ''}${port}`;
         };
     },
+    port: function() {
+        return function(text, render) {
+            const port = render(text);
+            if (port === "") {
+                return configuration.proxy_port_in_redirect ? 'on' : 'off';
+            }
+            return configuration.proxy_port_in_redirect ? `:${port}` : '';
+        };
+    },
+    proxy_rewrite: function() {
+        return function(text, render) {
+            const [pattern, url, tags=null] = render(text).split(' ', 3);
+            if (configuration.proxy_nginx) {
+                return nginxRewrite(pattern, new URL(url));
+            }
+            let flags = tags ? tags.slice(1, -1).split(',') : [];
+            flags.push('P');
+            return httpdRewrite(pattern, url, flags);
+        };
+    },
+    jenkins_rewrite: function() {
+        return function(text, render) {
+            const [pattern, path, tags=null] = render(text).split(' ', 3);
+            let flags = tags ? tags.slice(1, -1).split(',') : [];
+            if (configuration.jenkins_direct) {
+                if (path.startsWith('prediction/') ||
+                    path.startsWith('prediction-site/') || tags) {
+                    flags.push('END');
+                    // Adjust to how copy.sh places the files
+                    const sitePath = path
+                        .replace(/^(prediction|visualization)-site\/[^/]+/,
+                            (_, group) => replaceMatches(
+                                group === "visualization" ? "hub" : group,
+                                `$hub/${group}`
+                            )
+                        )
+                        .replace(/^prediction\/(.*)/, '/prediction/$1');
+                    return configuration.proxy_nginx ?
+                        nginxRewrite(pattern, sitePath) :
+                        httpdRewrite(pattern, sitePath, flags);
+                }
+                return '';
+            }
+            if (configuration.proxy_nginx) {
+                // Proxy pass handled by separate rule in configuration file
+                return nginxRewrite(pattern, path);
+            }
+            flags.push('P');
+            const url = `http://${configuration.jenkins_host}:8080${path}`;
+            return httpdRewrite(pattern, url, flags);
+        };
+    },
+    jenkins_redirect: function() {
+        return function(text, render) {
+            const [pattern, path] = render(text).split(' ');
+            return configuration.proxy_nginx ?
+                nginxRewrite(pattern, path, true) :
+                httpdRewrite(pattern, path, ['L', 'R=301']);
+        };
+    },
+    hub_rewrite: configuration.hub_regex.replace(/(?<!\\])\(\?<\w+>/g, "(?:"),
+    hub_redirect: configuration.proxy_nginx ? configuration.hub_redirect :
+        configuration.hub_redirect.replace(/\$([_a-zA-Z]+)/g, httpdMatch),
+    hub_branch: configuration.proxy_nginx ? configuration.hub_branch :
+        "RewriteBase /",
+    visualization_branch: configuration.proxy_nginx ?
+        configuration.visualization_branch : "RewriteBase /",
+    prediction_branch: configuration.proxy_nginx ?
+        configuration.prediction_branch : "RewriteBase /",
+    branch_maps: ["hub", "visualization", "prediction"].map(
+        group => createBranchMaps(group)
+    ).join('\n\n'),
     jenkins_report: function() {
         return function(text, render) {
             const url_parts = render(text).split('/');
-            const job = url_parts.shift();
-            const branch = url_parts.shift();
-            const file = url_parts.join('/');
+            const [job, branch, file] = convertMatches(
+                url_parts.shift(), url_parts.shift(), url_parts.join('/')
+            );
             if (configuration.jenkins_direct) {
-                return `${configuration.jenkins_direct}/${branch}/${job}/${file}`;
+                // Path prefix added (for nginx) in jenkins_rewrite
+                return `${job}/${branch}/${file}`;
             }
             return `${configuration.jenkins_path}/job/build-${job}/job/${branch}/Visualization/${file}`;
         };
@@ -178,25 +333,33 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     jenkins_artifact: function() {
         return function(text, render) {
             const url_parts = render(text).split('/');
-            const job = url_parts.shift();
-            const branch = url_parts.shift();
-            const file = url_parts.join('/');
+            const [job, branch, file] = convertMatches(
+                url_parts.shift(), url_parts.shift(), url_parts.join('/')
+            );
             if (configuration.jenkins_direct) {
-                return `${configuration.jenkins_direct}/${branch}/${job}/${file}`;
+                // Path prefix added (for nginx) in jenkins_rewrite
+                return `${job}/${branch}/${file}`;
             }
             return `${configuration.jenkins_path}/job/create-${job}/job/${branch}/lastStableBuild/artifact/${file}`;
         };
     },
-    jenkins_branches: configuration.jenkins_direct ?
-        `${configuration.jenkins_direct}/branches.json` :
+    jenkins_branches: configuration.jenkins_direct ? '/branches.json':
         `${configuration.jenkins_path}/job/create-prediction/api/json?tree=jobs[name,lastStableBuild[description,duration,timestamp]]`,
-    error_log: process.env.NODE_ENV === 'test' ? 'notice' : 'error',
-    rewrite_log: process.env.NODE_ENV === 'test' ? 'on' : 'off'
+    error_log: _.get(proxy_logs, [
+        configuration.proxy_nginx ? 'nginx' : 'httpd', 'error',
+        process.env.NODE_ENV
+    ], 'error'),
+    rewrite_log: _.get(proxy_logs, [
+        configuration.proxy_nginx ? 'nginx' : 'httpd', 'rewrite',
+        process.env.NODE_ENV
+    ], 'off')
 });
 
+const proxy = configuration.proxy_nginx ? 'nginx' : 'httpd';
 const templates = [
-    'nginx.conf', 'nginx/blog.conf', 'nginx/discussion.conf',
-    'nginx/prediction.conf', 'nginx/visualization.conf', 'nginx/websocket.conf',
+    `${proxy}.conf`, `${proxy}/blog.conf`, `${proxy}/discussion.conf`,
+    `${proxy}/prediction.conf`, `${proxy}/visualization.conf`,
+    `${proxy}/websocket.conf`,
     'caddy/docker-compose.yml', 'test/docker-compose.yml'
 ];
 templates.forEach((template) => {

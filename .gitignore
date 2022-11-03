@@ -2,12 +2,17 @@
 __pycache__
 bundle.js
 bundle.js.map
+bundle.js.LICENSE.txt
 /config.json
 /config-alias.json
 /config.*.json
 caddy/docker-compose.yml
 test/docker-compose.yml
 test/docker-compose.shm.yml
+/httpd.conf
+httpd/*.conf
+httpd/*.map
+httpd/*.txt
 /nginx.conf
 nginx/*.conf
 lib/test.py
@@ -26,6 +31,7 @@ test/junit/
 test/owasp-dep/
 test/results/
 env/
+/visualizations*
 /visualization_names.txt
 www/fonts/
 www/mix-manifest.json

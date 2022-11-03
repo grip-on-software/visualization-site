@@ -1,0 +1,73 @@
+# vim: set filetype=apache nofoldenable:
+
+# Configuration for the GROS prediction site.
+
+Options -Indexes
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}>
+    {{{prediction_branch}}}
+    {{{hub_branch}}}
+
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(index\.html|show|papers/?)?$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/{{/jenkins_redirect}}
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}zip$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}show/zip{{/jenkins_redirect}}
+
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}branches {{{jenkins_branches}}} [ENV=CORS:true]{{/jenkins_rewrite}}
+
+{{#files_share_id}}
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}files http://{{#upstream}}files{{/upstream}}/index.php/apps/files_sharing/ajax/list.php?t={{{files_share_id}}}&dir=%2F&sort=name&sortdirection=asc [ENV=CORS:true]{{/proxy_rewrite}}
+{{/files_share_id}}
+    Header set Access-Control-Allow-Origin * env=CORS
+
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(.+\.css|.+\.js.*) {{#jenkins_report}}prediction-site/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(.+) {{#jenkins_report}}visualization-site/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
+</LocationMatch>
+
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?<branch>[-_0-9a-zA-Z]+))?)/>
+    {{{prediction_branch}}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([^/]+)/sprint/(\d+|latest)$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/$3.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([^/]+)/sprints$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/sprints.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/jira$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/projects.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/list/meta$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/projects_meta.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/configuration$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/configuration.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/locale/(descriptions|tags|units|short_units|sources|metadata)$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([^/]+)$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/sources.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([^/]+)/sprint/latest$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/links.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/links/([^/]+)/sprint/(\d+)$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/links.$3.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
+    Header set Access-Control-Allow-Origin *
+</LocationMatch>
+
+# ZIP download only available from Jenkins directly for now.
+{{^jenkins_direct}}
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?<branch>[-_0-9a-zA-Z]+))/zip>
+    {{{prediction_branch}}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/*zip*/archive.zip{{/jenkins_artifact}}{{/jenkins_rewrite}}
+</LocationMatch>
+{{/jenkins_direct}}
+
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/>
+    {{{prediction_branch}}}
+    {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([^/]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$1/$2{{/jenkins_redirect}}
+
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([^/]+) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$2{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([^/]+)/sprint/(\d+|latest) {{#jenkins_report}}prediction-site/$branch/index.html?organization=$organization&project=$2&sprint=$3{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([^/]+/sprint)?/(.+) {{#jenkins_report}}prediction-site/$branch/$3{{/jenkins_report}}{{/jenkins_rewrite}}
+    {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/$ {{#jenkins_report}}prediction-site/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
+</LocationMatch>
+
+{{#files_share_id}}
+<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/>
+    {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) http://{{#upstream}}files{{/upstream}}/index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1?{{/proxy_rewrite}}
+    Header unset Content-Disposition
+    ProxyErrorOverride On
+</LocationMatch>
+{{/files_share_id}}
+
+ProxyErrorOverride On
+# ErrorDocuments must start with a slash (before expression expansion) in order
+# for it to be considered a local path URL (and not a string).
+ErrorDocument 401 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}401.html
+ErrorDocument 403 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}403.html
+ErrorDocument 404 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}404.html
+ErrorDocument 500 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}50x.html
+ErrorDocument 502 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}50x.html
+ErrorDocument 503 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}50x.html
+ErrorDocument 504 /{{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}50x.html

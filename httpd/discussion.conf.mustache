@@ -1,0 +1,8 @@
+# vim: set filetype=apache nofoldenable:
+
+<Location "/admin">
+    # Require administration to originate from within VLAN
+    Require all denied
+</Location>
+
+ProxyPass / http://{{#upstream}}discussion:3000{{/upstream}}

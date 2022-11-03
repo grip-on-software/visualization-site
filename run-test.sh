@@ -139,7 +139,7 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	mkdir -p -m 0777 "$tree/test/owasp-dep"
 fi
 
-PROXY_HOST=nginx
+PROXY_HOST=proxy
 
 docker-compose $COMPOSE_ARGS pull
 docker-compose $COMPOSE_ARGS up -d --force-recreate
