@@ -31,7 +31,7 @@ test/junit/
 test/owasp-dep/
 test/results/
 env/
-/visualizations*
+/visualizations*/
 /visualization_names.txt
 www/fonts/
 www/mix-manifest.json
