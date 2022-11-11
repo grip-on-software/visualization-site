@@ -35,10 +35,12 @@ if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
 fi
 
 for visualization in $VISUALIZATION_NAMES prediction visualization-site; do
-	build="lastSuccessfulBuild"
+	job="build-$visualization"
 	branches="*master"
+	build="lastSuccessfulBuild"
 	if [[ $visualization == "prediction" ]]; then
 		config="prediction"
+		job="create-$visualization"
 		# Include all branches
 		branches="*"
 		# Prediction builds do not archive new artifacts if they are UNSTABLE
@@ -53,7 +55,7 @@ for visualization in $VISUALIZATION_NAMES prediction visualization-site; do
 		config="visualization"
 	fi
 
-    for path in $JOBS_PATH/build-$visualization/branches/$branches; do
+    for path in $JOBS_PATH/$job/branches/$branches; do
 		# Retrieve most recent build (even if tests make it UNSTABLE)
         ID=$(sed -n "/$build /s/$build //p" $path/builds/permalinks)
         branch=$(basename $path)
