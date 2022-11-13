@@ -14,6 +14,7 @@ proxy:
 {{^proxy_nginx}}
     - "../httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
     - "../httpd:/usr/local/apache2/conf/httpd"
+    - "../httpd/maps:{{{branch_maps_path}}}"
 {{/proxy_nginx}}
     - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
   expose:

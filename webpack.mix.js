@@ -161,24 +161,24 @@ const replaceMatches = (group, path) => configuration.proxy_nginx ? path :
         }
         return httpdMatch(substring, match);
     });
-const createBranchMaps = function(group) {
-    if (configuration.proxy_nginx) {
-        return configuration[`${group}_branch`];
-    }
-    return _.map(configuration.hub_mapping[group], (mapping, env) => {
-        const mapPath = `${group}_${env}`;
-        fs.writeFileSync(path.resolve(__dirname, `httpd/${mapPath}.txt`),
-            _.map(mapping.output, (value, key) => `${key} ${value}`).join('\n')
-        );
-        // TODO: Optionally use dbm:...map and another path for deployment
-        return `RewriteMap ${group}_${env} txt:conf/httpd/${mapPath}.txt`;
-    }).join('\n');
-};
 const nginxRewrite = (pattern, path, redirect=false) => redirect ?
     `rewrite ${pattern} ${path} permanent;` : (path instanceof URL ? [
         `rewrite ${pattern} ${path.pathname} break;`,
         `proxy_pass ${path.origin};`
     ].join('\n    ') : `rewrite ${pattern} ${path} break;`);
+
+if (!configuration.proxy_nginx) {
+    _.forEach(["hub", "visualization", "prediction"], (group) => {
+        _.forEach(configuration.hub_mapping[group], (mapping, env) => {
+            const mapFile = `${group}_${env}.txt`;
+            fs.writeFileSync(path.resolve(__dirname, `httpd/maps/${mapFile}`),
+                _.map(mapping.output,
+                    (value, key) => `${key} ${value}`
+                ).join('\n')
+            );
+        });
+    });
+}
 
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
@@ -314,9 +314,19 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
         configuration.visualization_branch : "RewriteBase /",
     prediction_branch: configuration.proxy_nginx ?
         configuration.prediction_branch : "RewriteBase /",
-    branch_maps: ["hub", "visualization", "prediction"].map(
-        group => createBranchMaps(group)
-    ).join('\n\n'),
+    branch_maps: function() {
+        return function(text, render) {
+            const group = render(text);
+            if (configuration.proxy_nginx) {
+                return configuration[`${group}_branch`];
+            }
+            return _.map(configuration.hub_mapping[group], (mapping, env) => {
+                const map = `${group}_${env}`;
+                const mapPath = `${configuration.branch_maps_path}/${map}.txt`;
+                return `RewriteMap ${map} txt:${mapPath}`;
+            }).join('\n');
+        };
+    },
     jenkins_report: function() {
         return function(text, render) {
             const url_parts = render(text).split('/');

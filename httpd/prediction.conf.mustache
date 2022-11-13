@@ -2,6 +2,9 @@
 
 # Configuration for the GROS prediction site.
 
+{{#branch_maps}}prediction{{/branch_maps}}
+{{#branch_maps}}hub{{/branch_maps}}
+
 Options -Indexes
 <LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}>
     {{{prediction_branch}}}

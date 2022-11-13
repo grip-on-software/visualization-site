@@ -2,6 +2,9 @@
 
 # Configuration for the GROS visualiation site.
 
+{{#branch_maps}}visualization{{/branch_maps}}
+{{#branch_maps}}hub{{/branch_maps}}
+
 <LocationMatch ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}>
     {{{hub_branch}}}
 

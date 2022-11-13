@@ -151,7 +151,7 @@ otherwise) are known:
   for capturing matches for compatibility across proxy servers. To avoid 
   renumbering issues, this regular expression should not contain unnamed match 
   captures `(...)`.
-- `hub_mapping` (objects): Groups of environment variable names to replace the 
+- `hub_mapping` (object): Groups of environment variable names to replace the 
   matched substrings from the regular expression from `hub_regex` in. Only used 
   for Apache, when hosting multiple organizations in the same environment. 
   Group keys can be "hub", "visualization" and "prediction", corresponding to 
@@ -162,6 +162,12 @@ otherwise) are known:
   mapping cannot contain spaces or empty strings in both the keys and values. 
   In NGINX, one can instead alter variables captured from regular expressions 
   using `hub_branch`, `visualization_branch` and `prediction_branch`.
+- `branch_maps_path`: Filesystem path where the rewrite maps for the Apache 
+  configuration are expected to reside. The map files are written to 
+  `httpd/maps` in this repository, but may be mapped to another absolute path. 
+  This affects the path within the Docker instance during the `docker-compose` 
+  paths, but can also be helpful when using (portions of) the configuration on 
+  an Apache server.
 - `hub_redirect`: When multiple organizations are hosted in the same 
   environment, variables from a matched organization at the start of the path 
   using `hub_regex` can be used in a rewrite that redirects to another URL. It 

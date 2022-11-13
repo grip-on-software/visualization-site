@@ -25,7 +25,7 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,caddy/*.yml'
+            archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,caddy/*.yml'
         }
         unstable {
             archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,caddy/*.yml'

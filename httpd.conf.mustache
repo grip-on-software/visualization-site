@@ -504,7 +504,6 @@ KeepaliveTimeout 65
         AddCharset utf-8 .html .js .css
         SetEnv JENKINS_HOST "{{{jenkins_host}}}"
         RewriteEngine on
-        {{{branch_maps}}}
         Include conf/httpd/visualization.conf
 </VirtualHost>
 
@@ -521,7 +520,6 @@ KeepaliveTimeout 65
         SetEnv JENKINS_HOST "{{{jenkins_host}}}"
         SetEnv FILES_HOST "{{{files_host}}}"
         RewriteEngine on
-        {{{branch_maps}}}
         Include conf/httpd/prediction.conf
 </VirtualHost>
 
