@@ -46,6 +46,7 @@ if (process.env.NODE_ENV === 'test') {
     // Always use jenkins and owncloud proxy URLs in test
     configuration.jenkins_direct = '';
     configuration.files_share_id = 'test';
+    configuration.proxy_port_in_redirect = false;
 }
 
 // Replace organization parameter with environment variable if necessary.
