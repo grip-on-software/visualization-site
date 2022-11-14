@@ -14,8 +14,10 @@
 
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}(manifest\.js|vendor\.js|navbar\.css|fonts/.+) {{#jenkins_report}}visualization-site/$branch/$1{{/jenkins_report}} [ENV=CORS:true]{{/jenkins_rewrite}}
 
+{{#control_host}}
     {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}encrypt "https://{{{control_host}}}/auth/encrypt.py" [ENV=CORS:true]{{/proxy_rewrite}}
     {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}access "https://{{{control_host}}}/auth/access.py" [ENV=CORS:true]{{/proxy_rewrite}}
+{{/control_host}}
 
     Header set Access-Control-Allow-Origin * env=CORS
 

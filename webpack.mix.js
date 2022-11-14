@@ -47,6 +47,9 @@ if (process.env.NODE_ENV === 'test') {
     configuration.jenkins_direct = '';
     configuration.files_share_id = 'test';
     configuration.proxy_port_in_redirect = false;
+    if (configuration.control_host === '') {
+        configuration.control_host = 'control.gros.test';
+    }
 }
 
 // Replace organization parameter with environment variable if necessary.

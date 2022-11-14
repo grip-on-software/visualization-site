@@ -218,7 +218,11 @@ otherwise) are known:
   files are not passed through to ownCloud from the NGINX or Apache proxy.
 - `control_host`: Domain name of an internal server where secure resources are 
   hosted, including encryption services and access control checks. This domain 
-  must be accessible through HTTPS from the NGINX or Apache proxy.
+  must be accessible through HTTPS from the NGINX or Apache proxy. This can be 
+  set to an empty string to disable proxy connections to endpoints for 
+  encrypting names of developers and checking project group access, as used in 
+  some visualizations. An empty string also makes the Caddy proxy configuration 
+  unusable, so only leave this empty if a portion of the configuration is used.
 - `websocket_server`: Domain name of an external server where a WebSocket for 
   real-time updates of access log analytics is hosted. This name should point 
   (possibly via a Caddy proxy) toward the NGINX or Apache proxy that makes the 
