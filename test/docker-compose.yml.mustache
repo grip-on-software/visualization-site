@@ -38,6 +38,10 @@ runner:
   environment:
     - VISUALIZATION_ORGANIZATION
     - VISUALIZATION_COMBINED
+    - BRANCH_NAME
+    - BUILD_NUMBER
+    - BUILD_URL
+    - NODE_NAME
   working_dir: "/work"
   links:
     - "selenium:selenium.test"

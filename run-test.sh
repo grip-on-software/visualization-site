@@ -44,16 +44,17 @@ else
 fi
 
 function container_logs() {
-	echo '<h2>Docker container logs</h2><ul>' >> test/results/index.html
+	echo $'<h2>Docker container logs</h2>\n<ul>' >> test/results/index.html
 
 	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/bash -c '
-		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_{}.html
-		echo "<pre>" >> test/results/logs_{}.html
-		docker logs {} 2>&1 | sed "s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g" >> test/results/logs_{}.html 2>&1
-		echo "</pre></body></html>" >> test/results/logs_{}.html
-		echo "<li><a href=\"logs_{}.html\">$(docker inspect --format={{.Name}} {}) ($(docker logs {} 2>&1 | wc -c) bytes)</a></li>" >> test/results/index.html'
+		host=$(docker inspect --format="{{index .Config.Labels \"com.docker.compose.service\"}}.{{.Config.Domainname}}" {})
+		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_$host.html
+		echo "<pre>" >> test/results/logs_$host.html
+		docker logs {} 2>&1 | sed "s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g" >> test/results/logs_$host.html 2>&1
+		echo -e "</pre>\n</body>\n</html>" >> test/results/logs_$host.html
+		echo "<li><a href=\"logs_$host.html\" title=\"Logs for $(docker inspect --format={{.Name}} {})\">$host ($(docker logs {} 2>&1 | wc -c) bytes)</a></li>" >> test/results/index.html'
 
-	echo '</ul></body></html>' >> test/results/index.html
+	echo $'</ul>\n</body>\n</html>' >> test/results/index.html
 }
 
 rm -rf test/junit test/results test/accessibility test/coverage test/downloads test/owasp-dep
