@@ -45,7 +45,7 @@ class Reporter:
         build_id = os.getenv('BUILD_NUMBER', '')
         configuration = [
             ['Build', f'<a href="{build_url}">{build_id}</a>'],
-            ['Started', datetime.now.astimezone()],
+            ['Started', datetime.now().astimezone()],
             ['Branch', os.getenv('BRANCH_NAME', '')],
             ['Host node', os.getenv('NODE_NAME', '')],
             ['Main organization', os.getenv('VISUALIZATION_ORGANIZATION', '')],
