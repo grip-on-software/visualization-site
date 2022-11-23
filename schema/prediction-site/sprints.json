@@ -1,0 +1,30 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/sprints.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint list",
+    "$ref": "#/$defs/sprints",
+    "$defs": {
+        "sprints": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the sprint."
+                    },
+                    "sprint_num": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "The sequential number of the sprint in the project's lifespan."
+                    },
+                    "sprint_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the sprint."
+                    }
+                }
+            }
+        }
+    }
+}

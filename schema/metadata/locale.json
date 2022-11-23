@@ -1,0 +1,66 @@
+{
+    "$id": "https://gros.liacs.nl/schema/metadata/locale.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Localization data",
+    "$ref": "#/$defs/locale",
+    "$defs": {
+        "locale": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z]{2,3}(-.*)?$": {
+                    "type": "object",
+                    "description": "Localization items for a specific language, with keys and localized replacement values. Valid languages use two-letter ISO 639-1 language codes plus optional BCP 47 subtags, so only a subset of languages is recognized.",
+                    "patternProperties": {
+                        ".*": {"type": "string"}
+                    }
+                }
+            }
+        },
+        "descriptions": {
+            "description": "Feature descriptions.",
+            "$ref": "#/$defs/locale"
+        },
+        "tags": {
+            "description": "Feature tag names.",
+            "$ref": "#/$defs/locale"
+        },
+        "units": {
+            "description": "Feature unit format templates.",
+            "$ref": "#/$defs/locale"
+        },
+        "short_units": {
+            "description": "Feature shorthand unit format templates.",
+            "$ref": "#/$defs/locale"
+        },
+        "sources": {
+            "description": "Source names, icons and metadata.",
+            "allOf": [
+                {"$ref": "#/$defs/locale"}
+            ],
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {"type": "string"},
+                            "description": "Portions of a FontAwesome icon class that indicates a source system."
+                        }
+                    }
+                },
+                "feature": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "List of features that originate from the source system."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/branches.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Prediction branches",
+    "$ref": "#/$defs/branches",
+    "$defs": {
+        "branches": {
+            "type": "object",
+            "properties": {
+                "jobs": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "pattern": "^[-_0-9a-zA-Z]+$",
+                                "description": "Name of a branch. Only branches which start with the organization name and a dash are available on an endpoint for a specific organization (with this part stripped), while a combined endpoint has a subset of the other branches (not matching any of the known organizations)."
+                            },
+                            "lastStableBuild": {
+                                "type": "object",
+                                "properties": {
+                                    "description": {
+                                        "oneOf": [
+                                            {"type": "string"},
+                                            {"type": "null"}
+                                        ],
+                                        "description": "Description of the branch."
+                                    },
+                                    "duration": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Number of milliseconds that the latest prediction run for this branch took."
+                                    },
+                                    "timestamp": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Number of milliseconds since the UNIX epoch (January 1, 1970 at 00:00:00) at the moment that the latest prediction run for this branch started."
+                                    }
+                                }
+                            }
+                        },
+                        "required": ["name"]
+                    }
+                }
+            }
+        }
+    }
+}

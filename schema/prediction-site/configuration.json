@@ -1,0 +1,90 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/configuration.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Prediction model configuration",
+    "$ref": "#/$defs/configuration",
+    "$defs": {
+        "configuration": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "object",
+                    "properties": {
+                        "expression": {
+                            "type": "string",
+                            "description": "Expression of the label used as target output in the model."
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "description": "Name of a feature used as part of the expression for the target output label.",
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "assignments": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "object",
+                            "properties": {
+                                "expression": {
+                                    "type": "string",
+                                    "description": "Expression that is used to assign the generated feature."
+                                },
+                                "attributes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "description": "Feature used in an assignment of another generated feature."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "organizations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "Identifier of an organization whose projects and sprints are used in the data set."
+                    }
+                },
+                "features": { 
+                    "type": "array",
+                    "items": {
+                        "description": "Name of a feature used as input for the model.",
+                        "type": "string"
+                    }
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "description": "Name of a column of the data set used as metadata.",
+                        "type": "string"
+                    }
+                },
+                "model": {
+                    "description": "Identifier of the model used.",
+                    "type": "string"
+                },
+                "binary": {
+                    "description": "Treshold at which a label value is converted to a binary classification, if provided.",
+                    "oneOf": [
+                        {"type": "number"},
+                        {"type": "null"}
+                    ]
+                },
+                "weighted": {
+                    "description": "Whether input values were weighted to produce values at similar scales as input for the model.",
+                    "type": "boolean"
+                },
+                "stratified": {
+                    "description": "Whether the data set was resampled (some sample sprints provided more often) in order to create proportionally balanced subsets with normal distributions of the target label, when provided in batches to the model.",
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

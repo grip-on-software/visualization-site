@@ -1,0 +1,145 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/sprint_prediction.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint prediction",
+    "$ref": "#/$defs/sprint_prediction",
+    "$defs": {
+        "sprint_prediction": {
+            "allOf": [
+                {"$ref": "#/$defs/sprint"}
+            ],
+            "type": "object",
+            "properties": {
+                "prediction": {
+                    "type": "integer",
+                    "description": "Classification or estimation label for the sprint from the model."
+                },
+                "probability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Reliability of the predicted label for the sprint according to the estimator model."
+                },
+                "risk": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Chance that the sprint will receive a negative classification after all, based on internal activations of the estimator model but with external normalized scale."
+                },
+                "metrics": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {"type": "number"}
+                    }
+                },
+                "analogies": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {"$ref": "#/$defs/analogy"}
+                        },
+                        {"type": "null"}
+                    ],
+                    "description": "Details on sprints that the model detected to be closest to the sprint."
+                },
+                "configuration": {
+                    "$ref": "configuration.json#/$defs/configuration"
+                },
+                "sources": {
+                    "type": "object",
+                    "description": "Information about the age of data retrieved from originating systems.",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$"
+                        }
+                    }
+                }
+            }
+        },
+        "sprint": {
+            "type": "object",
+            "properties": {
+                "project": {
+                    "type": "string",
+                    "description": "Identifier of the project which the sprint that is being labeled is from."
+                },
+                "project_id": {
+                    "description": "Internal identifier of the project.",
+                    "oneOf": [
+                        {"type": "string"},
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    ]
+                },
+                "sprint": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Identifier of the sprint."
+                },
+                "id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Internal identifier of the sprint"
+                },
+                "board_id": {
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        {"type": "null"}
+                    ],
+                    "description": "Identifier of the Scrum board in the issue tracker where the sprint is found."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the sprint."
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$",
+                    "description": "The moment that the sprint starts."
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$",
+                    "description": "The moment that the sprint ends."
+                },
+                "tags": {
+                    "type": "array",
+                    "description": "List of feature names that are applicable to the sprint.",
+                    "items": {"type": "string"}
+                }
+            }
+        },
+        "analogy": {
+            "allOf": [
+                {"$ref": "#/$defs/sprint"}
+            ],
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "integer",
+                    "description": "Labels of the nearby sprint."
+                }
+            }
+        },
+        "features": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "oneOf": [
+                        {"type": "number"},
+                        {"type": "null"}
+                    ]
+                }
+            }
+        }
+    }
+}

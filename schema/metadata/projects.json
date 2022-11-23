@@ -1,0 +1,12 @@
+{
+    "$id": "https://gros.liacs.nl/schema/metadata/projects.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Projects list",
+    "$ref": "#/$defs/projects",
+    "$defs": {
+        "projects": {
+            "type": "array",
+            "items": {"type": "string"}
+        }
+    }
+}

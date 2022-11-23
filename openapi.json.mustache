@@ -1,0 +1,480 @@
+{ "x-vim-modeline": "/* vim: set filetype=json: */",
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Prediction API",
+        "description": "API for Grip on Software prediction results.",
+        "version": "0.0.1",
+        "contact": {
+            "name": "Leon Helwerda",
+            "url": "https://gros.liacs.nl",
+            "email": "l.s.helwerda@liacs.leidenuniv.nl"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "servers": [
+        {
+            "url": "{{{prediction_url}}}",
+            "description": "Prediction API for an individual organization's data set, a combined entry point or an organization within a combined data set.",
+            "variables": {
+                "organization": {
+                    "enum": [{{{prediction_paths}}}],
+                    "default": {{{prediction_path}}},
+                    "description": "The organization or combined path."
+                }
+            }
+        }
+    ],
+    "components": {
+        "parameters": {
+            "BranchParam": {
+                "name": "branch",
+                "in": "path",
+                "description": "API route and branch name of the model to use. This value must start with `v1`. If a model branch is provided, it must be prefixed with a dash (`-`). Otherwise, the default `master` branch is used.",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "pattern": "^v1(-[-_0-9a-zA-Z]+)?$"
+                }
+            },
+            "ProjectParam": {
+                "name": "project",
+                "in": "path",
+                "description": "Project for which to retrieve prediction information.",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SprintParam": {
+                "name": "sprint",
+                "in": "path",
+                "description": "Sprint for which to retrieve prediction information. Can be `latest` or a valid sprint identifier of a recent sprint.",
+                "required": true,
+                "schema": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["latest"]
+                        },
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    ],
+                    "default": "latest"
+                }
+            }
+        }
+    },
+    "paths": {
+        "/api/{branch}/predict/jira/{project}/sprint/{sprint}": {
+            "get": {
+                "summary": "Get sprint predictions",
+                "description": "Retrieve information from the prediction model on a project's sprint.",
+                "responses": {
+                    "200": {
+                        "description": "Sprint predictions",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "P1": {
+                                        "externalValue": "test/sample/prediction-site/data/P1/123.json"
+                                    },
+                                    "TEST": {
+                                        "externalValue": "test/sample/prediction-site/data/TEST/latest.json"
+                                    },
+                                    "XY": {
+                                        "externalValue": "test/sample/prediction-site/data/XY/latest.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/prediction-site/sprint_prediction.json#/$defs/sprint_prediction"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"},
+                {"$ref": "#/components/parameters/ProjectParam"},
+                {"$ref": "#/components/parameters/SprintParam"}
+            ]
+        },
+        "/api/{branch}/predict/jira/{project}/sprints": {
+            "get": {
+                "summary": "Get project's recent sprints",
+                "description": "Retrieve a list of recent sprints of a project that have predictions.",
+                "responses": {
+                    "200": {
+                        "description": "Project sprints",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "P1": {
+                                        "externalValue": "test/sample/prediction-site/data/P1/sprints.json"
+                                    },
+                                    "TEST": {
+                                        "externalValue": "test/sample/prediction-site/data/TEST/sprints.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/prediction-site/sprints.json#/$defs/sprints"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"},
+                {"$ref": "#/components/parameters/ProjectParam"}
+            ]
+        },
+        "/api/{branch}/list/jira": {
+            "get": {
+                "summary": "Get projects",
+                "description": "Retrieve a list of identifiers for projects that have predictions.",
+                "responses": {
+                    "200": {
+                        "description": "Projects",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/projects.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/projects.json#/$defs/projects"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/list/meta": {
+            "get": {
+                "summary": "Get projects metadata",
+                "description": "Retrieve a list of metadata fields about projects that have predictions.",
+                "responses": {
+                    "200": {
+                        "description": "Projects metadata",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/projects_meta.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/projects_meta.json#/$defs/projects_meta"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/configuration": {
+            "get": {
+                "summary": "Get model configuration",
+                "description": "Retrieve parameters of the prediction model of a branch.",
+                "responses": {
+                    "200": {
+                        "description": "Configuration",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/configuration.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/prediction-site/configuration.json#/$defs/configuration"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/dataset": {
+            "get": {
+                "summary": "Get feature data set",
+                "description": "Retrieve the data set used for the training, test and validation of the prediction model. The data set is formatted as an ARFF file.",
+                "responses": {
+                    "200": {
+                        "description": "Data set file",
+                        "content": {
+                            "text/plain": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/sprint_features.arff"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/descriptions": {
+            "get": {
+                "summary": "Get feature descriptions",
+                "description": "Retrieve localization for human-readable descriptions of features used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Feature descriptions",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/descriptions.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/locale.json#/$defs/descriptions"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/tags": {
+            "get": {
+                "summary": "Get feature tags",
+                "description": "Retrieve localization for human-readable tags for some of the features used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Feature tags",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/tags.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/locale.json#/$defs/tags"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/units": {
+            "get": {
+                "summary": "Get feature units",
+                "description": "Retrieve localization for human-readable unit format templates for features used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Feature units",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/units.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/locale.json#/$defs/units"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/short_units": {
+            "get": {
+                "summary": "Get feature short units",
+                "description": "Retrieve localization for human-readable shorthand unit format templates for features used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Feature short units",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/short_units.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/locale.json#/$defs/short_units"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/source": {
+            "get": {
+                "summary": "Get source descriptions",
+                "description": "Retrieve localization for human-readable source names and icons used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Source descriptions",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/sources.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/locale.json#/$defs/sources"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/locale/metadata": {
+            "get": {
+                "summary": "Get feature metadata",
+                "description": "Retrieve metadata for features used in the prediction.",
+                "responses": {
+                    "200": {
+                        "description": "Feature metadata",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/data/metadata.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/features.json#/$defs/features"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"}
+            ]
+        },
+        "/api/{branch}/links/{project}": {
+            "get": {
+                "summary": "Get project source links",
+                "description": "Retrieve links to sources of prediction data for a project within the originating systems. Only project-wide sources are enumerated in the result.",
+                "responses": {
+                    "200": {
+                        "description": "Project sources",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "P1": {
+                                        "externalValue": "test/sample/prediction-site/data/P1/sources.json"
+                                    },
+                                    "TEST": {
+                                        "externalValue": "test/sample/prediction-site/data/TEST/sources.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/project_sources.json#/$defs/project_sources"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"},
+                {"$ref": "#/components/parameters/ProjectParam"}
+            ]
+        },
+        "/api/{branch}/links/{project}/sprint/{sprint}": {
+            "get": {
+                "summary": "Get sprint source links",
+                "description": "Retrieve links to sources of prediction data for a sprint within the originating systems. Where possible, sprint-specific sources are enumerated, but some may be project-wide.",
+                "responses": {
+                    "200": {
+                        "description": "Sprint sources",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "P1": {
+                                        "externalValue": "test/sample/prediction-site/data/P1/links.123.json"
+                                    },
+                                    "TEST": {
+                                        "externalValue": "test/sample/prediction-site/data/TEST/links.json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/metadata/sprint_sources.json#/$defs/sprint_sources"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {"$ref": "#/components/parameters/BranchParam"},
+                {"$ref": "#/components/parameters/ProjectParam"},
+                {"$ref": "#/components/parameters/SprintParam"}
+            ]
+        },
+        "/branches": {
+            "get": {
+                "summary": "Get all branches",
+                "description": "Retrieve branches which are potentially available on this endpoint or different endpoints.",
+                "responses": {
+                    "200": {
+                        "description": "Branches",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "test": {
+                                        "externalValue": "test/sample/prediction-site/api/json"
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "schema/prediction-site/branches.json#/$defs/branches"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [{}]
+}

@@ -374,7 +374,8 @@ const templates = [
     `${proxy}.conf`, `${proxy}/blog.conf`, `${proxy}/discussion.conf`,
     `${proxy}/prediction.conf`, `${proxy}/visualization.conf`,
     `${proxy}/websocket.conf`,
-    'caddy/docker-compose.yml', 'test/docker-compose.yml'
+    'caddy/docker-compose.yml', 'test/docker-compose.yml',
+    'swagger/docker-compose.yml'
 ];
 templates.forEach((template) => {
     try {
@@ -399,6 +400,31 @@ const jsConfiguration = _.assign({}, _.pickBy(configuration,
 });
 const configAlias = path.resolve(__dirname, 'config-alias.json');
 fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
+
+// Generate prediction API specification configuration
+const predictionPaths = _.flatten(_.map(_.concat(_.keys(_.get(configuration,
+    ['hub_mapping', 'prediction', 'hub', 'output'], {}
+)), ""), (hub) => _.map(_.keys(_.get(configuration,
+    ['hub_mapping', 'prediction', 'branch_organization', 'output'], {}
+)), (org) => `"${hub}${org}"`)));
+const apiConfiguration = _.assign({}, _.mapValues(configuration,
+    (value, key) => key.endsWith('_url') ?
+        value.replace(/\/?\$organization/, '{organization}') : value
+), {
+    prediction_paths: _.isEmpty(predictionPaths) ? '""' :
+        _.join(predictionPaths, ', '),
+    prediction_path: _.isEmpty(predictionPaths) ? '""' : predictionPaths[0]
+});
+try {
+    fs.writeFileSync("openapi.json",
+        mustache.render(fs.readFileSync(`openapi.json.mustache`, 'utf8'),
+            apiConfiguration
+        )
+    );
+}
+catch (e) {
+    throw new Error(`Could not render openapi.json.mustache: ${e.message}`);
+}
 
 // Generage configuration for HTML pages
 const htmlConfiguration = _.assign({}, urlConfiguration, messages,
