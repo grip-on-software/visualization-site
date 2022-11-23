@@ -1,0 +1,15 @@
+@relation sprint_data
+@attribute project_id numeric
+@attribute sprint_num numeric
+@attribute sprint_days numeric
+@attribute num_story_points numeric
+@attribute done_story_points numeric
+@attribute num_weighted_points numeric
+@attribute num_links numeric
+@attribute num_comments numeric
+@attribute avg_concurrent_progress numeric
+@data
+1,1,21,10,9,8.5,4,17,4.2
+1,2,27,13,7,6.25,3,7,2.4
+3,1,16,6,4,5.5,0,12,1.1111111111111
+4,1,13,30,25,0.5,22,12,3.3333
