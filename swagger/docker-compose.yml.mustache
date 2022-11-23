@@ -28,13 +28,18 @@ services:
           - "{{{prediction_server}}}"
 {{/jenkins_direct}}
 {{^jenkins_direct}}
-# Assumed to be using the test/docker-compose.yml proxy setup
+# Assumed to be using/overriding the test/docker-compose.yml proxy setup
   proxy:
     ports:
       - "2368:2368"
       - "3000:3000"
     volumes:
+{{#proxy_nginx}}
+      - "../swagger/nginx.conf:/etc/nginx/nginx/prediction-swagger.conf:ro"
+{{/proxy_nginx}}
+{{^proxy_nginx}}
       - "../swagger/httpd.conf:/usr/local/apache2/conf/httpd/prediction-swagger.conf:ro"
+{{/proxy_nginx}}
     networks:
       swagger:
         aliases:
