@@ -160,6 +160,10 @@ otherwise) are known:
   "default", and "output" keys, which are used to build a `RewriteMap`. The 
   input and default can refer to other variables with dollar signs. The output 
   mapping cannot contain spaces or empty strings in both the keys and values. 
+  In addition to the `hub_regex` variables, the "prediction" group may also 
+  transform a `branch_organization` variable to map paths to organizations in 
+  (combined) prediction setups. The mapping is also used for determining the 
+  available prediction path setups on the server for the OpenAPI specification. 
   In NGINX, one can instead alter variables captured from regular expressions 
   using `hub_branch`, `visualization_branch` and `prediction_branch`.
 - `branch_maps_path`: Filesystem path where the rewrite maps for the Apache 
