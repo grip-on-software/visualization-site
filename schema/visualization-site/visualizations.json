@@ -1,0 +1,79 @@
+{
+    "$id": "https://gros.liacs.nl/schema/visualization-site/visualizations.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Available visualizations on visualization site",
+    "$ref": "#/$defs/visualizations",
+    "$defs": {
+        "visualizations": {
+            "type": "object",
+            "properties": {
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "description": "Identifier of the visualization."
+                                        },
+                                        "icon": {
+                                            "type": "array",
+                                            "minItems": 2,
+                                            "description": "FontAwesome specification for an icon that represents the visualization."
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "description": "Mustache template for a URL to the visualization. Uses the ID in combination with `visualization_url` configuration if not provided."
+                                        },
+                                        "language_parameter": {
+                                            "type": "string",
+                                            "description": "Query string parameter key to use to add the currently selected language in the URL to the visualization."
+                                        },
+                                        "blog": {
+                                            "type": "object",
+                                            "description": "Reference to a blog post about the visualization.",
+                                            "properties": {
+                                                "fragment": {
+                                                    "type": "string",
+                                                    "description": "URL fragment for the blog post."
+                                                },
+                                                "language": {
+                                                    "type": "string",
+                                                    "description": "Language code for the language the blog post is written in."
+                                                }
+                                            }
+                                        },
+                                        "download": {
+                                            "type": "string",
+                                            "description": "Custom download URL for the visualization."
+                                        },
+                                        "nginx": {
+                                            "type": "boolean",
+                                            "description": "Whether the visualization is hosted by the proxy on the visualization site. This is `false` when the visualization is hosted on another site, such as the prediction site."
+                                        },
+                                        "index": {
+                                            "type": "boolean",
+                                            "description": "Whether to display the visualization as a block on the visualization site hub."
+                                        },
+                                        "repo": {
+                                            "type": "string",
+                                            "description": "Name of the repository where the code for the visualization is stored."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

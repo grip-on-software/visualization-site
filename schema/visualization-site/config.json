@@ -1,0 +1,211 @@
+{
+    "$id": "https://gros.liacs.nl/schema/visualization-site/config.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Visualization site configuration",
+    "$ref": "#/$defs/config-visualization-site",
+    "$defs": {
+        "config-base": {
+            "type": "object",
+            "properties": {
+                "visualization_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                }
+            },
+            "required": ["visualization_url"]
+        },
+        "config-visualization-site": {
+            "allOf": [
+                {"$ref": "#/$defs/config-base"}
+            ],
+            "type": "object",
+            "properties": {
+                "prediction_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "blog_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "discussion_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "download_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "jira_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "blog_host": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "blog_server": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "discussion_host": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "discussion_server": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "www_server": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "prediction_server": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "hub_organizations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "organization": {
+                                "type": "string",
+                                "pattern": "^[-_0-9a-zA-Z]+$"
+                            },
+                            "visualization-site": {
+                                "type": "string",
+                                "pattern": "^[-_0-9a-zA-Z]+$"
+                            },
+                            "prediction-site": {
+                                "type": "string",
+                                "pattern": "^[-_0-9a-zA-Z]+$"
+                            }
+                        }
+                    }
+                },
+                "hub_regex": {
+                    "type": "string",
+                    "format": "regex"
+                },
+                "hub_mapping": {
+                    "type": "object",
+                    "properties": {
+                        "hub": {"$ref": "#/$defs/hub_map"},
+                        "visualization": {"$ref": "#/$defs/hub_map"},
+                        "prediction": {"$ref": "#/$defs/hub_map"}
+                    }
+                },
+                "branch_maps_path": {
+                    "type": "string"
+                },
+                "hub_redirect": {
+                    "type": "string"
+                },
+                "hub_branch": {
+                    "type": "string"
+                },
+                "visualization_branch": {
+                    "type": "string"
+                },
+                "prediction_branch": {
+                    "type": "string"
+                },
+                "jenkins_host": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "jenkins_path": {
+                    "type": "string"
+                },
+                "jenkins_direct": {
+                    "type": "string"
+                },
+                "jenkins_direct_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "jenkins_direct_cert": {
+                    "type": "string"
+                },
+                "jenkins_api_token": {
+                    "type": "string"
+                },
+                "files_host": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "files_share_id": {
+                    "type": "string"
+                },
+                "control_host": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "websocket_server": {
+                    "type": "string",
+                    "format": "hostname"
+                },
+                "proxy_nginx": {
+                    "type": "boolean"
+                },
+                "proxy_range": {
+                    "type": "string"
+                },
+                "proxy_port_in_redirect": {
+                    "type": "boolean"
+                },
+                "auth_cert": {
+                    "type": "string"
+                },
+                "allow_range": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "primary_dns": {
+                    "type": "string",
+                    "oneOf": [
+                        {"format": "ipv4"},
+                        {"format": "ipv6"}
+                    ]
+                }
+            }
+        },
+        "hub_map": {
+            "type": "object",
+            "patternProperties": {
+                "^[_a-z]+$": {
+                    "type": "object",
+                    "properties": {
+                        "input": {"type": "string"},
+                        "default": {"type": "string"},
+                        "output": {
+                            "type": "object",
+                            "patternProperties": {
+                                ".+": {
+                                    "type": "string",
+                                    "minLength": 1
+                                }
+                            },
+                            "unevaluatedProperties": false
+                        }
+                    }
+                },
+                "unevaluatedProperties": false
+            }
+        },
+        "config-visualization": {
+            "allOf": [
+                {"$ref": "#/$defs/config-base"}
+            ],
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -12,6 +12,7 @@
     "visualization_server": "visualization.gros.example",
     "www_server": "www.gros.example",
     "prediction_server": "prediction.gros.example",
+    "hub_organizations": [],
     "hub_regex": "",
     "hub_mapping": {
         "hub": {
@@ -33,11 +34,25 @@
             }
         },
         "prediction": {
+            "hub": {
+                "input": "$hub",
+                "default": "$hub",
+                "output": {
+                    "/combined": "/combined"
+                }
+            },
             "branch": {
                 "input": "$branch-",
                 "default": "$branch",
                 "output": {
                     "-": "master"
+                }
+            },
+            "branch_organization": {
+                "input": "$hub",
+                "default": "",
+                "output": {
+                    "/myorg": "myorg-"
                 }
             }
         }
