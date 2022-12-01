@@ -19,6 +19,7 @@
                 {"$ref": "#/$defs/config-base"}
             ],
             "type": "object",
+            "$comment": "Documentation on configuration items in README.md of gros/visualization-site repository",
             "properties": {
                 "prediction_url": {
                     "type": "string",

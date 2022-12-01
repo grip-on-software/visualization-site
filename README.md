@@ -163,9 +163,11 @@ otherwise) are known:
   In addition to the `hub_regex` variables, the "prediction" group may also 
   transform a `branch_organization` variable to map paths to organizations in 
   (combined) prediction setups. The mapping is also used for determining the 
-  available prediction path setups on the server for the OpenAPI specification. 
-  In NGINX, one can instead alter variables captured from regular expressions 
-  using `hub_branch`, `visualization_branch` and `prediction_branch`.
+  available prediction path setups on the server for the OpenAPI specification, 
+  and for copying the published visualizations on master branches to the proper 
+  default organizations. In NGINX, one can instead alter variables captured 
+  from regular expressions using `hub_branch`, `visualization_branch` and 
+  `prediction_branch`.
 - `branch_maps_path`: Filesystem path where the rewrite maps for the Apache 
   configuration are expected to reside. The map files are written to 
   `httpd/maps` in this repository, but may be mapped to another absolute path. 

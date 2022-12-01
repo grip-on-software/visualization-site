@@ -386,7 +386,7 @@ templates.forEach((template) => {
         );
     }
     catch (e) {
-        throw new Error(`Could not render ${template}.mustache: ${e.message}`);
+        throw new Error(`Could not render ${template}.mustache`, {cause: e});
     }
 });
 
@@ -413,7 +413,19 @@ const apiConfiguration = _.assign({}, _.mapValues(configuration,
 ), {
     prediction_paths: _.isEmpty(predictionPaths) ? '""' :
         _.join(predictionPaths, ', '),
-    prediction_path: _.isEmpty(predictionPaths) ? '""' : predictionPaths[0]
+    prediction_path: _.isEmpty(predictionPaths) ? '""' : predictionPaths[0],
+    example_file: function() {
+        return function(text, render) {
+            const data = text.split(':');
+            const name = data.shift();
+            const example = JSON.parse(data.join(':'));
+            const value = fs.readFileSync(example.externalValue, 'utf8');
+            example.value = example.externalValue.endsWith('json') ?
+                JSON.parse(value) : value;
+            delete example.externalValue;
+            return `${name}: ${JSON.stringify(example)}`;
+        };
+    }
 });
 try {
     fs.writeFileSync("openapi.json",
@@ -423,7 +435,7 @@ try {
     );
 }
 catch (e) {
-    throw new Error(`Could not render openapi.json.mustache: ${e.message}`);
+    throw new Error('Could not render openapi.json.mustache', {cause: e});
 }
 
 // Generage configuration for HTML pages

@@ -5,9 +5,8 @@
         "description": "API for Grip on Software prediction results.",
         "version": "0.0.1",
         "contact": {
-            "name": "Leon Helwerda",
-            "url": "https://gros.liacs.nl",
-            "email": "l.s.helwerda@liacs.leidenuniv.nl"
+            "name": "Grip on Software",
+            "url": "https://gros.liacs.nl"
         },
         "license": {
             "name": "Apache 2.0",
@@ -80,15 +79,15 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "P1": {
+                                    {{#example_file}}"P1": {
                                         "externalValue": "test/sample/prediction-site/data/P1/123.json"
-                                    },
-                                    "TEST": {
+                                    }{{/example_file}},
+                                    {{#example_file}}"TEST": {
                                         "externalValue": "test/sample/prediction-site/data/TEST/latest.json"
-                                    },
-                                    "XY": {
+                                    }{{/example_file}},
+                                    {{#example_file}}"XY": {
                                         "externalValue": "test/sample/prediction-site/data/XY/latest.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/prediction-site/sprint_prediction.json#/$defs/sprint_prediction"
@@ -114,12 +113,12 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "P1": {
+                                    {{#example_file}}"P1": {
                                         "externalValue": "test/sample/prediction-site/data/P1/sprints.json"
-                                    },
-                                    "TEST": {
+                                    }{{/example_file}},
+                                    {{#example_file}}"TEST": {
                                         "externalValue": "test/sample/prediction-site/data/TEST/sprints.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/prediction-site/sprints.json#/$defs/sprints"
@@ -144,9 +143,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/projects.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/projects.json#/$defs/projects"
@@ -170,9 +169,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/projects_meta.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/projects_meta.json#/$defs/projects_meta"
@@ -196,9 +195,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/configuration.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/prediction-site/configuration.json#/$defs/configuration"
@@ -222,9 +221,9 @@
                         "content": {
                             "text/plain": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/sprint_features.arff"
-                                    }
+                                    }{{/example_file}}
                                 }
                             }
                         }
@@ -245,9 +244,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/descriptions.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/locale.json#/$defs/descriptions"
@@ -271,9 +270,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/tags.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/locale.json#/$defs/tags"
@@ -297,9 +296,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/units.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/locale.json#/$defs/units"
@@ -323,9 +322,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/short_units.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/locale.json#/$defs/short_units"
@@ -349,9 +348,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/sources.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/locale.json#/$defs/sources"
@@ -375,9 +374,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/data/metadata.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/features.json#/$defs/features"
@@ -401,12 +400,12 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "P1": {
+                                    {{#example_file}}"P1": {
                                         "externalValue": "test/sample/prediction-site/data/P1/sources.json"
-                                    },
-                                    "TEST": {
+                                    }{{/example_file}},
+                                    {{#example_file}}"TEST": {
                                         "externalValue": "test/sample/prediction-site/data/TEST/sources.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/project_sources.json#/$defs/project_sources"
@@ -431,12 +430,12 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "P1": {
+                                    {{#example_file}}"P1": {
                                         "externalValue": "test/sample/prediction-site/data/P1/links.123.json"
-                                    },
-                                    "TEST": {
+                                    }{{/example_file}},
+                                    {{#example_file}}"TEST": {
                                         "externalValue": "test/sample/prediction-site/data/TEST/links.json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/metadata/sprint_sources.json#/$defs/sprint_sources"
@@ -462,9 +461,9 @@
                         "content": {
                             "application/json": {
                                 "examples": {
-                                    "test": {
+                                    {{#example_file}}"test": {
                                         "externalValue": "test/sample/prediction-site/api/json"
-                                    }
+                                    }{{/example_file}}
                                 },
                                 "schema": {
                                     "$ref": "schema/prediction-site/branches.json#/$defs/branches"
