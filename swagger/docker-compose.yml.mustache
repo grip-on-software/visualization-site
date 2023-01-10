@@ -1,0 +1,78 @@
+# vim: set filetype=yaml nofoldenable:
+
+version: '2'
+
+services:
+{{#jenkins_direct}}
+  proxy:
+    image: httpd:2.4-alpine
+    volumes:
+      - "{{{jenkins_direct}}}:/srv/visualization-site/www"
+      - "../httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
+      - "../httpd:/usr/local/apache2/conf/httpd"
+      - "../httpd/maps:{{{branch_maps_path}}}"
+      - "../swagger/httpd.conf:/usr/local/apache2/conf/httpd/prediction-swagger.conf:ro"
+      - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
+    expose:
+      - "2368"
+      - "3000"
+    ports:
+      - "2368:2368"
+      - "3000:3000"
+    depends_on:
+      - swagger
+      - swagger-validator
+    networks:
+      swagger:
+        aliases:
+          - "{{{prediction_server}}}"
+{{/jenkins_direct}}
+{{^jenkins_direct}}
+# Assumed to be using/overriding the test/docker-compose.yml proxy setup
+  proxy:
+    ports:
+      - "2368:2368"
+      - "3000:3000"
+    volumes:
+{{#proxy_nginx}}
+      - "../swagger/nginx.conf:/etc/nginx/nginx/prediction-swagger.conf:ro"
+{{/proxy_nginx}}
+{{^proxy_nginx}}
+      - "../swagger/httpd.conf:/usr/local/apache2/conf/httpd/prediction-swagger.conf:ro"
+{{/proxy_nginx}}
+    networks:
+      swagger:
+        aliases:
+          - "{{{prediction_server}}}"
+{{/jenkins_direct}}
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    domainname: test
+    volumes:
+      - "../openapi.json:/docs/openapi.json:ro"
+      - "../schema:/docs/schema"
+      - "../test/sample:/docs/test/sample"
+    expose:
+      - "8080"
+    environment:
+      - "BASE_URL=/swagger"
+      - "SWAGGER_JSON=/docs/openapi.json"
+      - "VALIDATOR_URL=/validator"
+    networks:
+      swagger:
+        aliases:
+          - "swagger.test"
+
+  swagger-validator:
+    image: swaggerapi/swagger-validator-v2:latest
+    domainname: test
+    expose:
+      - "8080"
+    networks:
+      swagger:
+        aliases:
+          - swagger-validator.test
+
+networks:
+  swagger:

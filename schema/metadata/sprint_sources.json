@@ -1,0 +1,27 @@
+{
+    "$id": "https://gros.liacs.nl/schema/metadata/sprint_sources.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sources for an individual sprint",
+    "$ref": "#/$defs/sprint_sources",
+    "$defs": {
+        "sprint_sources": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "properties": {
+                        "source": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL for a source, usually specifically for a sprint and feature, but sometimes broadly for the project."
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "The type of source."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

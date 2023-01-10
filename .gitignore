@@ -9,12 +9,14 @@ bundle.js.LICENSE.txt
 caddy/docker-compose.yml
 test/docker-compose.yml
 test/docker-compose.shm.yml
+swagger/docker-compose.yml
 /httpd.conf
 httpd/*.conf
 httpd/*.map
 httpd/*.txt
 /nginx.conf
 nginx/*.conf
+openapi.json
 lib/test.py
 manifest.js
 vendor.js

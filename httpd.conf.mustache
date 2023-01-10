@@ -386,6 +386,8 @@ LogLevel {{{error_log}}} rewrite:{{{rewrite_log}}}
     #
     #AddType text/html .shtml
     #AddOutputFilter INCLUDES .shtml
+
+    AddType text/plain .arff
 </IfModule>
 
 #
@@ -469,7 +471,6 @@ SSLRandomSeed connect builtin
 </IfModule>
 
 # GROS
-#Include conf/httpd/*.conf
 
 <Directory /srv/visualization-site/www/>
         AllowOverride none
@@ -521,6 +522,7 @@ KeepaliveTimeout 65
         SetEnv FILES_HOST "{{{files_host}}}"
         RewriteEngine on
         Include conf/httpd/prediction.conf
+        IncludeOptional conf/httpd/prediction-swagger.conf
 </VirtualHost>
 
 <VirtualHost *:3000>

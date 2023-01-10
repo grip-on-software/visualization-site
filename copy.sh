@@ -17,7 +17,7 @@
 # limitations under the License.
 
 if [ -z "$VISUALIZATION_NAMES" ]; then
-	VISUALIZATION_NAMES=$(cat visualization_names.txt)
+    VISUALIZATION_NAMES=$(cat visualization_names.txt)
 fi
 
 CONFIG="config.json"
@@ -34,52 +34,68 @@ if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
     exit 0
 fi
 
-for visualization in $VISUALIZATION_NAMES prediction visualization-site; do
-	job="build-$visualization"
-	branches="*master"
-	build="lastSuccessfulBuild"
-	if [[ $visualization == "prediction" ]]; then
-		config="prediction"
-		job="create-$visualization"
-		# Include all branches
-		branches="*"
-		# Prediction builds do not archive new artifacts if they are UNSTABLE
-		build="lastStableBuild"
-	elif [[ $visualization == "prediction-site" ]]; then
-		default_organization="combined"
-		config="prediction"
-	elif [[ $visualization == "visualization-site" ]]; then
-		default_organization="combined"
-	else
-		default_organization=$(jq -r ".hub_mapping.hub.organization.default // \"combined\"" $CONFIG)
-		config="visualization"
-	fi
+# Repositories that have JSON schemas and a Jenkins build that archives them.
+ARCHIVE_NAMES="prediction monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config visualization-site"
+
+# Copy published visualization HTML and prediction/schema artifacts
+for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
+    job="build-$repo"
+    branches="*master"
+    build="lastSuccessfulBuild"
+    if [[ $repo == "prediction" ]]; then
+        config="prediction"
+        job="create-$repo"
+        # Include all branches
+        branches="*"
+        # Prediction builds do not archive new artifacts if they are UNSTABLE
+        build="lastStableBuild"
+    elif [[ $repo == "prediction-site" ]]; then
+        default_organization="combined"
+        config="prediction"
+    elif [[ $repo == "visualization-site" ]]; then
+        default_organization="combined"
+    else
+        default_organization=$(jq -r ".hub_mapping.hub.organization.default // \"combined\"" $CONFIG)
+        config="visualization"
+    fi
 
     for path in $JOBS_PATH/$job/branches/$branches; do
-		# Retrieve most recent build (even if tests make it UNSTABLE)
+        # Retrieve most recent build (even if tests make it UNSTABLE)
         ID=$(sed -n "/$build /s/$build //p" $path/builds/permalinks)
         branch=$(basename $path)
-		if [[ $branch == "master" ]]; then
-			organization=$default_organization
-		else
-			organization=$(jq -r ".hub_organizations | .[] | select(.[\"$config-site\"] == \"$branch\") | .organization" $CONFIG)
-		fi
-		target="$(jq -r .${config}_url $CONFIG | sed -e s/\\/*\$organization/$organization/)"
-        mkdir -p "$TARGET/$target"
-		origin="$path/builds/$ID/htmlreports/Visualization"
-        if [ ! -d "$origin" ]; then
-			origin="$path/htmlreports/Visualization/"
-		fi
-		if [[ $visualization == "visualization-site" ]]; then
-            $COPY_APPEND "$origin/" "$TARGET/$target"
-		elif [[ $visualization == "prediction" ]]; then
-			$COPY "$path/builds/$ID/archive/" "$TARGET/prediction/$branch"
+        if [[ $branch == "master" ]]; then
+            organization=$default_organization
         else
+            organization=$(jq -r ".hub_organizations | .[] | select(.[\"$config-site\"] == \"$branch\") | .organization" $CONFIG)
+        fi
+        target="$(jq -r .${config}_url $CONFIG | sed -e s/\\/*\$organization/$organization/)"
+        origin="$path/builds/$ID/htmlreports/Visualization"
+        if [ ! -d "$origin" ]; then
+            origin="$path/htmlreports/Visualization/"
+        fi
+        if [[ $repo == "visualization-site" ]]; then
+            mkdir -p "$TARGET/$target"
+            $COPY_APPEND "$origin/" "$TARGET/$target"
+        elif [[ $repo == "prediction" ]]; then
+            $COPY "$path/builds/$ID/archive/output/" "$TARGET/$repo/$branch/output"
+        elif [[ " $VISUALIZATION_NAMES " =~ " $repo " ]]; then
+            mkdir -p "$TARGET/$target"
             $COPY "$origin" "$TARGET/$target"
+        fi
+
+        if [[ $branch == "master" && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
+            if [[ $repo == "visualization-site" ]]; then
+                cp "$path/builds/$ID/archive/openapi.json" "$TARGET/openapi.json"
+                $COPY_APPEND "$path/builds/$ID/archive/schema" "$TARGET/schema"
+            else
+                mkdir -p "$TARGET/schema/$repo"
+                $COPY "$path/builds/$ID/archive/schema/" "$TARGET/schema/$repo"
+            fi
         fi
     done
 done
 
+# Download prediction branches
 curl -g -H 'Accept: application/json' \
     -H "Authorization: Basic $(jq -r .jenkins_api_token $CONFIG)" \
     --cacert $(jq -r .jenkins_direct_cert $CONFIG) \

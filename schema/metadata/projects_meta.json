@@ -1,0 +1,37 @@
+{
+    "$id": "https://gros.liacs.nl/schema/metadata/projects.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Projects metadata",
+    "$ref": "#/$defs/projects_meta",
+    "$defs": {
+        "projects_meta": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the project, usually a identifier key from an issue tracker."
+                    },
+                    "quality_display_name": {
+                        "type": "string",
+                        "description": "Human-readable name of the project from the quality control dashboard."
+                    },
+                    "recent": {
+                        "type": "boolean",
+                        "description": "Whether the project has recent sprints."
+                    },
+                    "core": {
+                        "type": "boolean",
+                        "description": "Whether the project is considered to be an actual software development project. When `false`, the project is developed by a support team."
+                    },
+                    "main": {
+                        "type": "boolean",
+                        "description": "Whether the project is a main project with no parent. When `false`, the project is a child of another."
+                    }
+                },
+                "required": ["name"]
+            }
+        }
+    }
+}
