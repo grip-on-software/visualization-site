@@ -61,7 +61,11 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
 
     for path in $JOBS_PATH/$job/branches/$branches; do
         # Retrieve most recent build (even if tests make it UNSTABLE)
-        ID=$(sed -n "/$build /s/$build //p" $path/builds/permalinks)
+        if [[ $repo == "visualization-site" && ! -z "$BUILD_NUMBER" ]]; then
+            ID=$BUILD_NUMBER
+        else
+            ID=$(sed -n "/$build /s/$build //p" $path/builds/permalinks)
+        fi
         branch=$(basename $path)
         if [[ $branch == "master" ]]; then
             organization=$default_organization
