@@ -90,7 +90,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
         if [[ $branch == "master" && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
             if [[ $repo == "visualization-site" ]]; then
                 cp "$path/builds/$ID/archive/openapi.json" "$TARGET/openapi.json"
-                $COPY_APPEND "$path/builds/$ID/archive/schema" "$TARGET/schema"
+                $COPY_APPEND "$path/builds/$ID/archive/schema/" "$TARGET/schema/"
             else
                 mkdir -p "$TARGET/schema/$repo"
                 $COPY "$path/builds/$ID/archive/schema/" "$TARGET/schema/$repo"
