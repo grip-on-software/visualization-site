@@ -6,7 +6,7 @@
 {{#branch_maps}}hub{{/branch_maps}}
 
 Options -Indexes
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}">
     {{{prediction_branch}}}
     {{{hub_branch}}}
 
@@ -24,7 +24,7 @@ Options -Indexes
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(.+) {{#jenkins_report}}visualization-site/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
 </LocationMatch>
 
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?<branch>[-_0-9a-zA-Z]+))?)/>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(api/v1(-(?<branch>[-_0-9a-zA-Z]+))?)/">
     {{{prediction_branch}}}
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([^/]+)/sprint/(\d+|latest)$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/$3.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}api/v1(-[-_0-9a-zA-Z]+)?/predict/jira/([^/]+)/sprints$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/$2/sprints.json{{/jenkins_artifact}}{{/jenkins_rewrite}}
@@ -41,13 +41,13 @@ Options -Indexes
 
 # ZIP download only available from Jenkins directly for now.
 {{^jenkins_direct}}
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?<branch>[-_0-9a-zA-Z]+))/zip>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/(?<branch>[-_0-9a-zA-Z]+))/zip">
     {{{prediction_branch}}}
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/zip$ {{#jenkins_artifact}}prediction/$branch_organization$branch/output/$organization/*zip*/archive.zip{{/jenkins_artifact}}{{/jenkins_rewrite}}
 </LocationMatch>
 {{/jenkins_direct}}
 
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/">
     {{{prediction_branch}}}
     {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}(show|branch/[-_0-9a-zA-Z]+)/([^/]+)/$ {{#url}}{{{prediction_server}}}/{{{hub_redirect}}}{{{prediction_url}}}{{/url}}$1/$2{{/jenkins_redirect}}
 
@@ -58,7 +58,7 @@ Options -Indexes
 </LocationMatch>
 
 {{#files_share_id}}
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{prediction_url}}}{{/path}}papers/">
     {{#proxy_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{prediction_url}}}{{/path}}papers/(.*) http://{{#upstream}}files{{/upstream}}/index.php/s/{{{files_share_id}}}/download?path=%2F&files=$1?{{/proxy_rewrite}}
     Header unset Content-Disposition
     ProxyErrorOverride On

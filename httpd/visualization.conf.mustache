@@ -5,7 +5,7 @@
 {{#branch_maps}}visualization{{/branch_maps}}
 {{#branch_maps}}hub{{/branch_maps}}
 
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}">
     {{{hub_branch}}}
 
     {{#jenkins_redirect}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
@@ -35,7 +35,7 @@
 # master branch, using the publishHTML post build step from the HTML
 # Publisher plugin, with the name "Visualization" and an index page of
 # index.html.
-<LocationMatch ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?<name>{{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip)>
+<LocationMatch "^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}(?<name>{{#join}}{{#visualization_names}}{{{.}}}|{{/visualization_names}}{{/join}})(/|\.zip)">
     {{{visualization_branch}}}
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}[^/]+/$ {{#jenkins_report}}$name/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}[^/]+/(.+) {{#jenkins_report}}$name/$branch/$1{{/jenkins_report}}{{/jenkins_rewrite}}
@@ -55,7 +55,7 @@ SSLProxyCheckPeerName off
 
 RemoteIPInternalProxy {{{proxy_range}}}
 RemoteIPHeader X-Forwarded-For
-<LocationMatch ^{{#path}}{{{visualization_url}}}{{/path}}analytics/>
+<LocationMatch "^{{#path}}{{{visualization_url}}}{{/path}}analytics/">
     Require ip{{#allow_range}} {{{.}}}{{/allow_range}}
     Options Indexes
     RewriteRule ^{{#path}}{{{visualization_url}}}{{/path}}analytics/ /srv/goaccess-report [L]
