@@ -1,0 +1,271 @@
+[
+    {{#vim-modeline}}"/* vim: set filetype=json: */",{{/vim-modeline}}
+    {
+        "type": "brand",
+        "items": [
+            {
+                "type": "link",
+                "url": [
+                    {"config": "visualization_url"},
+                    "?lang=",
+                    {"locale": "lang"}
+                ],
+                "title": {
+                    "en": "Visualizations from GROS",
+                    "nl": "Visualisaties van GROS"
+                },
+                "content": [
+                    {
+                        "type": "image",
+                        "url": [
+                            {"config": "visualization_url"},
+                            "images/ICTU-LEIDEN.png"
+                        ],
+                        "alt": {
+                            "en": "Grip on Software",
+                            "nl": "Grip op Software"
+                        },
+                        "width": 28,
+                        "height": 28
+                    }
+                ]
+            },
+            {
+                "type": "link",
+                "url": "https://gros.liacs.nl/",
+                "title": {
+                    "en": "Grip on Software",
+                    "nl": "Grip op Software"
+                },
+                "content": {
+                    "en": "GROS",
+                    "nl": "GROS"
+                }
+            },
+            {
+                "type": "burger",
+                "target": "menu-visualizations",
+                "lines": 3
+            },
+            {
+                "type": "fullscreen",
+                "icon": ["fas", "arrows-alt"],
+                "title": {
+                    "en": "Full screen",
+                    "nl": "Volledig scherm"
+                }
+            }
+        ]
+    },
+    {
+        "type": "menu",
+        "id": "menu-visualizations",
+        "items": [
+            {
+                "type": "start",
+                "items": [
+                    {
+                        "type": "dropdown",
+                        "id": "visualizations",
+                        "class": "is-focus",
+                        "link": {
+                            "url": [
+                                {"config": "visualization_url"},
+                                "?lang=",
+                                {"locale": "lang"}
+                            ],
+                            "content": {
+                                "en": "Visualizations",
+                                "nl": "Visualisaties"
+                            }
+                        },
+                        "items": [{{{visualizations}}}]
+                    }
+                ]
+            },
+            {
+                "type": "end",
+                "items": [
+                    {
+                        "type": "dropdown",
+                        "id": "languages",
+                        "class": "has-icon",
+                        "items": [],
+                        "link": {
+                            "url": "",
+                            "icon": ["fas", "language", "xs"],
+                            "content": {
+                                "en": "Language",
+                                "nl": "Taal"
+                            },
+                            "title": {
+                                "en": "Return to default language",
+                                "nl": "Terugkeren naar standaardtaal"
+                            }
+                        }
+                    },
+                    {
+                        "type": "link",
+                        "url": "https://liacs.leidenuniv.nl/",
+                        "title": {
+                            "en": "Leiden Institute of Advanced Computer Science (LIACS)",
+                            "nl": "Leiden Institute of Advanced Computer Science (LIACS)"
+                        },
+                        "content": [
+                            {
+                                "type": "image",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    "images/liacs.svg"
+                                ],
+                                "alt": {
+                                    "en": "LIACS",
+                                    "nl": "LIACS"
+                                },
+                                "width": 108,
+                                "height": 28
+                            }
+                        ]
+                    },
+                    {
+                        "type": "link",
+                        "class": "item is-fullsized is-hidden-touch",
+                        "url": "https://www.universiteitleiden.nl/",
+                        "title": {
+                            "en": "Leiden University",
+                            "nl": "Universiteit Leiden"
+                        },
+                        "content": [
+                            {
+                                "type": "image",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    {
+                                        "en": "images/leiden-en-light.svg",
+                                        "nl": "images/leiden-nl-light.svg"
+                                    }
+                                ],
+                                "alt": {
+                                    "en": "Leiden University",
+                                    "nl": "Universiteit Leiden"
+                                },
+                                "style": "max-height: 5rem",
+                                "width": 94,
+                                "height": 52
+                            }
+                        ]
+                    },
+                    {
+                        "type": "link",
+                        "class": "item is-hidden-desktop",
+                        "url": "https://www.universiteitleiden.nl/",
+                        "title": {
+                            "en": "Leiden University",
+                            "nl": "Universiteit Leiden"
+                        },
+                        "content": [
+                            {
+                                "type": "image",
+                                "url": [
+                                    {"config": "visualization_url"},
+                                    {
+                                        "en": "images/leiden-en-dark.svg",
+                                        "nl": "images/leiden-nl-dark.svg"
+                                    }
+                                ],
+                                "alt": {
+                                    "en": "Leiden University",
+                                    "nl": "Universiteit Leiden"
+                                },
+                                "style": "max-height: 5rem",
+                                "width": 94,
+                                "height": 52
+                            }
+                        ]
+                    },
+                    {
+                        "type": "dropdown",
+                        "id": "organizations",
+                        "class": "{{^organizations}}is-hidden{{/organizations}}",
+                        "link": {
+                            "title": {
+                                "en": "Switch organization",
+                                "nl": "Organisatie wisselen"
+                            },
+{{#combined}}
+                            "url": [
+                                "{{{combined_url}}}?lang=",
+                                {"locale": "lang"}
+                            ],
+                            "content": {
+                                "en": "Combined",
+                                "nl": "Gecombineerd"
+                            }
+{{/combined}}
+{{^combined}}{{#organizations}}{{#active}}
+                            "url": "{{{url}}}",
+                            "class": "link is-external",
+                            "content": [
+                                {
+                                    "type": "image",
+                                    "url": [
+                                        {"config": "visualization_url"},
+                                        "{{{image}}}"
+                                    ],
+                                    "alt": {{{alt}}},
+                                    "width": "{{{width}}}",
+                                    "height": "{{{height}}}",
+                                    "style": "{{{style}}}"
+                                }
+                            ]
+{{/active}}{{/organizations}}
+{{^organizations}}
+                            "url": [
+                                {"config": "visualization_url"},
+                                "?lang=",
+                                {"locale": "lang"}
+                            ],
+                            "content": []
+{{/organizations}}{{/combined}}
+                        },
+                        "items": [
+{{#organizations}}
+                            {
+                                "type": "link",
+                                "id": "organization-{{{organization}}}",
+                                "class": "item{{#active}} is-active{{/active}}",
+                                "url": [
+                                    "{{{hub_url}}}?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "title": {
+                                    "en": "Switch to {{{locale.en}}}",
+                                    "nl": "Wisselen naar {{{locale.nl}}}"
+                                },
+                                "content": {{{content}}}
+                            },
+{{/organizations}}
+                            {
+                                "type": "link",
+                                "id": "organization-combined",
+                                "class": "item{{#combined}} is-active{{/combined}}",
+                                "url": [
+                                    "{{{combined_url}}}?lang=",
+                                    {"locale": "lang"}
+                                ],
+                                "title": {
+                                    "en": "Switch to combined data set",
+                                    "nl": "Wisselen naar gecombineerde dataset"
+                                },
+                                "content": {
+                                    "en": "Combined",
+                                    "nl": "Gecombineerd"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

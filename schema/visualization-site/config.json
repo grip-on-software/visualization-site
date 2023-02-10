@@ -74,6 +74,26 @@
                                 "type": "string",
                                 "pattern": "^[-_0-9a-zA-Z]+$"
                             },
+                            "title": {"$ref": "#/$defs/navbar_locale"},
+                            "locale": {"$ref": "#/$defs/navbar_locale"},
+                            "image": {
+                                "type": "string"
+                            },
+                            "width": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "height": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "style": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri"
+                            },
                             "visualization-site": {
                                 "type": "string",
                                 "pattern": "^[-_0-9a-zA-Z]+$"
@@ -81,6 +101,12 @@
                             "prediction-site": {
                                 "type": "string",
                                 "pattern": "^[-_0-9a-zA-Z]+$"
+                            },
+                            "visualizations": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         }
                     }
@@ -201,6 +227,15 @@
                     }
                 },
                 "unevaluatedProperties": false
+            }
+        },
+        "navbar_locale": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z]{2,3}(-.*)?$": {
+                    "type": "string",
+                    "description": "Localization item for a specific language. Valid languages use two-letter ISO 639-1 language codes plus optional BCP 47 subtags, so only a subset of languages is recognized."
+                }
             }
         },
         "config-visualization": {

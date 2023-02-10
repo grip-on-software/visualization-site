@@ -16,6 +16,7 @@ httpd/*.map
 httpd/*.txt
 /nginx.conf
 nginx/*.conf
+navbar.json
 openapi.json
 lib/test.py
 manifest.js
