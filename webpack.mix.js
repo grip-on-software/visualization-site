@@ -186,6 +186,7 @@ if (!configuration.proxy_nginx) {
     });
 }
 
+const proxy = configuration.proxy_nginx ? 'nginx' : 'httpd';
 const control_host_index = configuration.control_host.indexOf('.');
 const domain_index = configuration.visualization_server.indexOf('.');
 const internal_domain_index = configuration.jenkins_host.indexOf('.');
@@ -361,17 +362,14 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
     },
     jenkins_branches: configuration.jenkins_direct ? '/branches.json':
         `${configuration.jenkins_path}/job/create-prediction/api/json?tree=jobs[name,lastStableBuild[description,duration,timestamp]]`,
-    error_log: _.get(proxy_logs, [
-        configuration.proxy_nginx ? 'nginx' : 'httpd', 'error',
-        process.env.NODE_ENV
-    ], 'error'),
-    rewrite_log: _.get(proxy_logs, [
-        configuration.proxy_nginx ? 'nginx' : 'httpd', 'rewrite',
-        process.env.NODE_ENV
-    ], 'off')
+    error_log: _.get(proxy_logs, [proxy, 'error', process.env.NODE_ENV],
+        'error'
+    ),
+    rewrite_log: _.get(proxy_logs, [proxy, 'rewrite', process.env.NODE_ENV],
+        'off'
+    )
 });
 
-const proxy = configuration.proxy_nginx ? 'nginx' : 'httpd';
 const templates = [
     `${proxy}.conf`, `${proxy}/blog.conf`, `${proxy}/discussion.conf`,
     `${proxy}/prediction.conf`, `${proxy}/visualization.conf`,
