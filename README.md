@@ -251,6 +251,12 @@ otherwise) are known:
   the `docker-compose` tests to provide this path within the Docker instance.
 - `allow_range` (array): CIDR ranges of IP addresses that are allowed to access 
   the access log analytics.
+- `goaccess_path`: Filesystem path to the location where the GoAccess interface 
+  is hosted. The directory should contain an `analytics` subpath which holds 
+  the actual web interface. This can be set to an empty string to disable the 
+  GoAccess endpoint.
+- `goaccess_log_path`: Filesystem path to log file location. Access logs stored 
+  in this path (including rotated and possibly GZip-encoded logs) are followed.
 - `primary_dns`: IP address of an external DNS server that allows Docker 
   instances during the `docker-compose` tests to look up external domain names, 
   aside from those used for the Docker instances. Proper DNS resolution may be 

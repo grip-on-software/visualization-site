@@ -82,5 +82,7 @@
     "proxy_port_in_redirect": false,
     "auth_cert": "wwwgros.crt",
     "allow_range": ["192.168.0.0/16"],
+    "goaccess_path": "/srv/goaccess-report",
+    "goaccess_log_path": "/var/log/apache2",
     "primary_dns": "127.0.0.1"
 }

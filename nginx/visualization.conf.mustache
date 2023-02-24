@@ -39,6 +39,7 @@ location ~ ^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}access {
 }
 {{/control_host}}
 
+{{#goaccess_path}}
 location ~ ^{{#path}}{{{visualization_url}}}{{/path}}analytics {
     set_real_ip_from {{{proxy_range}}};
     real_ip_header X-Forwarded-For;
@@ -47,10 +48,11 @@ location ~ ^{{#path}}{{{visualization_url}}}{{/path}}analytics {
     allow {{{.}}};
     {{/allow_range}}
     deny all;
-    root /srv/goaccess-report;
+    root {{{goaccess_path}}};
     autoindex on;
     access_log /var/log/nginx/analytics_access.log;
 }
+{{/goaccess_path}}
 
 {{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}view {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}
 {{#jenkins_redirect}}^{{{hub_regex}}}{{#path}}{{{visualization_url}}}{{/path}}job {{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}{{/jenkins_redirect}}

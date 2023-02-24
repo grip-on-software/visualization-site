@@ -165,6 +165,12 @@
                         "type": "string"
                     }
                 },
+                "goaccess_path": {
+                    "type": "string"
+                },
+                "goaccess_log_path": {
+                    "type": "string"
+                },
                 "primary_dns": {
                     "type": "string",
                     "oneOf": [

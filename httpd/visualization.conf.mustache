@@ -45,6 +45,7 @@
 {{/jenkins_direct}}
 </LocationMatch>
 
+{{#control_host}}
 # For control host encrypt/access proxy
 SSLProxyEngine on
 SSLProxyCACertificateFile {{{auth_cert}}}
@@ -55,14 +56,19 @@ SSLProxyCheckPeerName off
 
 RemoteIPInternalProxy {{{proxy_range}}}
 RemoteIPHeader X-Forwarded-For
+
+ProxyErrorOverride On
+{{/control_host}}
+
+{{#goaccess_path}}
 <LocationMatch "^{{#path}}{{{visualization_url}}}{{/path}}analytics/">
     Require ip{{#allow_range}} {{{.}}}{{/allow_range}}
     Options Indexes
-    RewriteRule ^{{#path}}{{{visualization_url}}}{{/path}}analytics/ /srv/goaccess-report [L]
-    #CustomLog analytics_access.log main
+    RewriteRule ^{{#path}}{{{visualization_url}}}{{/path}}analytics/ {{{goaccess_path}}} [L,ENV=ANALYTICS:true]
 </LocationMatch>
+CustomLog analytics_access.log main env=ANALYTICS
+{{/goaccess_path}}
 
-ProxyErrorOverride On
 # ErrorDocuments must start with a slash (before expression expansion) in order
 # for it to be considered a local path URL (and not a string).
 ErrorDocument 401 /{{#url}}{{{visualization_server}}}/{{{hub_redirect}}}{{{visualization_url}}}{{/url}}401.html
