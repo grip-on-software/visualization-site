@@ -17,12 +17,15 @@
 # limitations under the License.
 
 CONFIG="config.json"
+if [ ! -z "$VISUALIZATION_SITE_CONFIGURATION" ]; then
+    CONFIG="$VISUALIZATION_SITE_CONFIGURATION"
+fi
 if [ ! -f "$CONFIG" ]; then
     CONFIG="lib/config.json"
 fi
 params="-o $(jq -r .goaccess_path $CONFIG)/analytics/index.html --log-format='%^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" ~h{,\" }' --date-format '%d/%b/%Y' --time-format '%H:%M:%S' --all-static-files --static-file .json"
 if [ ! -z "$GOACCESS_DAEMON" ]; then
-	params="$params --origin=http://$(jq -r .visualization_server $CONFIG) --ws-url=$(jq -r .websocket_server $CONFIG):80 --addr=127.0.0.1 --real-time-html"
+    params="$params --origin=http://$(jq -r .visualization_server $CONFIG) --ws-url=$(jq -r .websocket_server $CONFIG):80 --addr=127.0.0.1 --real-time-html"
 fi
 
 log_path=$(jq -r .goaccess_log_path $CONFIG)

@@ -21,6 +21,9 @@ if [ -z "$VISUALIZATION_NAMES" ]; then
 fi
 
 CONFIG="config.json"
+if [ ! -z "$VISUALIZATION_SITE_CONFIGURATION" ]; then
+    CONFIG="$VISUALIZATION_SITE_CONFIGURATION"
+fi
 if [ ! -f "$CONFIG" ]; then
     CONFIG="lib/config.json"
 fi

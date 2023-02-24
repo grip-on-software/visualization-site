@@ -35,7 +35,9 @@ if (!fs.existsSync(navbar)) {
     navbar = path.resolve(__dirname, 'navbar.json');
 }
 
-let configFile = 'config.json',
+let configFile =
+    typeof process.env.VISUALIZATION_SITE_CONFIGURATION !== "undefined" ?
+    process.env.VISUALIZATION_SITE_CONFIGURATION : 'config.json',
     config = path.resolve(__dirname, configFile);
 if (!fs.existsSync(config)) {
     configFile = 'lib/config.json';

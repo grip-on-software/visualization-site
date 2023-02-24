@@ -87,8 +87,8 @@ rules. All of these results are combined as well into a report.
 
 The visualization dashboard, connections to other servers as well as common 
 elements such as a navigation bar, are all configured in this repository. The 
-main configuration point is the `config.json` file, which can be copied from 
-`lib/config.json` to the root of the repository in order to make local 
+main configuration point is usually the `config.json` file, which can be copied 
+from `lib/config.json` to the root of the repository in order to make local 
 adjustments. The following configuration items (all strings, unless noted 
 otherwise) are known:
 
@@ -246,7 +246,7 @@ otherwise) are known:
   front of it, then this is most likely not wanted. Similarly, if only portions 
   of the configuration files are used, then this is also not useful to enable.
 - `auth_cert`: Filesystem path to a certificate used for validating the HTTPS 
-  connection to the `control_host`. If a `SERVER_CERTIFICATE` environment is 
+  connection to the `control_host`. If a `$SERVER_CERTIFICATE` environment is 
   not set, then this is also used as the path on the Docker host machine during 
   the `docker-compose` tests to provide this path within the Docker instance.
 - `allow_range` (array): CIDR ranges of IP addresses that are allowed to access 
@@ -268,11 +268,10 @@ in the same environment. The value is searched for the substring
 `$organization`, possibly after slashes. These can be replaced with the actual 
 organization that the build is for. In some cases, it is removed only to allow 
 NGINX or Apache rules to add a supported variant of it in front of the path 
-using `hub_regex`. The environment variables `$VISUALIZATION_ORGANIZATION` and 
-`$VISUALIZATION_COMBINED` determine what happens with the substring, as it can 
-also become "/combined" for the latter. The environment variables can also play 
-a role elsewhere, such as in the proxy server configuration and test 
-environment.
+using `hub_regex`, and in other cases, it may be preserved to be adjusted at 
+a later moment within the visualization or hub. Specific [environment 
+variables](#environment-variables) determine how the substring `$organization` 
+is replaced.
 
 Note that configuration items that have keys ending in `_host` or `_server` may 
 be set to "fake" values when only a portion of the final NGINX or Apache 
@@ -280,22 +279,75 @@ configuration is actually used, for example when some resources are not made
 available. The configuration values should still be set to valid domain names 
 so that they can be used within the `docker-compose` network during the tests.
 
-Whereas the configuration file is likely necessary to be copied and changed, 
-there are other files within the repository that can be modified to adjust what 
-is available on the visualization site. We will briefly introduce these files, 
-as adjustments should be considered more like code changes.
+### Environment variables
 
-The navigation bar is configured in `navbar.json` as well as 
-`navbar.$VISUALIZATION_ORGANIZATION.js`. The format is defined in the 
+Several environment variables may be used when calling `npm run` or the Shell 
+scripts, and may affect various contexts, such as resource paths in the HTML 
+pages, the JavaScript-based navigation bar, the proxy server configuration and 
+the test environment. Boolean environment variables must be set to `true` in 
+order to take effect.
+
+- `$VISUALIZATION_ORGANIZATION`: Determines the organization to use within the 
+  URLs defined in the configuration.
+- `$VISUALIZATION_COMBINED` (boolean): Determines whether to replace the 
+  organization within the URL with `/combined`.
+- `$VISUALIZATION_SITE_CONFIGURATION`: Path to the main configuration file, 
+  defaulting to `config.json`. If this file does not exist, then 
+  `lib/config.json` is used.
+- `$PREDICTION_CONFIGURATION`: Path to the configuration file of the 
+  `prediction-site` visualization, which is then used during tests. By default, 
+  the prediction's default configuration is used, which may be incompatible in 
+  some complex combined/organization setups. Other visualizations are tested 
+  with default configuration.
+- `$VISUALIZATION_NAMES`: Optional space-separated list of repository names of 
+  visualizations (excluding `visualization-site` itself) that should be 
+  included in the navigation bar, proxy configuration, test environment setup, 
+  and publishing phase. By default, all visualizations listed in the file 
+  `visualizations.json` are considered.
+- `$VISUALIZATION_MAX_SECONDS` (integer): Number of seconds to wait before are 
+  visualizations are compiled and made available during the test setup. By 
+  default, 60 seconds is allocated, which may be too short for some nodes.
+- `$REPO_ROOT`: Directory to store the Git repositories of the visualizations 
+  during the test setup. Relative to the current directory. By default, `repos` 
+  is created as a subdirectory. If another directory is used, then existing 
+  clones are left as-is with no up-to-dateness checks and dependencies are 
+  backed up so that they do not interfere with the test setup.
+- `$SERVER_CERTIFICATE`: Path to the HTTPS certificate to use in the test setup 
+  when requesting upstream resources for encryption and access checks. By 
+  default, this is the `auth_cert` from the configuration, but this can be set 
+  to use a different path at the host device than in the Docker test setup.
+- `$JENKINS_HOME`: Provided by 
+  [Jenkins](https://www.jenkins.io/doc/book/managing/system-properties/#jenkins_home) 
+  and used by the `copy.sh` script as the root from which to collect artifacts 
+  and visualization HTML reports for publishing.
+- `$BRANCH_NAME`: Provided by [Jenkins Multibranch 
+  Pipeline](https://www.jenkins.io/doc/book/pipeline/multibranch/#additional-environment-variables) 
+  and used by the test environment in order to separate Docker resources when 
+  building dependencies for visualizations under test.
+- `$BUILD_NUMBER`, `$BUILD_TAG`, `$BUILD_URL`, `$NODE_NAME`: Provided by 
+  [Jenkins](https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#using-environment-variables) 
+  and used by the test environment in order to track build context for 
+  reporting and naming purposes.
+
+### Files
+
+Whereas the configuration file, usually located at `config.json`, is likely 
+necessary to be copied (from `lib/config.json`) and changed, there are other 
+files within the repository that can be modified to adjust what is available on 
+the visualization site. We will briefly introduce these files, as adjustments 
+should be considered more like code changes.
+
+The navigation bar is configured in `navbar.json`, with optional 
+contextual overrides in `navbar.$NAVBAR_SCOPE.js`. The format is defined in the 
 `@gros/visualization-ui` package for the `Navbar` class, with the addition that 
 strings can have `$organization` substrings replaced.
 
 The available visualizations are configured in `visualizations.json`. The 
 structure is based on the layout of the dashboard, but the items defined in it 
-also determine which visualizations are actually made available in the proxy 
-server configuration as well as within the tests. The JSON object is used as 
-a Mustache structure within the index template, and so they may contain 
-Mustache items to refer to configuration items.
+also determine which visualizations are actually made available in the 
+proxy server configuration as well as within the tests. The 
+JSON object is used as a Mustache structure within the index template, and so 
+they may contain Mustache items to refer to configuration items.
 
 Localization of the visualization site is in `lib/locales.json`. The messages 
 in it are only used when referred from JavaScript code using the `Locales` 

@@ -24,9 +24,9 @@
 
 if [ -z "$VISUALIZATION_SITE_CONFIGURATION" ]; then
     VISUALIZATION_SITE_CONFIGURATION="config.json"
-    if [ ! -f "$VISUALIZATION_SITE_CONFIGURATION" ]; then
-        VISUALIZATION_SITE_CONFIGURATION="lib/config.json"
-    fi
+fi
+if [ ! -f "$VISUALIZATION_SITE_CONFIGURATION" ]; then
+    VISUALIZATION_SITE_CONFIGURATION="lib/config.json"
 fi
 
 # Comparable integer format for versions - https://stackoverflow.com/a/37939589
