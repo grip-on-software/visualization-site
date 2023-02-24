@@ -136,6 +136,21 @@ pipeline {
                 }
             }
         }
+        stage('Publish non-production') {
+            when { branch '*master' }
+            agent {
+                docker {
+                    image "${env.VISUALIZATION_IMAGE}"
+                    registryUrl "${env.DOCKER_URL}"
+                    registryCredentialsId 'docker-credentials'
+                    reuseNode true
+                }
+            }
+            steps {
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
+                archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,caddy/*.yml,swagger/*.yml,swagger/*.conf,openapi.json,schema/**/*.json'
+            }
+        }
         stage('Build production') {
             when { branch '*master' }
             agent {
