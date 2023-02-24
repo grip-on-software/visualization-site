@@ -6,6 +6,8 @@
             "title": "Welcome to Visualizations from GROS",
             "homepage-description": "Read an introduction to the research at the %s.",
             "homepage-link": "homepage",
+            "javascript-error": "JavaScript must be enabled to use the visualizations.",
+            "anonymized": "Note that this version of the visualizations only provides anonymized data, meaning that some functionality may be limited or missing.",
             "blog": "Blog",
             "discussion": "Discussion",
             "visualizations-title": "Visualizations",
@@ -40,7 +42,7 @@
             "error-50x-header": "Internal server error",
             "error-50x-content": "Try again later or return to the %s.",
             "error-return": "Return to the %s.",
-            "error-return-link": "home page"
+            "error-return-link": "homepage"
         }
     },
     "nl": {
@@ -50,6 +52,8 @@
             "title": "Welkom bij Visualisaties van GROS",
             "homepage-description": "Lees een introductie van het onderzoek op de %s.",
             "homepage-link": "homepage",
+            "javascript-error": "JavaScript moet ingeschakeld zijn om de visualisaties te gebruiken.",
+            "anonymized": "Let op dat deze versie van de visualisaties enkel geanonimiseerde gegevens beschikbaar stelt, wat betekent dat sommige functionaliteit beperkt of ontbrekend is.",
             "blog": "Blog",
             "discussion": "Discussie",
             "visualizations-title": "Visualisaties",
@@ -84,7 +88,7 @@
             "error-50x-header": "Interne serverfout",
             "error-50x-content": "U kunt het later opnieuw proberen of terugkeren naar de %s.",
             "error-return": "U kunt terugkeren naar de %s.",
-            "error-return-link": "hoofdpagina"
+            "error-return-link": "homepage"
         }
     }
 }

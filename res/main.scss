@@ -1,5 +1,6 @@
 .homepage {
     margin-bottom: 1.5rem;
+    color: #161616;
 }
 
 .links .button:not(:last-child) {
@@ -21,7 +22,7 @@
 
 /* Keep the cards at the same height */
 .card {
-    display:flex;
+    display: flex;
     flex-direction: column;
     height: 100%;
 
