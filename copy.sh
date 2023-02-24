@@ -84,7 +84,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
             $COPY "$path/builds/$ID/archive/output/" "$TARGET/$repo/$branch/output"
         elif [[ " $VISUALIZATION_NAMES " =~ " $repo " ]]; then
             mkdir -p "$TARGET/$target/$repo"
-            $COPY "$origin" "$TARGET/$target/$repo"
+            $COPY "$origin/" "$TARGET/$target/$repo"
         fi
 
         if [[ $branch == "master" && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
