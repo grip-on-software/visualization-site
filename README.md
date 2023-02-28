@@ -291,6 +291,9 @@ order to take effect.
   URLs defined in the configuration.
 - `$VISUALIZATION_COMBINED` (boolean): Determines whether to replace the 
   organization within the URL with `/combined`.
+- `$VISUALIZATION_ANONYMIZED` (boolean): Determines whether to show 
+  a notification on the HTML page indicating that the visualizations contain 
+  anonymized data and that some functionality is limited or missing.
 - `$VISUALIZATION_SITE_CONFIGURATION`: Path to the main configuration file, 
   defaulting to `config.json`. If this file does not exist, then 
   `lib/config.json` is used.

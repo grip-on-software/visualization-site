@@ -440,7 +440,9 @@ catch (e) {
 
 // Generage configuration for HTML pages
 const htmlConfiguration = _.assign({}, urlConfiguration, messages,
-    visualizations
+    visualizations, {
+        anonymized: process.env.VISUALIZATION_ANONYMIZED === "true"
+    }
 );
 
 Mix.paths.setRootPath(__dirname);
