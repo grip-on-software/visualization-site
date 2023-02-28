@@ -137,7 +137,7 @@ pipeline {
             }
         }
         stage('Publish non-production') {
-            when { branch '*master' }
+            when { not { branch '*master' } }
             agent {
                 docker {
                     image "${env.VISUALIZATION_IMAGE}"
