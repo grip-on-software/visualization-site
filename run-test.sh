@@ -75,15 +75,27 @@ fi
 
 VISUALIZATION_ENV=$(env -i VISUALIZATION_ORGANIZATION=$VISUALIZATION_ORGANIZATION VISUALIZATION_COMBINED=$VISUALIZATION_COMBINED)
 
+function cleanup_modules() {
+	repo=$1
+	docker ps -q -a --filter "volume=$BRANCH_NAME-$repo-modules" | xargs --no-run-if-empty docker rm -f
+	docker volume rm -f "$BRANCH_NAME-$repo-modules"
+}
+
 function update_repo() {
+	# Path to check out the repository to
 	tree=$1
 	shift
+	# URL from which to obtain the remote repository
 	url=$1
 	shift
-	build_check=$1
+	# Visualization repository name; enables build check/module cleanup if given
+	repo=$1
 	if [ ! -d $tree ]; then
 		echo "Cloning $tree"
 		git clone $url $tree
+		if [ ! -z "$repo" ]; then
+			cleanup_modules "$repo"
+		fi
 	elif [ ! -z "$has_repo_root" ]; then
 		echo "Keeping $tree intact"
 		if [ -d "$tree/node_modules" ]; then
@@ -105,16 +117,15 @@ function update_repo() {
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
-		if [ ! -z "$build_check" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ "$VISUALIZATION_ENV" = "$previous_env" ]; then
+		if [ ! -z "$repo" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ "$VISUALIZATION_ENV" = "$previous_env" ]; then
 			echo "$repo is up to date, skipping build in instance."
 			echo "$VISUALIZATION_ENV" > "$tree/.skip_build"
 		else
 			GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git pull origin master
-			if [ ! -z "$build_check" ]; then
+			if [ ! -z "$repo" ]; then
 				echo "Build of $repo required"
 				rm -f "$tree/.skip_build"
-				docker ps -q -a --filter "volume=$BRANCH_NAME-$repo-modules" | xargs --no-run-if-empty docker stop
-				docker volume rm -f "$BRANCH_NAME-$repo-modules"
+				cleanup_modules "$repo"
 			fi
 		fi
 	fi
@@ -123,7 +134,7 @@ function update_repo() {
 for repo in $VISUALIZATION_NAMES; do
 	tree="$PWD/$REPO_ROOT/$repo"
 	url=$(git config --get remote.origin.url | sed s/visualization-site/$repo/)
-	update_repo "$tree" "$url" 1
+	update_repo "$tree" "$url" "$repo"
 	mkdir -p "$tree/public"
 done
 
