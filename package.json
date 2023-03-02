@@ -8,7 +8,7 @@
     "production": "cross-env NODE_ENV=production webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
     "test": "./run-test.sh",
     "nyc-report": "cross-env NODE_ENV=test nyc report --temp-dir test/coverage/output --reporter lcov --report-dir test/coverage",
-    "axe-report": "cross-env NODE_ENV=test node axe-report.js && tr '\\r' '\\n' < test/accessibility/report.txt.csv > test/accessibility/report.csv"
+    "axe-report": "cross-env NODE_ENV=test node axe-report.js && [ -f test/accessibility/report.txt.csv ] && tr '\\r' '\\n' < test/accessibility/report.txt.csv > test/accessibility/report.csv || exit 0"
   },
   "devDependencies": {
     "@ictu/axe-reports": "^1.1.11",
@@ -17,7 +17,7 @@
     "babel-loader": "^9.1.2",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-preset-env": "^1.7.0",
-    "browser-sync": "^2.27.12",
+    "browser-sync": "^2.28.1",
     "browser-sync-webpack-plugin": "^2.3.0",
     "express": "^4.18.2",
     "html-webpack-plugin": "^5.5.0",

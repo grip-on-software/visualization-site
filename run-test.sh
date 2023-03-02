@@ -202,7 +202,7 @@ for name in $VISUALIZATION_NAMES; do
 done
 echo "Starting test"
 
-docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py
+docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py -v
 status=$?
 
 container_logs

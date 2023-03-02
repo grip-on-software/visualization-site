@@ -20,6 +20,7 @@ limitations under the License.
 from contextlib import closing
 import errno
 import html
+from http.client import BadStatusLine
 import json
 import os
 import re
@@ -33,13 +34,9 @@ from urllib.request import Request, urlopen
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.remote.remote_connection import RemoteConnection
+from selenium.webdriver.support.wait import WebDriverWait
 from axe_selenium_python import Axe
-
-try:
-    from httplib import BadStatusLine
-except ImportError:
-    from http.client import BadStatusLine
 
 def skip_unless_visualization(name):
     """
@@ -59,9 +56,14 @@ class IntegrationTest(unittest.TestCase):
     environment of the visualization hub instances.
     """
 
+    # Timeout and poll frequency for setting up the remote driver.
     DRIVER_POLL_TIMEOUT = 2.5
     DRIVER_POLL_FREQUENCY = 0.5
 
+    # Global connection timeout for the remote driver.
+    CONNECTION_TIMEOUT = 10
+
+    # Timeout and poll frequency for waiting for element changes.
     WAIT_TIMEOUT = 5
     WAIT_FREQUENCY = 0.5
 
@@ -70,7 +72,7 @@ class IntegrationTest(unittest.TestCase):
         # Connect to the remote executor. Exceptions may be thrown when the
         # Selenium server is not yet set up.
         try:
-            url = 'http://selenium.test:4444/wd/hub'
+            url = 'http://selenium.test:4444'
             capabilities = DesiredCapabilities.CHROME
             capabilities['loggingPrefs'] = {'browser': 'ALL'}
             options = Options()
@@ -107,6 +109,7 @@ class IntegrationTest(unittest.TestCase):
         return urljoin(base, url)
 
     def setUp(self):
+        RemoteConnection.set_timeout(self.CONNECTION_TIMEOUT)
         self._driver = self._setup_driver()
         tries = 0
         while self._driver is None and tries < self.DRIVER_POLL_TIMEOUT:
@@ -133,6 +136,9 @@ class IntegrationTest(unittest.TestCase):
         if self._driver is None or self._outcome is None or \
             self._outcome.result is None or \
             getattr(self._outcome.result, 'reporter', None) is None:
+            if self._driver is not None:
+                self._driver.quit()
+                self._driver = None
             return
 
         reporter = self._outcome.result.reporter
@@ -170,4 +176,5 @@ class IntegrationTest(unittest.TestCase):
         report = html.escape(axe.report(accessibility["violations"]))
         reporter.write_accessibility(self.id(), report)
 
-        self._driver.close()
+        self._driver.quit()
+        self._driver = None

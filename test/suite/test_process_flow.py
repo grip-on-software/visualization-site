@@ -39,7 +39,7 @@ class ProcessFlowTest(IntegrationTest):
         element = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
+        self.assertEqual(len(element.find_elements(By.TAG_NAME, 'li')), 1)
 
         self._wait_for(expected_conditions.text_to_be_present_in_element(
             (By.CSS_SELECTOR, '#slider output'), '5'
@@ -48,7 +48,7 @@ class ProcessFlowTest(IntegrationTest):
         graph = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'graph')
         ))
-        self.assertEqual(len(graph.find_elements_by_class_name('node')), 7)
+        self.assertEqual(len(graph.find_elements(By.CLASS_NAME, 'node')), 7)
         # There is a total of 12 links but two (Open -> Resolved Won't Fix and
         # Open -> Closed Redundant) are not shown by default.
-        self.assertEqual(len(graph.find_elements_by_class_name('edge')), 10)
+        self.assertEqual(len(graph.find_elements(By.CLASS_NAME, 'edge')), 10)

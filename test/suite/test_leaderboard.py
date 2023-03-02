@@ -40,7 +40,7 @@ class LeaderboardTest(IntegrationTest):
         element = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(element.find_elements_by_tag_name('li')), 1)
+        self.assertEqual(len(element.find_elements(By.TAG_NAME, 'li')), 1)
 
     @skip_unless_visualization("leaderboard")
     def test_leaderboard_sort(self):
@@ -54,7 +54,7 @@ class LeaderboardTest(IntegrationTest):
         cards = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'cards')
         ))
-        self.assertEqual(len(cards.find_elements_by_class_name('card')), 15)
+        self.assertEqual(len(cards.find_elements(By.CLASS_NAME, 'card')), 15)
 
         num_sprints = 9.
         num_repos = 4.
@@ -79,15 +79,17 @@ class LeaderboardTest(IntegrationTest):
         ])
         titles = lambda cards: [
             title.text
-            for title in cards.find_elements_by_class_name('card-title')
+            for title in cards.find_elements(By.CLASS_NAME, 'card-title')
         ]
 
         self.assertEqual(titles(cards), list(features.keys()))
 
-        driver.find_element_by_css_selector('.radio input[value="feature"]').click()
+        driver.find_element(By.CSS_SELECTOR,
+                            '.radio input[value="feature"]').click()
         self.assertEqual(titles(cards), list(sorted(features.keys())))
 
-        driver.find_element_by_css_selector('.radio input[value="group"]').click()
+        driver.find_element(By.CSS_SELECTOR,
+                            '.radio input[value="group"]').click()
 
         group_sort = lambda name: (len(features[name][0]), features[name][0]) \
             if isinstance(features[name][0], tuple) else (1, (features[name][0],))
@@ -95,12 +97,13 @@ class LeaderboardTest(IntegrationTest):
                          list(sorted(features.keys(),
                                      key=lambda name: (group_sort(name), name))))
 
-        driver.find_element_by_css_selector('.radio input[value="score"]').click()
+        driver.find_element(By.CSS_SELECTOR,
+                            '.radio input[value="score"]').click()
         self.assertEqual(titles(cards),
                          list(sorted(features.keys(),
                                      key=lambda name: features[name][1])))
 
-        icon = cards.find_element_by_css_selector('.card-header-icon a')
+        icon = cards.find_element(By.CSS_SELECTOR, '.card-header-icon a')
         icon.click()
 
         self._wait_for(expected_conditions.staleness_of(icon))
@@ -111,4 +114,5 @@ class LeaderboardTest(IntegrationTest):
         card = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'card')
         ))
-        self.assertEqual(card.find_element_by_class_name('ellipsized-title').text, 'P1')
+        self.assertEqual(card.find_element(By.CLASS_NAME,
+                                           'ellipsized-title').text, 'P1')

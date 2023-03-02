@@ -41,10 +41,10 @@ class TimelineTest(IntegrationTest):
         labels = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#chart-holder svg .labels')
         ))
-        self.assertEqual(len(labels.find_elements_by_tag_name('text')), 1)
+        self.assertEqual(len(labels.find_elements(By.TAG_NAME, 'text')), 1)
 
         # Test the weekday scale selector.
-        weekday = driver.find_element_by_css_selector('[data-weekday-scale]')
+        weekday = driver.find_element(By.CSS_SELECTOR, '[data-weekday-scale]')
         weekday.click()
 
         self._wait_for(expected_conditions.staleness_of(labels))
@@ -63,26 +63,24 @@ class TimelineTest(IntegrationTest):
         sprint = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'line-drop-0-0')
         ))
-        zoom_out = driver.find_element_by_css_selector('[data-zoom="-1"]')
+        zoom_out = driver.find_element(By.CSS_SELECTOR, '[data-zoom="-1"]')
         zooms = 0
         while zooms < 5 and sprint.location['x'] < x_axis.location['x']:
             zoom_out.click()
             time.sleep(1)
             zooms += 1
 
-        hover = ActionChains(driver)
-        hover.move_to_element_with_offset(sprint, 1, 1).perform()
+        ActionChains(driver).move_to_element(sprint).perform()
 
         tooltip = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'tooltip')
         ))
-        self.assertIn("Start", tooltip.find_element_by_tag_name('h3').text)
+        self.assertIn("Start", tooltip.find_element(By.TAG_NAME, 'h3').text)
 
-        hover = ActionChains(driver)
-        hover.move_to_element_with_offset(sprint, 1, 1).click().perform()
+        ActionChains(driver).move_to_element(sprint).click().perform()
 
         burndown = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#subchart-holder .burndown-chart')
         ))
         self._wait_for(expected_conditions.staleness_of(tooltip))
-        self.assertEqual(len(burndown.find_elements_by_tag_name('circle')), 6)
+        self.assertEqual(len(burndown.find_elements(By.TAG_NAME, 'circle')), 6)
