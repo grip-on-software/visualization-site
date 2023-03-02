@@ -297,6 +297,9 @@ order to take effect.
   URLs defined in the configuration.
 - `$VISUALIZATION_COMBINED` (boolean): Determines whether to replace the 
   organization within the URL with `/combined`.
+- `$NAVBAR_SCOPE`: Determines the navigation bar override file to use. If the 
+  file `navbar.$NAVBAR_SCOPE.js` exists, then it is loaded in place of the 
+  generated `navbar.json` file. See [files](#files) for more details.
 - `$VISUALIZATION_ANONYMIZED` (boolean): Determines whether to show 
   a notification on the HTML page indicating that the visualizations contain 
   anonymized data and that some functionality is limited or missing.
@@ -351,14 +354,19 @@ contextual overrides in `navbar.$NAVBAR_SCOPE.js`. The format is defined in the
 `@gros/visualization-ui` package for the `Navbar` class, with the addition that 
 URLs can have `$organization` substrings replaced, and various Mustache 
 operations can take place to fill the navigation bar with menus/links defined 
-elsewhere, such as visualizations and organizations.
+elsewhere, such as visualizations and organizations. `navbar.$NAVBAR_SCOPE.js` 
+should, if used, refer to `navbar.json` and use simple JavaScript operations to 
+augment it, though the use of this file may not be necessary when specifics for 
+an organization can be set by changing other files, such as `config.json` and 
+`visualizations.json`.
 
 The available visualizations are configured in `visualizations.json`. The 
 structure is based on the layout of the dashboard, but the items defined in it 
 also determine which visualizations are actually made available in the 
 navigation bar, proxy server configuration as well as within the tests. The 
-JSON object is used as a Mustache structure within the index template, and so 
-they may contain Mustache items to refer to configuration items.
+JSON object is used as a Mustache structure within the index template and the 
+navigation bar, and so they may contain Mustache items to refer to certain
+configuration items, such as URLs.
 
 Localization of the visualization site is in `lib/locales.json`. The messages 
 in it are only used when referred from JavaScript code using the `Locales` 
