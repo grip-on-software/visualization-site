@@ -138,12 +138,18 @@ otherwise) are known:
   to the predictions. This name should point (possibly via a Caddy proxy) 
   toward the NGINX or Apache proxy that makes the server available.
 - `hub_organizations` (array): When multiple organizations are hosted in the 
-  same environment, an array of objects containing organizations and branch 
-  names can be used to provide a build and dummy data for visualizations on 
-  multiple branches. Currently, only the `visualization-site` and 
-  `prediction-site` visualizations are considered as keys in each object, and 
-  they should provide a branch name that the `visualization_branch` and 
-  `prediction_branch` may point to, respectively.
+  same environment, an array of objects containing organizations, navigation 
+  data and branch names can be added to make them available cross-builds. For 
+  tests, they provide a build and serve dummy data for visualizations on 
+  multiple branches. The test routes only consider the `visualization-site` and 
+  `prediction-site` as keys in each object, and their values should provide 
+  a branch name that the `visualization_branch` and `prediction_branch` may 
+  respectively point to for NGINX testing, or the branch names generated using 
+  `hub_mapping` for Apache testing. The organizations objects in this array 
+  also define how items in a navigation bar dropdown should appear, with 
+  titles, content/alternative text locales, images (plus width/height/style 
+  attributes) and external URLs. Finally, a key `visualizations` may have an 
+  array value with the visualizations that the organization's hub hosts.
 - `hub_regex`: When multiple organizations are hosted in the same environment, 
   a regular expression can be used to match the organization name which must 
   occur at the start of the path, and place the matched parts into variables 
@@ -340,15 +346,17 @@ files within the repository that can be modified to adjust what is available on
 the visualization site. We will briefly introduce these files, as adjustments 
 should be considered more like code changes.
 
-The navigation bar is configured in `navbar.json`, with optional 
+The navigation bar is configured in `navbar.json.mustache`, with optional 
 contextual overrides in `navbar.$NAVBAR_SCOPE.js`. The format is defined in the 
 `@gros/visualization-ui` package for the `Navbar` class, with the addition that 
-strings can have `$organization` substrings replaced.
+URLs can have `$organization` substrings replaced, and various Mustache 
+operations can take place to fill the navigation bar with menus/links defined 
+elsewhere, such as visualizations and organizations.
 
 The available visualizations are configured in `visualizations.json`. The 
 structure is based on the layout of the dashboard, but the items defined in it 
 also determine which visualizations are actually made available in the 
-proxy server configuration as well as within the tests. The 
+navigation bar, proxy server configuration as well as within the tests. The 
 JSON object is used as a Mustache structure within the index template, and so 
 they may contain Mustache items to refer to configuration items.
 

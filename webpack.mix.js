@@ -29,11 +29,7 @@ const message = (key) => `<span data-message="${key}">${spec.en.messages[key]}</
 const messages = _.transform(spec.en.messages, (result, value, key) => {
     result[`message-${key}`] = message(key);
 }, {});
-
-let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
-if (!fs.existsSync(navbar)) {
-    navbar = path.resolve(__dirname, 'navbar.json');
-}
+const locale = (key) => _.mapValues(spec, language => language.messages[key]);
 
 let configFile =
     typeof process.env.VISUALIZATION_SITE_CONFIGURATION !== "undefined" ?
@@ -95,6 +91,7 @@ visualizations.groups = _.map(visualizations.groups,
             download: typeof item.download !== "undefined" ?
                 mustache.render(item.download, urlConfiguration) :
                 `${urlConfiguration.download_url}${item.id}.zip`,
+            icon_parts: item.icon,
             icon: `<span class="icon">
                 <i class="${_.map(item.icon, (part, i) => i === 0 ? part : `fa-${part}`).join(' ')}" aria-hidden="true"></i>
             </span>`,
@@ -392,14 +389,111 @@ templates.forEach((template) => {
 
 // Generate configuration to import into the navbar builder
 const jsConfiguration = _.assign({}, _.pickBy(configuration,
-    (value, key) => key.endsWith('_url')
+    (value, key) => !key.startsWith('jenkins_direct') && key.endsWith('url')
 ), {
     organization:
-    typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
-    process.env.VISUALIZATION_ORGANIZATION : ''
+        typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+        process.env.VISUALIZATION_ORGANIZATION : '',
+    visualizations: _.assign({}, _.mapValues(
+        _.keyBy(configuration.hub_organizations, 'organization'),
+        'visualizations'
+    ), {combined: ["prediction"]})
 });
 const configAlias = path.resolve(__dirname, 'config-alias.json');
 fs.writeFileSync(configAlias, JSON.stringify(jsConfiguration));
+
+const combinedUrl = configuration.prediction_url.replace("/$organization",
+    "/combined"
+);
+// URLs in navbar should be rendered as, e.g., {"config": "visualization_url"}
+// so that the expansion can take place later, which is relevant for combined
+// visualizations for example, where we may want it to lead to a visualization
+// for the main organization instead, or for switching organizations.
+const delayedUrlConfiguration = _.assign({}, _.mapValues(jsConfiguration,
+    (url, key) => key.endsWith('_url') ? JSON.stringify({config: key}) : url
+), {
+    config: function() {
+        return function(text, render) {
+            return _.map(_.filter(text.split(/({{{?[^}]+}}}?)/), bit => bit),
+                bit => bit.startsWith('{') ? render(bit) : JSON.stringify(bit)
+            ).join(', ');
+        };
+    }
+});
+const navbarConfiguration = _.assign({}, delayedUrlConfiguration, {
+    alt: function() {
+        return this.locale ? JSON.stringify(this.locale) :
+            this.organization;
+    },
+    content: function() {
+        return this.title ? JSON.stringify(this.title) : this.organization;
+    },
+    organizations: _.map(configuration.hub_organizations,
+        (org, index) => _.assign({}, org, {
+            active: process.env.VISUALIZATION_COMBINED !== "true" &&
+                (org.organization === process.env.VISUALIZATION_ORGANIZATION ||
+                    index === 0 &&
+                    typeof process.env.VISUALIZATION_ORGANIZATION === "undefined"
+                ),
+            hub_url: configuration.visualization_url.replace(
+                "/$organization", `/${org.organization}`
+            )
+        })
+    ),
+    combined: process.env.VISUALIZATION_COMBINED === "true",
+    combined_url: combinedUrl,
+    visualizations: _.map(visualizations.groups, (group, index) => {
+        const items = _.reduce(group.items, (result, item) => {
+            if (!item.index) {
+                return result;
+            }
+            const url = item.url || `{{{visualization_url}}}${item.id}`;
+            const visualizationUrl = mustache.render(
+                `{{#config}}${url}{{/config}}`, delayedUrlConfiguration
+            );
+            const languageParameter = item.language_parameter ?
+                `?${item.language_parameter}=` : '?';
+            const titles = locale(`${item.id}-title`);
+            result.push(`
+                            {
+                                "type": "link",
+                                "id": "visualization-${item.id}",
+                                "url": [
+                                    ${visualizationUrl},
+                                    ${JSON.stringify(languageParameter)},
+                                    {"locale": "lang"}
+                                ],
+                                "icon": ${JSON.stringify(item.icon_parts)},
+                                "content": ${JSON.stringify(titles)}
+                            }`
+            );
+            return result;
+        }, []);
+        if (!_.isEmpty(items) &&
+            index !== visualizations.groups.length - 1) {
+            items.push(`
+                            {
+                                "type": "divider"
+                            }`
+            );
+        }
+        return items.join(',');
+    }).join(',')
+});
+try {
+    fs.writeFileSync("navbar.json",
+        mustache.render(fs.readFileSync(`navbar.json.mustache`, 'utf8'),
+            navbarConfiguration
+        )
+    );
+}
+catch (e) {
+    throw new Error('Could not render navbar.json.mustache', {cause: e});
+}
+let navbar = path.resolve(__dirname, `navbar.${process.env.NAVBAR_SCOPE}.js`);
+if (!fs.existsSync(navbar)) {
+    navbar = path.resolve(__dirname, 'navbar.json');
+}
 
 // Generate prediction API specification configuration
 const predictionPaths = _.flatten(_.map(_.concat(_.keys(_.get(configuration,

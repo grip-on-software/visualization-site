@@ -13,6 +13,7 @@ $subtitle-weight: $weight-light;
 @import "node_modules/bulma/sass/elements/_all";
 @import "node_modules/bulma/sass/components/_all";
 @import "node_modules/bulma/sass/grid/_all";
+@import "node_modules/bulma/sass/helpers/_all";
 @import "node_modules/bulma/sass/layout/_all";
 
 @mixin fullscreen {
@@ -46,9 +47,46 @@ $subtitle-weight: $weight-light;
     }
 }
 
-.navbar .navbar-dropdown .navbar-item .icon:only-child {
-    margin-left: 0;
-    margin-right: 0;
+.navbar {
+    .navbar-item {
+        @include from($navbar-breakpoint) {
+            &.is-fullsized {
+                padding: 0;
+            }
+        }
+        &.has-icon .icon:only-child {
+            margin-right: 0;
+        }
+    }
+    .has-dropdown {
+        &:not(.is-focus) {
+            @include until($navbar-breakpoint) {
+                .navbar-link::after {
+                    @include reset
+                }
+            }
+        }
+        &.is-focus {
+            @include until($navbar-breakpoint) {
+                &:not(.is-active) {
+                    &:focus, &:focus-within {
+                        .navbar-link::after {
+                            transform: rotate(135deg) translate(0.25em, -0.25em)
+                        }
+                        .navbar-dropdown {
+                            display: none
+                        }
+                    }
+                }
+            }
+        }
+        .navbar-dropdown {
+            .navbar-item .icon:only-child {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    }
 }
 .tabs ul {
     width: 100%;
