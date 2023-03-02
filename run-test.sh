@@ -101,6 +101,7 @@ function update_repo() {
 			previous_env="no previous build"
 		fi
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git reset --hard
+		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git remote set-url origin $url
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
