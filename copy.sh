@@ -80,7 +80,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
         if [ ! -d "$origin" ]; then
             origin="$path/htmlreports/Visualization/"
         fi
-        if [[ $repo == "visualization-site" ]]; then
+        if [[ $repo == "visualization-site" || $repo == "prediction-site" ]]; then
             mkdir -p "$TARGET/$target"
             $COPY_APPEND "$origin/" "$TARGET/$target"
         elif [[ $repo == "prediction" ]]; then
