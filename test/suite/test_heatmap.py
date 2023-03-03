@@ -40,7 +40,7 @@ class HeatmapTest(IntegrationTest):
         element = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'projectPicker')
         ))
-        self.assertEqual(len(element.find_elements_by_tag_name('li')), 2)
+        self.assertEqual(len(element.find_elements(By.TAG_NAME, 'li')), 2)
 
     @skip_unless_visualization("heatmap")
     def test_heatmap_tooltip(self):
@@ -54,13 +54,13 @@ class HeatmapTest(IntegrationTest):
         year = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'days')
         ))
-        days = year.find_elements_by_class_name('day-group')
+        days = year.find_elements(By.CLASS_NAME, 'day-group')
         self.assertEqual(len(days), 365)
         day = days[101]
-        hover = ActionChains(driver)
-        hover.move_to_element_with_offset(day, 1, 1).click().perform()
+        ActionChains(driver).move_to_element(day).click().perform()
 
         tooltip = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'tooltip')
         ))
-        self.assertIn("April 12, 2018", tooltip.find_element_by_tag_name('h3').text)
+        self.assertIn("April 12, 2018",
+                      tooltip.find_element(By.TAG_NAME, 'h3').text)

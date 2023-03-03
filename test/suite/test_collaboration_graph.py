@@ -40,9 +40,9 @@ class CollaborationGraphTest(IntegrationTest):
         links = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, 'svg#graph .links')
         ))
-        self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
-        nodes = driver.find_element_by_css_selector('svg#graph .nodes')
-        self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
+        self.assertEqual(len(links.find_elements(By.TAG_NAME, 'line')), 3)
+        nodes = driver.find_element(By.CSS_SELECTOR, 'svg#graph .nodes')
+        self.assertEqual(len(nodes.find_elements(By.TAG_NAME, 'circle')), 5)
 
     @skip_unless_visualization("collaboration-graph")
     def test_collaboration_graph_extern(self):
@@ -56,9 +56,9 @@ class CollaborationGraphTest(IntegrationTest):
         nodes = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, 'svg#graph .nodes')
         ))
-        circle = nodes.find_elements_by_tag_name('circle')[2]
+        circle = nodes.find_elements(By.TAG_NAME, 'circle')[2]
 
-        button = driver.find_element_by_css_selector('.regular-option')
+        button = driver.find_element(By.CSS_SELECTOR, '.regular-option')
         button.click()
         self._wait_for(expected_conditions.invisibility_of_element_located(circle))
 
@@ -76,9 +76,9 @@ class CollaborationGraphTest(IntegrationTest):
         nodes = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, 'svg#graph .nodes')
         ))
-        circles = nodes.find_elements_by_tag_name('circle')
+        circles = nodes.find_elements(By.TAG_NAME, 'circle')
 
-        search = driver.find_element_by_css_selector('input.regular-option')
+        search = driver.find_element(By.CSS_SELECTOR, 'input.regular-option')
         search.send_keys('A')
 
         time.sleep(5)
@@ -98,14 +98,16 @@ class CollaborationGraphTest(IntegrationTest):
         ))
         button.click()
 
-        self.assertEqual(len(driver.find_elements_by_css_selector('.regular-option[disabled]')), 2)
+        self.assertEqual(len(driver.find_elements(By.CSS_SELECTOR,
+                                                  '.regular-option[disabled]')),
+                         2)
 
         buttons = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#options .buttons')
         ))
-        pause = buttons.find_element_by_id('pauseButton')
-        slower = buttons.find_element_by_css_selector('.slower')
-        faster = buttons.find_element_by_css_selector('.faster')
+        pause = buttons.find_element(By.ID, 'pauseButton')
+        slower = buttons.find_element(By.CSS_SELECTOR, '.slower')
+        faster = buttons.find_element(By.CSS_SELECTOR, '.faster')
 
         self.assertEqual(pause.get_attribute("data-tooltip"), "Pause")
         self.assertIsNone(slower.get_attribute("disabled"))
@@ -125,10 +127,10 @@ class CollaborationGraphTest(IntegrationTest):
         ))
         self.assertEqual(title.text, "August 2017")
 
-        links = driver.find_element_by_css_selector('svg#graph .links')
-        self.assertEqual(len(links.find_elements_by_tag_name('line')), 2)
-        nodes = driver.find_element_by_css_selector('svg#graph .nodes')
-        self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 3)
+        links = driver.find_element(By.CSS_SELECTOR, 'svg#graph .links')
+        self.assertEqual(len(links.find_elements(By.TAG_NAME, 'line')), 2)
+        nodes = driver.find_element(By.CSS_SELECTOR, 'svg#graph .nodes')
+        self.assertEqual(len(nodes.find_elements(By.TAG_NAME, 'circle')), 3)
 
         self._wait_for(expected_conditions.presence_of_element_located(
             (By.CSS_SELECTOR, '.fa-stop')
@@ -140,7 +142,7 @@ class CollaborationGraphTest(IntegrationTest):
             (By.CSS_SELECTOR, 'svg#graph .nodes .node:nth-child(5)')
         ))
 
-        links = driver.find_element_by_css_selector('svg#graph .links')
-        self.assertEqual(len(links.find_elements_by_tag_name('line')), 3)
-        nodes = driver.find_element_by_css_selector('svg#graph .nodes')
-        self.assertEqual(len(nodes.find_elements_by_tag_name('circle')), 5)
+        links = driver.find_element(By.CSS_SELECTOR, 'svg#graph .links')
+        self.assertEqual(len(links.find_elements(By.TAG_NAME, 'line')), 3)
+        nodes = driver.find_element(By.CSS_SELECTOR, 'svg#graph .nodes')
+        self.assertEqual(len(nodes.find_elements(By.TAG_NAME, 'circle')), 5)

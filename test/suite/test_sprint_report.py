@@ -55,15 +55,16 @@ class SprintReportFormatTable(SprintReportFormatTest):
         return (By.CSS_SELECTOR, '#format-content table')
 
     def test(self, runner, element):
-        runner.assertEqual(len(element.find_elements_by_tag_name('tbody')), 1)
-        project = element.find_element_by_class_name('project')
-        runner.assertEqual(len(project.find_elements_by_class_name('sprint')),
+        runner.assertEqual(len(element.find_elements(By.TAG_NAME, 'tbody')), 1)
+        project = element.find_element(By.CLASS_NAME, 'project')
+        runner.assertEqual(len(project.find_elements(By.CLASS_NAME, 'sprint')),
                            1)
-        runner.assertEqual(project.find_element_by_class_name('board').text,
+        runner.assertEqual(project.find_element(By.CLASS_NAME, 'board').text,
                            'Proj1')
-        runner.assertEqual(project.find_element_by_class_name('display-name').text,
+        runner.assertEqual(project.find_element(By.CLASS_NAME,
+                                                'display-name').text,
                            'Project1')
-        runner.assertEqual(len(element.find_elements_by_class_name('feature')),
+        runner.assertEqual(len(element.find_elements(By.CLASS_NAME, 'feature')),
                            3)
 
 class SprintReportFormatChart(SprintReportFormatTest):
@@ -80,7 +81,8 @@ class SprintReportFormatChart(SprintReportFormatTest):
 
     def test(self, runner, element):
         for selector, count in self.selectors:
-            runner.assertEqual(len(element.find_elements_by_css_selector(selector)), count)
+            runner.assertEqual(len(element.find_elements(By.CSS_SELECTOR,
+                                                         selector)), count)
 
 class SprintReportExportTest:
     """
@@ -171,12 +173,12 @@ class SprintReportTest(IntegrationTest):
         items = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
-        item = items.find_element_by_css_selector('li:last-child')
+        self.assertEqual(len(items.find_elements(By.TAG_NAME, 'li')), 3)
+        item = items.find_element(By.CSS_SELECTOR, 'li:last-child')
         item.click()
 
         # Format options
-        options = driver.find_element_by_id('format')
+        options = driver.find_element(By.ID, 'format')
         formats = {
             'table': SprintReportFormatTable(),
             'line_chart': SprintReportFormatChart([
@@ -198,7 +200,7 @@ class SprintReportTest(IntegrationTest):
         }
         old_display = None
         for name, formatter in formats.items():
-            item = options.find_element_by_id(f'format-{name}')
+            item = options.find_element(By.ID, f'format-{name}')
             item.click()
 
             if old_display is not None:
@@ -224,25 +226,29 @@ class SprintReportTest(IntegrationTest):
         items = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        item = items.find_element_by_css_selector('li:last-child')
+        item = items.find_element(By.CSS_SELECTOR, 'li:last-child')
         item.click()
 
         # Format option: Line chart
-        item = driver.find_element_by_id('format-line_chart')
+        item = driver.find_element(By.ID, 'format-line_chart')
         item.click()
 
         chart = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'chart')
         ))
+        # Move cursor into chart, wait until the chart is fully loaded, then
+        # move to a location where we can get a focus element. Move again and
+        # see if the focus properly becomes loaded.
         hover = ActionChains(driver)
-        hover.move_to_element_with_offset(chart, 200, 200).pause(0.5)
-        hover.move_to_element_with_offset(chart, 480, 250).click()
+        hover.move_to_element(chart).pause(0.5).scroll_to_element(chart)
+        hover.move_to_element_with_offset(chart, -280, 0).pause(0.5)
+        hover.move_to_element_with_offset(chart, 0, 0).click()
         hover.perform()
 
         focus = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CLASS_NAME, 'focus')
         ))
-        details = focus.find_elements_by_tag_name('tspan')
+        details = focus.find_elements(By.TAG_NAME, 'tspan')
         # 3 sprint metadata (name, number, close date) + 3 features with
         # 3 tspan elements each (wrapper, feature name, value)
         self.assertEqual(len(details), 12)
@@ -260,8 +266,8 @@ class SprintReportTest(IntegrationTest):
         items = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
-        item = items.find_element_by_css_selector('li:last-child')
+        self.assertEqual(len(items.find_elements(By.TAG_NAME, 'li')), 3)
+        item = items.find_element(By.CSS_SELECTOR, 'li:last-child')
         item.click()
 
         icon = self._wait_for(expected_conditions.visibility_of_element_located(
@@ -273,7 +279,7 @@ class SprintReportTest(IntegrationTest):
             (By.CSS_SELECTOR, '#sources th.project')
         ))
         self.assertEqual(project.text, 'Proj1')
-        sources = driver.find_elements_by_css_selector('#sources tbody tr')
+        sources = driver.find_elements(By.CSS_SELECTOR, '#sources tbody tr')
         self.assertEqual(len(sources), 5)
 
     @skip_unless_visualization("sprint-report")
@@ -289,27 +295,27 @@ class SprintReportTest(IntegrationTest):
         items = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(items.find_elements_by_tag_name('li')), 3)
-        item = items.find_element_by_css_selector('li:last-child')
+        self.assertEqual(len(items.find_elements(By.TAG_NAME, 'li')), 3)
+        item = items.find_element(By.CSS_SELECTOR, 'li:last-child')
         item.click()
 
         table = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#format-content table')
         ))
-        expand = table.find_element_by_css_selector('.fa-expand')
+        expand = table.find_element(By.CSS_SELECTOR, '.fa-expand')
         expand.click()
 
         details = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, 'table.details')
         ))
-        rows = details.find_elements_by_css_selector('tr.detail')
+        rows = details.find_elements(By.CSS_SELECTOR, 'tr.detail')
         self.assertEqual(len(rows), 3)
         self.assertEqual([
-            row.find_element_by_css_selector('td:first-child a').text
+            row.find_element(By.CSS_SELECTOR, 'td:first-child a').text
             for row in rows
         ], ["P1-198", "P1-224", "P1-301"])
         self.assertEqual([
-            row.find_element_by_css_selector('td:last-child').text
+            row.find_element(By.CSS_SELECTOR, 'td:last-child').text
             for row in rows
         ], ["2", "5", "0.5"])
 
@@ -342,7 +348,7 @@ class SprintReportTest(IntegrationTest):
                                                 'Copied link to the clipboard')
         }
         for exporter, test_case in exports.items():
-            button = export.find_element_by_id(f'export-{exporter}')
+            button = export.find_element(By.ID, f'export-{exporter}')
             button.click()
             self.assertTrue(test_case.test(button),
                             test_case.get_message(exporter))

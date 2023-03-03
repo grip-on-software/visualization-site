@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from selenium.webdriver.common.by import By
 from .base import IntegrationTest
 
 class VisualizationSiteTest(IntegrationTest):
@@ -54,7 +55,7 @@ class VisualizationSiteTest(IntegrationTest):
 
         driver = self._driver
         driver.get(self._visualization_url)
-        container = driver.find_element_by_id('navbar')
-        fullscreen = container.find_element_by_class_name('navbar-fullscreen')
+        container = driver.find_element(By.ID, 'navbar')
+        fullscreen = container.find_element(By.CLASS_NAME, 'navbar-fullscreen')
         fullscreen.click()
         self.assertEqual(driver.get_window_position(), {'x': 0, 'y': 0})

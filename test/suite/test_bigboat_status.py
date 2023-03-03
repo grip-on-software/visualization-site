@@ -40,17 +40,17 @@ class BigboatStatusTest(IntegrationTest):
         element = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'content')
         ))
-        self.assertIn("TEST", element.find_element_by_tag_name('h2').text)
+        self.assertIn("TEST", element.find_element(By.TAG_NAME, 'h2').text)
         self.assertEqual("http://www.dashboard.test/",
-            element.find_element_by_id('source-url').get_attribute('href')
+            element.find_element(By.ID, 'source-url').get_attribute('href')
         )
         self.assertIn("2017-06-27 09:00:39",
-                      element.find_element_by_id('last-checked').text)
+                      element.find_element(By.ID, 'last-checked').text)
 
         graph = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'average-reliability')
         ))
-        ActionChains(driver).move_to_element_with_offset(graph, 480, 250).click().perform()
+        ActionChains(driver).move_to_element(graph).click().perform()
 
         focus = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#average-reliability .focus')
@@ -59,6 +59,7 @@ class BigboatStatusTest(IntegrationTest):
             (By.CSS_SELECTOR, '#average-reliability .focus tspan')
         ))
         self.assertEqual(tspan.text, '26 Jun 18:31')
-        self.assertEqual(focus.find_element_by_css_selector('tspan:last-child').text,
+        self.assertEqual(focus.find_element(By.CSS_SELECTOR,
+                                            'tspan:last-child').text,
                          'Available IPs')
         self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')

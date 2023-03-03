@@ -39,20 +39,22 @@ class PredictionSiteTest(IntegrationTest):
         navigation = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertEqual(len(navigation.find_elements_by_tag_name('li')), 3)
+        self.assertEqual(len(navigation.find_elements(By.TAG_NAME, 'li')), 3)
         recent = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#filter input')
         ))
         recent.click()
-        self.assertEqual(len(navigation.find_elements_by_tag_name('li')), 4)
+        self.assertEqual(len(navigation.find_elements(By.TAG_NAME, 'li')), 4)
 
         branches = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'branches-dropdown')
         ))
-        self.assertEqual(len(branches.find_elements_by_css_selector('#branches a')), 2)
+        self.assertEqual(len(branches.find_elements(By.CSS_SELECTOR,
+                                                    '#branches a')), 2)
 
         files = self._wait_for(expected_conditions.visibility_of_element_located((By.ID, 'files')))
-        self.assertEqual(len(files.find_elements_by_css_selector('div.card')), 2)
+        self.assertEqual(len(files.find_elements(By.CSS_SELECTOR, 'div.card')),
+                         2)
 
     @skip_unless_visualization("prediction-site")
     def test_prediction_site_project(self):
@@ -70,12 +72,12 @@ class PredictionSiteTest(IntegrationTest):
         sources = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#sources tbody')
         ))
-        self.assertEqual(len(sources.find_elements_by_tag_name('tr')), 5)
+        self.assertEqual(len(sources.find_elements(By.TAG_NAME, 'tr')), 5)
 
         features = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, '#features tbody')
         ))
-        self.assertEqual(len(features.find_elements_by_tag_name('tr')), 7)
+        self.assertEqual(len(features.find_elements(By.TAG_NAME, 'tr')), 7)
 
     @skip_unless_visualization("prediction-site")
     def test_prediction_site_sprint(self):
@@ -106,12 +108,12 @@ class PredictionSiteTest(IntegrationTest):
         sprints = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'sprints')
         ))
-        items = sprints.find_elements_by_tag_name('li')
+        items = sprints.find_elements(By.TAG_NAME, 'li')
         self.assertEqual(len(items), 2)
         self.assertEqual(items[-1].get_attribute('class'), 'is-active')
-        self.assertEqual(items[-1].find_element_by_tag_name('a').text, '#2')
+        self.assertEqual(items[-1].find_element(By.TAG_NAME, 'a').text, '#2')
 
-        items[0].find_element_by_tag_name('a').click()
+        items[0].find_element(By.TAG_NAME, 'a').click()
         self._wait_for(expected_conditions.staleness_of(title))
         sprint = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'sprint')
@@ -140,10 +142,11 @@ class PredictionSiteTest(IntegrationTest):
         self.assertIn("404", error.text)
 
         # Navigation should still be shown and honor the language parameter.
-        navigation = self._wait_for(expected_conditions.visibility_of_element_located(
+        nav = self._wait_for(expected_conditions.visibility_of_element_located(
             (By.ID, 'navigation')
         ))
-        self.assertIn("lang=nl", navigation.find_element_by_tag_name('a').get_attribute('href'))
+        self.assertIn("lang=nl",
+                      nav.find_element(By.TAG_NAME, 'a').get_attribute('href'))
 
     @skip_unless_visualization('prediction-site')
     def test_prediction_site_model(self):

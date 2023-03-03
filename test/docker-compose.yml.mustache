@@ -27,7 +27,7 @@ proxy:
     - "jenkins:{{{files_host}}}"
 
 runner:
-  image: python:3.6-alpine
+  image: python:3.9-alpine
   domainname: test
   command: "python -c 'import signal;signal.pause()'"
   volumes:
@@ -48,7 +48,7 @@ runner:
     - "coverage:coverage.test"
 
 selenium:
-  image: selenium/standalone-chrome:3.14.0
+  image: selenium/standalone-chrome:4.8.1
   domainname: test
   shm_size: "2g"
   expose:
