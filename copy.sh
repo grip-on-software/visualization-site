@@ -84,6 +84,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
             mkdir -p "$TARGET/$target"
             $COPY_APPEND "$origin/" "$TARGET/$target"
         elif [[ $repo == "prediction" ]]; then
+			mkdir -p "$TARGET/$repo/$branch/output"
             $COPY "$path/builds/$ID/archive/output/" "$TARGET/$repo/$branch/output"
         elif [[ " $VISUALIZATION_NAMES " =~ " $repo " ]]; then
             mkdir -p "$TARGET/$target/$repo"
@@ -93,6 +94,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
         if [[ $branch == "master" && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
             if [[ $repo == "visualization-site" ]]; then
                 cp "$path/builds/$ID/archive/openapi.json" "$TARGET/openapi.json"
+				mkdir -p "$TARGET/schema"
                 $COPY_APPEND "$path/builds/$ID/archive/schema/" "$TARGET/schema/"
             else
                 mkdir -p "$TARGET/schema/$repo"
