@@ -17,13 +17,8 @@ $subtitle-weight: $weight-light;
 @import "node_modules/bulma/sass/layout/_all";
 
 @mixin fullscreen {
-    *|*:-moz-full-screen {
-        @content
-    }
-    *|*:-webkit-full-screen {
-        @content
-    }
-    *|*:fullscreen {
+    /* Handled by autoprefixer */
+    :fullscreen {
         @content
     }
 }
