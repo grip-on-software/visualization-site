@@ -389,7 +389,7 @@ templates.forEach((template) => {
 
 // Generate configuration to import into the navbar builder
 const jsConfiguration = _.assign({}, _.pickBy(configuration,
-    (value, key) => !key.startsWith('jenkins_direct') && key.endsWith('url')
+    (value, key) => !key.startsWith('jenkins_direct') && key.endsWith('_url')
 ), {
     organization:
         typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
