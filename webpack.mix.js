@@ -41,7 +41,17 @@ if (!fs.existsSync(config)) {
 }
 const configuration = JSON.parse(fs.readFileSync(config));
 if (process.env.NODE_ENV === 'test') {
-    // Always use jenkins and owncloud proxy URLs in test
+    // In test:
+    // - Change visualization URL to an absolute URL to the visualization server
+    //   (caddy proxy domain name) so prediction site can obtain resources, but
+    //   only if the URL is not already absolute (assume correct config)
+    // - Always use jenkins reverse proxy
+    // - Enable owncloud reverse proxy rules for prediction files
+    // - Make redirects hide port in redirect for upstream caddy proxy
+    // - Enable control host reverse proxy for access/encrypt endpoints
+    configuration.visualization_url = new URL(configuration.visualization_url,
+        `http://${configuration.visualization_server}`
+    ).href;
     configuration.jenkins_direct = '';
     configuration.files_share_id = 'test';
     configuration.proxy_port_in_redirect = false;
