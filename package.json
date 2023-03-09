@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "pretest": "cross-env NODE_ENV=test webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "pretest": "cross-env NODE_ENV=test MIX_FILE=$PWD/webpack.mix.js webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
     "dev": "cross-env NODE_ENV=development webpack --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
