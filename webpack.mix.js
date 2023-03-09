@@ -241,8 +241,8 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
         // Generate an absolute path URL
         return function(text, render) {
             const url_parts = render(text).split('/');
-            var server = url_parts.shift();
-            return (new URL(url_parts.join('/'), `http://${server}/`))
+            const server = `http://${url_parts.shift()}`;
+            return (new URL(url_parts.join('/').replace(server, ''), server))
                 .pathname.replace('//', '/').replace(/^\/\$/, '$')
                 .replace(/(?:^\/)?%%7B(ENV:MATCH_[_a-zA-Z]+)%7D/g, '%{$1}');
         };
