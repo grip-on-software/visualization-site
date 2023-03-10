@@ -81,6 +81,12 @@ $subtitle-weight: $weight-light;
                 margin-right: 0;
             }
         }
+        @include from($navbar-breakpoint) {
+            &.is-at-end .navbar-dropdown {
+                left: auto;
+                right: 0;
+            }
+        }
     }
 }
 .tabs ul {
