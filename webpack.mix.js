@@ -234,7 +234,12 @@ const srvConfiguration = _.assign({}, visualizations, _.mapValues(configuration,
             if (path.charAt(0) === '/' && path.charAt(1) !== '/') {
                 return path;
             }
-            return '/';
+            try {
+                return (new URL(path)).pathname;
+            }
+            catch (e) {
+                return '/';
+            }
         };
     },
     url: function() {
