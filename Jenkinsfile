@@ -5,6 +5,7 @@ pipeline {
         string(name: 'VISUALIZATION_ORGANIZATION', defaultValue: "${env.VISUALIZATION_ORGANIZATION}", description: 'Organization to build for')
         string(name: 'NAVBAR_SCOPE', defaultValue: "", description: 'Organization scope to use in navigation bar (keep empty to use generic style)')
         booleanParam(name: 'VISUALIZATION_COMBINED', defaultValue: true, description: 'Build for combined visualization')
+        booleanParam(name: 'PUBLISH_PRODUCTION', defaultValue: false, description: 'Build production and publish from non-main branch')
     }
 
     environment {
@@ -42,8 +43,8 @@ pipeline {
     stages {
         stage('Start') {
             when {
-                expression {
-                    currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause) == null
+                not {
+                    triggeredBy 'TimerTrigger'
                 }
             }
             steps {
@@ -137,7 +138,10 @@ pipeline {
             }
         }
         stage('Publish non-production') {
-            when { not { branch '*master' } }
+            when {
+                not { branch '*master' }
+                environment name: 'PUBLISH_PRODUCTION', value: 'false'
+            }
             agent {
                 docker {
                     image "${env.VISUALIZATION_IMAGE}"
@@ -152,7 +156,12 @@ pipeline {
             }
         }
         stage('Build production') {
-            when { branch '*master' }
+            when {
+                anyOf {
+                    branch '*master'
+                    environment name: 'PUBLISH_PRODUCTION', value: 'true'
+                }
+            }
             agent {
                 docker {
                     image "${env.VISUALIZATION_IMAGE}"
@@ -167,10 +176,16 @@ pipeline {
                 sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} MIX_FILE=$WORKSPACE/webpack.mix.js npm run production"
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
                 archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,caddy/*.yml,swagger/*.yml,swagger/*.conf,openapi.json,schema/**/*.json'
+                stash includes: 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,swagger/*.yml,swagger/*.conf,openapi.json', name: 'swagger_config'
             }
         }
         stage('Copy') {
-            when { branch 'master' }
+            when {
+                anyOf {
+                    branch 'master'
+                    environment name: 'PUBLISH_PRODUCTION', value: 'true'
+                }
+            }
             agent {
                 label 'publish'
             }
@@ -179,14 +194,15 @@ pipeline {
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
                     unstash 'visualization_names'
+                    unstash 'swagger_config'
                     sh './copy.sh'
                 }
             }
         }
         stage('Status') {
             when {
-                expression {
-                    currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause) == null
+                not {
+                    triggeredBy 'TimerTrigger'
                 }
             }
             steps {

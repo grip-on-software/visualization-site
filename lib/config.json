@@ -84,5 +84,7 @@
     "allow_range": ["192.168.0.0/16"],
     "goaccess_path": "/srv/goaccess-report",
     "goaccess_log_path": "/var/log/apache2",
-    "primary_dns": "127.0.0.1"
+    "primary_dns": "127.0.0.1",
+    "swagger_openapi_url": "./",
+    "swagger_validator_url": "/validator"
 }

@@ -13,6 +13,8 @@ services:
       - "../httpd/maps:{{{branch_maps_path}}}"
       - "../swagger/httpd.conf:/usr/local/apache2/conf/httpd/prediction-swagger.conf:ro"
       - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
+      - "../openapi.json:/srv/visualization-site/www/openapi.json:ro"
+      - "../schema:/srv/visualization-site/www/schema"
     expose:
       - "2368"
       - "3000"
@@ -58,7 +60,12 @@ services:
     environment:
       - "BASE_URL=/swagger"
       - "SWAGGER_JSON=/docs/openapi.json"
-      - "VALIDATOR_URL=/validator"
+{{#jenkins_direct}}
+      - "URLS=[{url: \"{{{swagger_openapi_url}}}openapi.json\", name: \"Prediction API\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-controller-openapi.json\", name: \"Data gathering controller API (view only)\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-scraper-agent-openapi.json\", name: \"Data gathering scraper agent API (view only)\"}]"
+{{/jenkins_direct}}
+{{#swagger_validator_url}}
+      - "VALIDATOR_URL={{{swagger_validator_url}}}"
+{{/swagger_validator_url}}
     networks:
       swagger:
         aliases:

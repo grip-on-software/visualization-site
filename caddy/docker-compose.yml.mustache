@@ -1,84 +1,34 @@
 # vim: set filetype=yaml :
 
-blog:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            proxy / {{{control_host}}}:2368 {
-                transparent
-            }
-        }
+version: '2'
 
-discourse:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            proxy / {{{control_host}}}:2368 {
-                transparent
-            }
-        }
+services:
+  blog:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/www:/etc/caddy/Caddyfile"
 
-www:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            proxy / {{{control_host}}}:2368 {
-                transparent
-            }
-        }
+  discourse:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/www:/etc/caddy/Caddyfile"
 
-visualization:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            proxy / {{{control_host}}}:2368 {
-                transparent
-            }
-        }
+  www:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/www:/etc/caddy/Caddyfile"
 
-prediction:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            proxy / {{{control_host}}}:2368 {
-                transparent
-            }
-        }
+  visualization:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/www:/etc/caddy/Caddyfile"
 
-ws:
-  image: greyarch/caddy
-  environment:
-    CONFIG: |
-        :80 {
-            tls off
-            errors stdout
-            gzip
-            timeouts none
-            proxy / {{{control_host}}}:3000 {
-                websocket
-                header_upstream Host {host}
-                header_upstream X-Real-IP {remote}
-                header_upstream X-Forwarded-For {remote}
-                header_upstream X-Forwarded-Proto {scheme}
-            }
-        }
+  prediction:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/www:/etc/caddy/Caddyfile"
+
+  ws:
+    image: caddy:2.6.4-alpine
+    volumes:
+      - "../caddy/ws:/etc/caddy/Caddyfile"

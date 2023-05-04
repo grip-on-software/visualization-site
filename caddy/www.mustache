@@ -1,0 +1,10 @@
+{
+    auto_https off
+}
+:80 {
+    log {
+        output stdout
+    }
+    encode gzip
+    reverse_proxy {{{control_host}}}:2368
+}

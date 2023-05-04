@@ -1,199 +1,222 @@
 # vim: set filetype=yaml nofoldenable:
 
-proxy:
-  image: {{#proxy_nginx}}bradjonesllc/nginx-dnsmasq:latest{{/proxy_nginx}}{{^proxy_nginx}}httpd:2.4-alpine{{/proxy_nginx}}
-  hostname: "{{{control_hostname}}}"
-  domainname: "{{{control_domain}}}"
-  dns: "{{{primary_dns}}}"
-  volumes:
-    - "../www:/srv/visualization-site/www"
-{{#proxy_nginx}}
-    - "../nginx.conf:/etc/nginx/nginx.conf:ro"
-    - "../nginx:/etc/nginx/nginx"
-{{/proxy_nginx}}
-{{^proxy_nginx}}
-    - "../httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
-    - "../httpd:/usr/local/apache2/conf/httpd"
-    - "../httpd/maps:{{{branch_maps_path}}}"
-{{/proxy_nginx}}
-    - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
-  expose:
-    - "2368"
-    - "3000"
-  links:
-    - "jenkins:{{{jenkins_host}}}"
-    - "jenkins:{{{blog_host}}}"
-    - "jenkins:{{{discussion_host}}}"
-    - "jenkins:{{{files_host}}}"
+version: '2'
 
-runner:
-  image: python:3.9-alpine
-  domainname: test
-  command: "python -c 'import signal;signal.pause()'"
-  volumes:
-    - "../test:/work"
-    - "../{{{config_file}}}:/config.json:ro"
-    - "../visualization_names.txt:/visualization_names.txt:ro"
-    - "../axe-core/:/axe-core"
-  environment:
-    - VISUALIZATION_ORGANIZATION
-    - VISUALIZATION_COMBINED
-    - BRANCH_NAME
-    - BUILD_NUMBER
-    - BUILD_URL
-    - NODE_NAME
-  working_dir: "/work"
-  links:
-    - "selenium:selenium.test"
-    - "coverage:coverage.test"
+services:
+  proxy:
+    image: {{#proxy_nginx}}bradjonesllc/nginx-dnsmasq:latest{{/proxy_nginx}}{{^proxy_nginx}}httpd:2.4-alpine{{/proxy_nginx}}
+    hostname: "{{{control_hostname}}}"
+    domainname: "{{{control_domain}}}"
+    volumes:
+      - "../www:/srv/visualization-site/www"
+      {{#proxy_nginx}}
+      - "../nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "../nginx:/etc/nginx/nginx"
+      {{/proxy_nginx}}
+      {{^proxy_nginx}}
+      - "../httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
+      - "../httpd:/usr/local/apache2/conf/httpd"
+      - "../httpd/maps:{{{branch_maps_path}}}"
+      {{/proxy_nginx}}
+      - "{{{server_certificate}}}:{{{auth_cert}}}:ro"
+    expose:
+      - "2368"
+      - "3000"
+    depends_on:
+      - jenkins
+    networks:
+      test:
+        aliases:
+          - "{{{control_host}}}"
 
-selenium:
-  image: selenium/standalone-chrome:4.8.1
-  domainname: test
-  shm_size: "2g"
-  expose:
-    - "4444"
-  links:
-    - "blog:{{{blog_server}}}"
-    - "discourse:{{{discussion_server}}}"
-    - "www:{{{www_server}}}"
-    - "visualization:{{{visualization_server}}}"
-    - "prediction:{{{prediction_server}}}"
-    - "ws:{{{websocket_server}}}"
-  volumes:
-    - "../test:/work"
-  working_dir: "/work"
+  runner:
+    image: python:3.9-alpine
+    domainname: test
+    command: "python -c 'import signal;signal.pause()'"
+    volumes:
+      - "../test:/work"
+      - "../{{{config_file}}}:/config.json:ro"
+      - "../visualization_names.txt:/visualization_names.txt:ro"
+      - "../axe-core/:/axe-core"
+    environment:
+      - VISUALIZATION_ORGANIZATION
+      - VISUALIZATION_COMBINED
+      - BRANCH_NAME
+      - BUILD_NUMBER
+      - BUILD_URL
+      - NODE_NAME
+    working_dir: "/work"
+    depends_on:
+      - selenium
+      - coverage
+    networks:
+      test:
 
-coverage:
-  image: $DOCKER_REPOSITORY/gros-coverage-collector:latest
-  domainname: test
-  expose:
-    - "8888"
-  volumes:
-    - "../{{{repo_root}}}:$PWD/test/repos"
-    - "$PWD:$PWD"
+  selenium:
+    image: selenium/standalone-chrome:4.8.1
+    domainname: test
+    shm_size: "2g"
+    expose:
+      - "4444"
+    networks:
+      test:
+        aliases:
+          - selenium.test
+    volumes:
+      - "../test:/work"
+    working_dir: "/work"
 
-jenkins:
-  image: greyarch/caddy
-  domainname: "{{{internal_domain}}}"
-  expose:
-    - "2368"
-    - "3000"
-    - "8080"
-    - "80"
-  environment:
-      CONFIG: |
-          :8080 {
-              tls off
-              errors stdout
-              gzip
-              root /srv/www
-              mime .json application/json
-              index htmlpublisher-wrapper.html
-          }
-          :2368 {
-              tls off
-              errors stdout
-              gzip
-              root /srv/blog
-          }
-          :3000 {
-              tls off
-              errors stdout
-              gzip
-              root /srv/discussion
-          }
-          :80 {
-              tls off
-              errors stdout
-              root /srv/owncloud
-              mime .php application/json
-          }
-  volumes:
-    - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
-    {{#visualization_organizations}}
-    - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/{{{.}}}/Visualization"
-    {{/visualization_organizations}}
-    {{#groups}}
-    {{#items}}
-    {{#index}}
-    - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/master/Visualization"
-    {{#visualization_organizations}}
-    - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/{{{.}}}/Visualization"
-    {{/visualization_organizations}}
-    {{/index}}
-    {{/items}}
-    {{/groups}}
-    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastStableBuild/artifact/output"
-    {{#prediction_organizations}}
-    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output"
-    - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output/{{{organization}}}"
-    {{/prediction_organizations}}
-    - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
-    - "../test/sample/blog:/srv/blog"
-    - "../test/sample/discussion:/srv/discussion"
-    - "../test/sample/owncloud:/srv/owncloud/index.php/apps/files_sharing/ajax"
+  coverage:
+    image: $DOCKER_REPOSITORY/gros-coverage-collector:latest
+    domainname: test
+    expose:
+      - "8888"
+    networks:
+      test:
+        aliases:
+          - coverage.test
+    volumes:
+      - "../{{{repo_root}}}:$PWD/test/repos"
+      - "$PWD:$PWD"
+
+  jenkins:
+    image: caddy:2.6.4-alpine
+    domainname: "{{{internal_domain}}}"
+    expose:
+      - "2368"
+      - "3000"
+      - "8080"
+      - "80"
+    networks:
+      test:
+        aliases:
+          - "{{{jenkins_host}}}"
+          - "{{{blog_host}}}"
+          - "{{{discussion_host}}}"
+          - "{{{files_host}}}"
+    volumes:
+      - "../test/Caddyfile:/etc/caddy/Caddyfile"
+      - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/master/Visualization"
+      {{#visualization_organizations}}
+      - "../www:/srv/www{{{jenkins_path}}}/job/build-visualization-site/job/{{{.}}}/Visualization"
+      {{/visualization_organizations}}
+      {{#groups}}
+      {{#items}}
+      {{#index}}
+      - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/master/Visualization"
+      {{#visualization_organizations}}
+      - "../{{{repo_root}}}/{{{repo}}}/public:/srv/www{{{jenkins_path}}}/job/build-{{{repo}}}/job/{{{.}}}/Visualization"
+      {{/visualization_organizations}}
+      {{/index}}
+      {{/items}}
+      {{/groups}}
+      - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/master/lastStableBuild/artifact/output"
+      {{#prediction_organizations}}
+      - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output"
+      - "../test/sample/prediction-site/data:/srv/www{{{jenkins_path}}}/job/create-prediction/job/{{{prediction-site}}}/lastStableBuild/artifact/output/{{{organization}}}"
+      {{/prediction_organizations}}
+      - "../test/sample/prediction-site/api:/srv/www/{{{jenkins_path}}}/job/create-prediction/api"
+      - "../test/sample/blog:/srv/blog"
+      - "../test/sample/discussion:/srv/discussion"
+      - "../test/sample/owncloud:/srv/owncloud/index.php/apps/files_sharing/ajax"
 
 {{#groups}}
 {{#items}}
 {{#index}}
-{{{repo}}}:
-  image: $DOCKER_REPOSITORY/gros-{{{repo}}}:latest
-  domainname: "{{{internal_domain}}}"
-  command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && MIX_FILE=$PWD/repos/{{{repo}}}/webpack.mix.js npm run pretest; fi'"
-  user: "{{{user_id}}}:{{{group_id}}}"
-  volumes:
-    - "../{{{repo_root}}}:$PWD/repos"
-    - "{{{branch_name}}}-{{{repo}}}-modules:/usr/src/app/node_modules"
-    - "../test/sample/{{{repo}}}/data:/data"
-  environment:
-    - VISUALIZATION_ORGANIZATION
-    - VISUALIZATION_COMBINED
-  working_dir: "$PWD/repos/{{{repo}}}"
-  expose:
-    - "3000"
+  {{{repo}}}:
+    image: $DOCKER_REPOSITORY/gros-{{{repo}}}:latest
+    domainname: "{{{internal_domain}}}"
+    command: "/bin/sh -exc 'if [ -f .skip_build ]; then rm -rf public/data/ && cp -r /data public/data/ && echo Skipped build; else rm -rf public/* && cp -r /data public/data/ && rm -rf node_modules && ln -s /usr/src/app/node_modules . && MIX_FILE=$PWD/repos/{{{repo}}}/webpack.mix.js npm run pretest; fi'"
+    user: "{{{user_id}}}:{{{group_id}}}"
+    volumes:
+      - "../{{{repo_root}}}:$PWD/repos"
+      - "{{{branch_name}}}-{{{repo}}}-modules:/usr/src/app/node_modules"
+      - "../test/sample/{{{repo}}}/data:/data"
+    environment:
+      - VISUALIZATION_ORGANIZATION
+      - VISUALIZATION_COMBINED
+    working_dir: "$PWD/repos/{{{repo}}}"
+    expose:
+      - "3000"
 {{/index}}
 {{/items}}
 {{/groups}}
 
-blog:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  blog:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{blog_server}}}"
 
-discourse:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  discourse:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{discussion_server}}}"
 
-www:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  www:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{www_server}}}"
 
-visualization:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  visualization:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{visualization_server}}}"
 
-prediction:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  prediction:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{prediction_server}}}"
 
-ws:
-  domainname: "{{{domain}}}"
-  environment:
-    - GODEBUG=netdns=cgo
-  links:
-    - "proxy:{{{control_host}}}"
+  ws:
+    domainname: "{{{domain}}}"
+    environment:
+      - GODEBUG=netdns=cgo
+    depends_on:
+      - proxy
+    networks:
+      test:
+        aliases:
+          - "{{{websocket_server}}}"
+
+volumes:
+{{#groups}}
+{{#items}}
+{{#index}}
+  "{{{branch_name}}}-{{{repo}}}-modules":
+    external: true
+{{/index}}
+{{/items}}
+{{/groups}}
+
+networks:
+  test:
