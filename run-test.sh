@@ -34,25 +34,19 @@ function version() {
 	echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }';
 }
 
-COMPOSE_VERSION=$(docker-compose version --short)
-COMPOSE_ARGS="-p ${BUILD_TAG:-visualization} -f caddy/docker-compose.yml"
-if [ $(version $COMPOSE_VERSION) -lt $(version "1.7.0") ]; then
-	sed -E 's/( +)shm_size: .*/\1volumes:\'$'\n''\1  - \/dev\/shm:\/dev\/shm/' test/docker-compose.yml > test/docker-compose.shm.yml
-	COMPOSE_ARGS="$COMPOSE_ARGS -f test/docker-compose.shm.yml"
-else
-	COMPOSE_ARGS="$COMPOSE_ARGS -f test/docker-compose.yml"
-fi
+COMPOSE_ARGS="-p ${BUILD_TAG:-visualization} -f caddy/docker-compose.yml -f test/docker-compose.yml"
 
 function container_logs() {
 	echo $'<h2>Docker container logs</h2>\n<ul>' >> test/results/index.html
 
-	docker-compose $COMPOSE_ARGS ps -q | xargs -L 1 -I {} /bin/bash -c '
+	docker compose $COMPOSE_ARGS ps -aq | xargs -L 1 -I {} /bin/bash -c '
 		host=$(docker inspect --format="{{index .Config.Labels \"com.docker.compose.service\"}}.{{.Config.Domainname}}" {})
+		state=$(docker inspect --format="{{.State.Status}}" {})
 		docker inspect --format="$(cat log-format.txt)" {} > test/results/logs_$host.html
 		echo "<pre>" >> test/results/logs_$host.html
 		docker logs {} 2>&1 | sed "s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g" >> test/results/logs_$host.html 2>&1
 		echo -e "</pre>\n</body>\n</html>" >> test/results/logs_$host.html
-		echo "<li><a href=\"logs_$host.html\" title=\"Logs for $(docker inspect --format={{.Name}} {})\">$host ($(docker logs {} 2>&1 | wc -c) bytes)</a></li>" >> test/results/index.html'
+		echo "<li><a href=\"logs_$host.html\" title=\"Logs for $(docker inspect --format={{.Name}} {})\">$host ($(docker logs {} 2>&1 | wc -c) bytes, end state: $state)</a></li>" >> test/results/index.html'
 
 	echo $'</ul>\n</body>\n</html>' >> test/results/index.html
 }
@@ -75,10 +69,14 @@ fi
 
 VISUALIZATION_ENV=$(env -i VISUALIZATION_ORGANIZATION=$VISUALIZATION_ORGANIZATION VISUALIZATION_COMBINED=$VISUALIZATION_COMBINED)
 
-function cleanup_modules() {
+function reset_modules_volume() {
+	# For the given visualization repository name, remove any running/stopped
+	# containers that are still using the old volume, then remove the volume
+	# itself. Finally, recreate the module for reuse in the Compose network.
 	repo=$1
 	docker ps -q -a --filter "volume=$BRANCH_NAME-$repo-modules" | xargs --no-run-if-empty docker rm -f
 	docker volume rm -f "$BRANCH_NAME-$repo-modules"
+	docker volume create "$BRANCH_NAME-$repo-modules"
 }
 
 function update_repo() {
@@ -94,7 +92,7 @@ function update_repo() {
 		echo "Cloning $tree"
 		git clone $url $tree
 		if [ ! -z "$repo" ]; then
-			cleanup_modules "$repo"
+			reset_modules_volume "$repo"
 		fi
 	elif [ ! -z "$has_repo_root" ]; then
 		echo "Keeping $tree intact"
@@ -117,7 +115,7 @@ function update_repo() {
 		GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git fetch origin master
 		LOCAL_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse HEAD)
 		REMOTE_REV=$(GIT_DIR="$tree/.git" GIT_WORK_TREE=$tree git rev-parse FETCH_HEAD)
-		if [ ! -z "$repo" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ "$VISUALIZATION_ENV" = "$previous_env" ]; then
+		if [ ! -z "$repo" ] && [ $LOCAL_REV = $REMOTE_REV ] && [ "$VISUALIZATION_ENV" = "$previous_env" ] && [ ! -z $(docker volume ls -q -f "name=^$BRANCH_NAME-$repo-modules$") ]; then
 			echo "$repo is up to date, skipping build in instance."
 			echo "$VISUALIZATION_ENV" > "$tree/.skip_build"
 		else
@@ -125,7 +123,7 @@ function update_repo() {
 			if [ ! -z "$repo" ]; then
 				echo "Build of $repo required"
 				rm -f "$tree/.skip_build"
-				cleanup_modules "$repo"
+				reset_modules_volume "$repo"
 			fi
 		fi
 	fi
@@ -154,10 +152,10 @@ fi
 
 PROXY_HOST=proxy
 
-docker-compose $COMPOSE_ARGS pull
-docker-compose $COMPOSE_ARGS up -d --force-recreate
+docker compose $COMPOSE_ARGS pull
+docker compose $COMPOSE_ARGS up -d --force-recreate
 
-TEST_CONTAINER=$(docker-compose $COMPOSE_ARGS ps -q runner)
+TEST_CONTAINER=$(docker compose $COMPOSE_ARGS ps -q runner)
 if [ -z "$TEST_CONTAINER" ]; then
 	container_logs
 	echo "Could not bring up the test instances." >&2
@@ -173,12 +171,20 @@ if [ -z "$VISUALIZATION_MAX_SECONDS" ]; then
 fi
 seconds=0
 for name in $VISUALIZATION_NAMES; do
-	container=$(docker-compose $COMPOSE_ARGS ps -q $name)
+	container=$(docker compose $COMPOSE_ARGS ps -aq $name)
+	if [ -z "$container" ]; then
+		docker compose $COMPOSE_ARGS ps -a
+		container_logs
+		docker compose $COMPOSE_ARGS down
+		echo "Could not find instance for $name." >&2
+		exit 1
+	fi
+
 	running="true"
 	while [ "$running" == "true" ]; do
 		if [ $seconds -gt $VISUALIZATION_MAX_SECONDS ]; then
 			container_logs
-			docker-compose $COMPOSE_ARGS down
+			docker compose $COMPOSE_ARGS down
 			echo "$name did not seem to be done after ${VISUALIZATION_MAX_SECONDS}s." >&2
 			exit 1
 		fi
@@ -189,7 +195,7 @@ for name in $VISUALIZATION_NAMES; do
 		if [ $exitcode -ne 0 ]; then
 			echo "$running" >&2
 			container_logs
-			docker-compose $COMPOSE_ARGS down
+			docker compose $COMPOSE_ARGS down
 			echo "An error occured while waiting for $name to be done." >&2
 			exit 1
 		fi
@@ -206,7 +212,7 @@ docker exec -u `id -u`:`id -g` $TEST_CONTAINER python /work/test.py -v
 status=$?
 
 container_logs
-docker-compose $COMPOSE_ARGS down
+docker compose $COMPOSE_ARGS down
 
 # Note the successful build with the environment used to build it
 for repo in $VISUALIZATION_NAMES; do

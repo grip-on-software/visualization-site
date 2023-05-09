@@ -2,6 +2,8 @@ bundle.js
 bundle.js.map
 /config.*.json
 caddy/docker-compose.yml
+caddy/ws
+caddy/www
 test/docker-compose.yml
 /httpd.conf
 httpd/*.conf
@@ -14,6 +16,7 @@ node_modules
 .gitignore
 Jenkinsfile
 repos/
+swagger/dist/
 test/config.json
 test/coverage/
 test/junit/

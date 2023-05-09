@@ -7,9 +7,12 @@ bundle.js.LICENSE.txt
 /config-alias.json
 /config.*.json
 caddy/docker-compose.yml
+caddy/ws
+caddy/www
 test/docker-compose.yml
 test/docker-compose.shm.yml
 swagger/docker-compose.yml
+swagger/dist/
 /httpd.conf
 httpd/*.conf
 httpd/*.map

@@ -1,0 +1,38 @@
+{
+    auto_https off
+}
+:8080 {
+    log {
+        output stdout
+    }
+    encode gzip
+    root * /srv/www
+    file_server {
+        index htmlpublisher-wrapper.html
+    }
+    header *.json Content-Type application/json;charset=utf-8
+}
+:2368 {
+    log {
+        output stdout
+    }
+    encode gzip
+    root * /srv/blog
+    file_server
+}
+:3000 {
+    log {
+        output stdout
+    }
+    encode gzip
+    root * /srv/discussion
+    file_server
+}
+:80 {
+    log {
+        output stdout
+    }
+    root * /srv/owncloud
+    file_server
+    header *.php Content-Type application/json;charset=utf-8
+}

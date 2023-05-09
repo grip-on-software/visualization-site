@@ -43,15 +43,15 @@ installation of other dependencies.
 
 For the tests, a Jenkins installation is assumed with proper OpenJDK Java 8+ 
 and Python 3.6+ (including `distutils` and `virtualenv`). The agent that 
-performs the tests must have `docker-compose`. In addition, tools such as Bash, 
-Git, `jq`, `awk`, `sed`, `grep` and `xargs` must be available and GNU-like 
-(POSIX-compliant may not be enough). A SonarQube Scanner must be registered in 
-Jenkins. The server agent that performs the publishing must have `curl` and 
-`rsync` as well. Details for configuring Jenkins servers and agents are outside 
-the scope of this documentation, although some details may be available in 
-other GROS documentation. The integration tests may be able to be run outside 
-a Jenkins job, but support for this is limited and it requires passing 
-additional environment variables.
+performs the tests must have Docker Compose V2. In addition, tools such as 
+Bash, Git, `jq`, `awk`, `sed`, `grep` and `xargs` must be available and 
+GNU-like (POSIX-compliant may not be enough). A SonarQube Scanner must be 
+registered in Jenkins. The server agent that performs the publishing must have 
+Docker Compose V2, Node.js, `curl` and `rsync` as well. Details for configuring 
+Jenkins servers and agents are outside the scope of this documentation, 
+although some details may be available in other GROS documentation. The 
+integration tests may be able to be run outside a Jenkins job, but support for 
+this is limited and it requires passing additional environment variables.
 
 The deployment assumes an NGINX or Apache service and potentially a Docker 
 Compose installation some which can be set up using (some of) the configuration 
@@ -263,10 +263,18 @@ otherwise) are known:
   GoAccess endpoint.
 - `goaccess_log_path`: Filesystem path to log file location. Access logs stored 
   in this path (including rotated and possibly GZip-encoded logs) are followed.
-- `primary_dns`: IP address of an external DNS server that allows Docker 
-  instances during the `docker-compose` tests to look up external domain names, 
-  aside from those used for the Docker instances. Proper DNS resolution may be 
-  necessary to properly set up the visualizations under test.
+- `swagger_openapi_url`: URL prefix to use for the OpenAPI specification files 
+  that are made available in the Swagger UI. The default value of `./` works 
+  well for the Docker instance, but if the OpenAPI files are meant to be stored 
+  elsewhere then another path is possible. For production builds of a static 
+  file hosting setup with `jenkins_direct`, this value is set to the absolute 
+  path of the direct hosting root, and additional OpenAPI files rather than 
+  just the prediction API are made available.
+- `swagger_validator_url`: URL to use to connect to the validator. The default 
+  value of `/validator` works well for the Docker compose network. If it is set 
+  to an empty string, then the online validator is used. Can be set to `none` 
+  to disable the validator. For production builds of a static file hosting 
+  setup with `jenkins_direct`, we use the online validator.
 
 Configuration items that have keys ending in `_url` may be processed to direct 
 toward an organization-specific path, in case multiple organizations are hosted 
@@ -328,6 +336,10 @@ order to take effect.
   when requesting upstream resources for encryption and access checks. By 
   default, this is the `auth_cert` from the configuration, but this can be set 
   to use a different path at the host device than in the Docker test setup.
+- `$PUBLISH_PRODUCTION`: A boolean variable which indicates whether to perform 
+  a copy for potential publication from the current feature branch instead of 
+  only doing so when on a main branch. Note that main branches are skipped in 
+  this case, so the publication may not have organization-specific paths.
 - `$JENKINS_HOME`: Provided by 
   [Jenkins](https://www.jenkins.io/doc/book/managing/system-properties/#jenkins_home) 
   and used by the `copy.sh` script as the root from which to collect artifacts 
@@ -369,9 +381,9 @@ navigation bar, and so they may contain Mustache items to refer to certain
 configuration items, such as URLs.
 
 Localization of the visualization site is in `lib/locales.json`. The messages 
-in it are only used when referred from JavaScript code using the `Locales` 
-class from the `@gros/visualization-ui` package, or when using the 
-`data-message` attribute within HTML.
+in it are used when referred from JavaScript code using the `Locales` class 
+from the `@gros/visualization-ui` package, or when using the `data-message` 
+attribute within the HTML templates.
 
 ## Running
 
@@ -392,11 +404,22 @@ During the build, JavaScript in order to construct a common navigation bar is
 separated from the main JavaScript bundle in `vendor.js`. The visualizations 
 and prediction site also refer to this file to display the navigation bar.
 
-A full production environment uses the generated proxy server configuration in 
-order to deploy the reverse proxy layer(s) that allow access to all the 
-visualizations and other resources. Optionally, the `caddy` docker compose file 
-can be set up. Next, either the main `nginx.conf` plus the files generated in 
-the `nginx` directory can be supplied to the NGINX service, or likewise with 
-`httpd.confg` and the generated files in the `httpd` directory for the Apache 
-service. Alternatively, a subset of these files may be used, for example to 
-host all under one domain, with additional local configuration.
+A non-static production environment can make use of the generated proxy server 
+configuration in order to deploy the reverse proxy layer(s) that allow access 
+to all the visualizations and other resources. Optionally, the `caddy` docker 
+compose file can be set up. Next, either the main `nginx.conf` plus the files 
+generated in the `nginx` directory can be supplied to the NGINX service, or 
+likewise with `httpd.confg` and the generated files in the `httpd` directory 
+for the Apache service. Alternatively, a subset of these files may be used, for 
+example to host all under one domain, with additional local configuration.
+
+A static production environment can make use of the result of the Bash script 
+`copy.sh` when run on the Jenkins server in order to create a document root 
+directory with the organizational hubs, all the visualizations, JSON schemas, 
+OpenAPI specifications and Swagger UI available for publishing on a static file 
+hosting server. This server may make use of the NGINX or Apache configurations, 
+which in their compiled form properly route the prediction site and error 
+pages, among others. Like other parts, the `copy.sh` script requires specific 
+[configuration](#configuration) for mapping hub paths, selecting organizations, 
+producing paths and URLs and accessing Jenkins for the publishable 
+visualizations, archived files and prediction branches.

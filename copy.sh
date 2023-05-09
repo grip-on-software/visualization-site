@@ -39,6 +39,12 @@ fi
 
 # Repositories that have JSON schemas and a Jenkins build that archives them.
 ARCHIVE_NAMES="prediction monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config visualization-site"
+# Subset of repositories that have openapi.json files in subdirectories and
+# a Jenkins build that archives them, excluding visualization-site.
+OPENAPI_NAMES="data-gathering"
+# Repositories whose visualizations are available from their respective `_url`
+# paths, rather than a subpath of their repository name.
+ROOT_NAMES="visualization-site prediction-site"
 
 # Copy published visualization HTML and prediction/schema artifacts
 for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
@@ -57,6 +63,9 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
         config="prediction"
     elif [[ $repo == "visualization-site" ]]; then
         default_organization="combined"
+        if [[ ! -z "$BRANCH_NAME" && $PUBLISH_PRODUCTION == "true" ]]; then
+            branches="$BRANCH_NAME"
+        fi
     else
         default_organization=$(jq -r ".hub_mapping.hub.organization.default // \"combined\"" $CONFIG)
         config="visualization"
@@ -72,33 +81,69 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
         branch=$(basename $path)
         if [[ $branch == "master" ]]; then
             organization=$default_organization
+            publish_archive=1
+        elif [[ $PUBLISH_PRODUCTION == "true" && ! -z "$BRANCH_NAME" && $branch == "$BRANCH_NAME" ]]; then
+            organization="combined"
+            publish_archive=1
         else
             organization=$(jq -r ".hub_organizations | .[] | select(.[\"$config-site\"] == \"$branch\") | .organization" $CONFIG)
+            publish_archive=0
         fi
-        target="$(jq -r .${config}_url $CONFIG | sed -e s/\\/*\$organization/$organization/)"
+        # Convert/extract path from visualization/prediction URL
+        # - Select proper organization
+        # - Retrieve pathname from URL
+        url="$(jq -r .${config}_url $CONFIG | sed -e s/\\\(\\/*\\\)\$organization/\\1$organization/)"
+        target="$(echo 'const {URL} = require("node:url");process.stdout.write((new URL(process.argv[2], "http://example.org")).pathname)' | node - $url)"
+        # Path to the publishable visualization ($VISUALIZATION_NAMES and hub)
         origin="$path/builds/$ID/htmlreports/Visualization"
+        # Path to the archived files ($ARCHIVE_NAMES and prediction)
+        archive="$path/builds/$ID/archive"
         if [ ! -d "$origin" ]; then
             origin="$path/htmlreports/Visualization/"
         fi
-        if [[ $repo == "visualization-site" || $repo == "prediction-site" ]]; then
+        if [[ " $ROOT_NAMES " =~ " $repo " ]]; then
+            # Visualization-site and prediction-site from their root paths.
             mkdir -p "$TARGET/$target"
             $COPY_APPEND "$origin/" "$TARGET/$target"
         elif [[ $repo == "prediction" ]]; then
-			mkdir -p "$TARGET/$repo/$branch/output"
-            $COPY "$path/builds/$ID/archive/output/" "$TARGET/$repo/$branch/output"
+            # Prediction data
+            mkdir -p "$TARGET/$repo/$branch/output"
+            $COPY "$archive/output/" "$TARGET/$repo/$branch/output"
         elif [[ " $VISUALIZATION_NAMES " =~ " $repo " ]]; then
             mkdir -p "$TARGET/$target/$repo"
             $COPY "$origin/" "$TARGET/$target/$repo"
         fi
 
-        if [[ $branch == "master" && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
+        if [[ $publish_archive == 1 && " $ARCHIVE_NAMES " =~ " $repo " ]]; then
+            if [[ " $OPENAPI_NAMES " =~ " $repo " ]]; then
+                # Convert archive paths to OpenAPI specifications to file names
+                # that do not conflict with other repos/paths.
+                # Repository: data-gathering
+                # Archive name: scraper/agent/openapi.json
+                # Publish name: data-gathering-scraper-agent-openapi.json
+                find "$archive" -name "openapi.json" -exec bash -c 'echo ${0##"$1"} | sed -e "s/\//-/g" -e "s/^/${2//\//\\/}/" | xargs cp "$0"' {} "$archive/" "$TARGET/$repo-" \;
+            fi
             if [[ $repo == "visualization-site" ]]; then
-                cp "$path/builds/$ID/archive/openapi.json" "$TARGET/openapi.json"
-				mkdir -p "$TARGET/schema"
-                $COPY_APPEND "$path/builds/$ID/archive/schema/" "$TARGET/schema/"
+                cp "$archive/openapi.json" "$TARGET/openapi.json"
+                mkdir -p "$TARGET/schema"
+                $COPY_APPEND "$archive/schema/" "$TARGET/schema/"
+
+                # Standalone Swagger
+                COMPOSE_ARGS="-f swagger/docker-compose.yml"
+                docker compose $COMPOSE_ARGS up -d --force-recreate
+                SWAGGER_CONTAINER=$(docker compose $COMPOSE_ARGS ps -q swagger)
+                if [ -z "$SWAGGER_CONTAINER" ]; then
+                    echo "Could not bring up Swagger instances." >&2
+                    exit 1
+                fi
+                docker compose $COMPOSE_ARGS cp swagger:/usr/share/nginx/html/ "swagger/dist/"
+                docker compose $COMPOSE_ARGS down
+
+                mkdir -p "$TARGET/swagger"
+                $COPY "swagger/dist/" "$TARGET/swagger/"
             else
                 mkdir -p "$TARGET/schema/$repo"
-                $COPY "$path/builds/$ID/archive/schema/" "$TARGET/schema/$repo"
+                $COPY "$archive/schema/" "$TARGET/schema/$repo"
             fi
         fi
     done

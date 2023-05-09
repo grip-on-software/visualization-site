@@ -59,6 +59,13 @@ if (process.env.NODE_ENV === 'test') {
         configuration.control_host = 'control.gros.test';
     }
 }
+else if (process.env.NODE_ENV === 'production' && configuration.jenkins_direct) {
+    // In production with a direct host setup, build Swagger configuration
+    // without a subdirectory for OpenAPI files, and use online validator for
+    // the extracted copy.
+    configuration.swagger_openapi_url = '/';
+    configuration.swagger_validator_url = '';
+}
 
 // Replace organization parameter with environment variable if necessary.
 // Used for visualization links and HTML configuration
@@ -386,8 +393,8 @@ const templates = [
     `${proxy}.conf`, `${proxy}/blog.conf`, `${proxy}/discussion.conf`,
     `${proxy}/prediction.conf`, `${proxy}/visualization.conf`,
     `${proxy}/websocket.conf`,
-    'caddy/docker-compose.yml', 'test/docker-compose.yml',
-    'swagger/docker-compose.yml'
+    'caddy/docker-compose.yml', 'caddy/ws', 'caddy/www',
+    'test/docker-compose.yml', 'swagger/docker-compose.yml'
 ];
 templates.forEach((template) => {
     try {

@@ -148,6 +148,9 @@ class Reporter:
 table,th,td {
     border: .1rem solid #aaa;
     border-collapse: collapse
+}
+dt {
+    font-weight: bold
 }""")
 
         self._results_index.write('</ul>\n<h2>Browser logs</h2>\n<ul>\n')
