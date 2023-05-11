@@ -33,7 +33,8 @@ $subtitle-weight: $weight-light;
         float: right;
 
         .navbar-menu,
-        .navbar-item {
+        .navbar-item,
+        .navbar-burger {
             display: none;
         }
         .navbar-fullscreen {
