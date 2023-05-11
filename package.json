@@ -20,14 +20,15 @@
       "www/*.js",
       "www/*.js.LICENSE.txt",
       "www/favicon.ico",
+      "www/fonts/",
       "www/images/",
+      "www/mix-manifest.json",
       "*.conf",
       "navbar.json",
       "openapi.json"
   ],
   "directories": {
       "dist": "www",
-      "doc": "doc",
       "lib": "lib",
       "res": "res",
       "test": "test"
