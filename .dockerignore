@@ -22,9 +22,10 @@ test/coverage/
 test/junit/
 test/results/
 www/
-*.sh
-*.conf
 goaccess-report.*
 *~
 *.bak
+*.conf
 *.log
+*.sh
+*.tgz
