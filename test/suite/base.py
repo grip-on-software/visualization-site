@@ -33,7 +33,6 @@ from urllib.error import URLError
 from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 from selenium.webdriver import Remote
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 from selenium.webdriver.support.wait import WebDriverWait
@@ -74,18 +73,17 @@ class IntegrationTest(unittest.TestCase):
         # Selenium server is not yet set up.
         try:
             url = 'http://selenium.test:4444'
-            capabilities = DesiredCapabilities.CHROME
-            capabilities['loggingPrefs'] = {'browser': 'ALL'}
+            # Request a webdriver with Chrome capabilities (chrome.Options)
+            # and set logging and download preferences.
             options = Options()
+            options.add_experimental_option('loggingPrefs', {'browser': 'ALL'})
             options.add_experimental_option("prefs", {
                 "download.default_directory": "/work/downloads",
                 "download.prompt_for_download": False,
                 "download.directory_upgrade": True,
                 "safebrowsing.enabled": True
             })
-            return Remote(command_executor=url,
-                          desired_capabilities=capabilities,
-                          options=options)
+            return Remote(command_executor=url, options=options)
         except BadStatusLine:
             return None
         except SocketError as socket_error:
