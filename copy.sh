@@ -43,6 +43,9 @@ ARCHIVE_NAMES="prediction monetdb-import export-exchange deployer data-gathering
 # Subset of repositories that have openapi.json files in subdirectories and
 # a Jenkins build that archives them, excluding visualization-site.
 OPENAPI_NAMES="data-gathering"
+# Repositories that are provided as an NPM package under the @gros scope with
+# packaged JSON schemas in them.
+MODULE_NAMES="visualization-ui"
 # Repositories whose visualizations are available from their respective `_url`
 # paths, rather than a subpath of their repository name.
 ROOT_NAMES="visualization-site prediction-site"
@@ -148,6 +151,9 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
             fi
         fi
     done
+done
+for module in $MODULE_NAMES; do
+    $COPY "./node_modules/@gros/$module/schema/" "$TARGET/schema/$module"
 done
 
 # Download prediction branches

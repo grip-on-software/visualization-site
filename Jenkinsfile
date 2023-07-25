@@ -173,10 +173,14 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules'
                 sh 'ln -s /usr/src/app/node_modules .'
+                sh 'cp -r /usr/src/app/node_modules/@gros/visualization-ui/schema/ module_schema'
                 sh "VISUALIZATION_ORGANIZATION=${params.VISUALIZATION_ORGANIZATION} VISUALIZATION_COMBINED=${params.VISUALIZATION_COMBINED} NAVBAR_SCOPE=${params.NAVBAR_SCOPE} MIX_FILE=$WORKSPACE/webpack.mix.js npm run production"
+                sh 'rm -rf node_modules'
+                sh 'mkdir -p node_modules/@gros/visualization-ui; mv module_schema/ node_modules/@gros/visualization-ui/schema'
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'www', reportFiles: 'index.html', reportName: 'Visualization', reportTitles: ''])
                 archiveArtifacts 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,caddy/*.yml,swagger/*.yml,swagger/*.conf,openapi.json,schema/**/*.json'
                 stash includes: 'nginx.conf,nginx/*.conf,httpd.conf,httpd/*.conf,httpd/maps/*.txt,swagger/*.yml,swagger/*.conf,openapi.json', name: 'swagger_config'
+                stash includes: 'node_modules/@gros/visualization-ui/schema/*.json', name: 'module_schema'
             }
         }
         stage('Copy') {
@@ -195,6 +199,7 @@ pipeline {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
                     unstash 'visualization_names'
                     unstash 'swagger_config'
+                    unstash 'module_schema'
                     sh './copy.sh'
                 }
             }
