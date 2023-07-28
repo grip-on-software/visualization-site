@@ -240,7 +240,7 @@ update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
 sed --in-place="" -e 's/\r$//' ./security/*.sh
 cp test/suppression.xml security/suppression.xml
 VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\/src\\/repos\\/\\1\\/node_modules/g")
-sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 \$VISUALIZATION_MOUNTS -v \$SITE_MOUNT:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --project \"\$PROJECT_NAME\" \\1/" ./security/security_dependencycheck.sh
+sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 \$VISUALIZATION_MOUNTS -v \$SITE_MOUNT:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --project \"\$PROJECT_NAME\" --disableOssIndex true \\1/" ./security/security_dependencycheck.sh
 PROJECT_NAME="Visualizations" VISUALIZATION_MOUNTS="$VISUALIZATION_MOUNTS" SITE_MOUNT="$BRANCH_NAME-visualization-site-modules" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
 if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	tree="$PWD/$REPO_ROOT/prediction-site"
