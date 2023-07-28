@@ -76,7 +76,7 @@ class IntegrationTest(unittest.TestCase):
             # Request a webdriver with Chrome capabilities (chrome.Options)
             # and set logging and download preferences.
             options = Options()
-            options.add_experimental_option('loggingPrefs', {'browser': 'ALL'})
+            options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
             options.add_experimental_option("prefs", {
                 "download.default_directory": "/work/downloads",
                 "download.prompt_for_download": False,
