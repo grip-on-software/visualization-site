@@ -25,6 +25,16 @@
     {{#jenkins_rewrite}}^{{{hub_rewrite}}}{{#path}}{{{visualization_url}}}{{/path}}$ {{#jenkins_report}}visualization-site/$branch/index.html{{/jenkins_report}}{{/jenkins_rewrite}}
 </LocationMatch>
 
+# Somehow the "Header set" does not work, even outside LocationMatch (order of
+# rule processing for LocationMatch rules?), instead use a FilesMatch to blanket
+# allow access to these remotely.
+# This is mostly for development where loading in the "visualization-site"
+# resources is helpful, but may also be used in production if visualization and
+# prediction are on different hostnames, and does not introduce security issues.
+<FilesMatch "\.(css|js|ttf|woff2|json)">
+   Header set Access-Control-Allow-Origin *
+</FilesMatch>
+
 <Location {{#path}}{{{visualization_url}}}{{/path}}login>
     Require all denied
 </Location>
