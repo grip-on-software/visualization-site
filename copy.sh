@@ -39,7 +39,7 @@ if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
 fi
 
 # Repositories that have JSON schemas and a Jenkins build that archives them.
-ARCHIVE_NAMES="prediction monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config visualization-site"
+ARCHIVE_NAMES="visualization-site prediction data-analysis monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config"
 # Subset of repositories that have openapi.json files in subdirectories and
 # a Jenkins build that archives them, excluding visualization-site.
 OPENAPI_NAMES="data-gathering"
