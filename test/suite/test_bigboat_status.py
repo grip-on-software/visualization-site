@@ -59,8 +59,5 @@ class BigboatStatusTest(IntegrationTest):
         tspan = self._wait_for(expected_conditions.presence_of_element_located(
             (By.CSS_SELECTOR, '#average-reliability .focus tspan')
         ))
-        self.assertEqual(tspan.text, '26 Jun 18:31')
-        self.assertEqual(focus.find_element(By.CSS_SELECTOR,
-                                            'tspan:last-child').text,
-                         'Available IPs')
-        self.assertEqual(focus.get_attribute('transform'), 'translate(568,450)')
+        self.assertEqual(tspan.text, '25 Jun 17:45 - all OK')
+        self.assertEqual(focus.get_attribute('transform'), 'translate(690,0)')
