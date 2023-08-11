@@ -1,0 +1,6 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/project_event.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline project event data",
+    "$ref": "event.json#/$defs/events"
+}

@@ -1,0 +1,34 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/data.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline data summary",
+    "$ref": "#/$defs/data",
+    "$defs": {
+        "data": {
+            "type": "object",
+            "properties": {
+                "min_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Earliest date and time from all data sources."
+                },
+                "max_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Latest date and time from all data sources."
+                },
+                "update_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Moment when data was collected."
+                },
+                "projects": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Project names."
+                }
+            },
+            "required": ["min_date", "max_date", "update_date", "projects"]
+        }
+    }
+}

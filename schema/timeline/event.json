@@ -1,0 +1,60 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/event.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline event data",
+    "$ref": "#/$defs/event",
+    "$defs": {
+        "event": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "$ref": "#/$defs/events"
+                }
+            }
+        },
+        "events": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "project_name": {
+                        "type": "string",
+                        "description": "Project name of the event."
+                    },
+                    "sprint_id": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Identifier of the sprint in which the event took place."
+                    },
+                    "sprint_name": {
+                        "type": "string",
+                        "description": "Name of the sprint in which the event took place."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time that the event took place."
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Event type."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date and time that the event ends."
+                    },
+                    "board_id": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Identifier of the Jira board that the event comes from."
+                    }
+                },
+                "required": [
+                    "project_name", "sprint_id", "sprint_name", "date",
+                    "type"
+                ]
+            }
+        }
+    }
+}

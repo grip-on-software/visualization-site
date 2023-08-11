@@ -1,0 +1,17 @@
+{
+    "$id": "https://gros.liacs.nl/schema/collaboration-graph/intervals.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Collaboration graph data intervals",
+    "$ref": "#/$defs/intervals",
+    "$defs": {
+        "intervals": {
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "UNIX timestamp of interval moment of the timelapse."
+            }
+        }
+    }
+}
+

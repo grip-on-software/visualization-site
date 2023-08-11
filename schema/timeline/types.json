@@ -1,0 +1,38 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/types.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline event types data",
+    "$ref": "#/$defs/types",
+    "$defs": {
+        "types": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "describing": "Name of the event type."
+                    },
+                    "locales": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z]{2,3}(-.*)?$": {
+                                "type": "array",
+                                "description": "Localization for a specific language. Valid languages use two-letter ISO 639-1 language codes plus optional BCP 47 subtags, so only a subset of languages is recognized.",
+                                "items": {"type": "string"}
+                            }
+                        }
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Whether to display the event by default."
+                    },
+                    "subchart": {
+                        "type": "boolean",
+                        "description": "Whether to display the event data in a subchart per sprint instead of the main chart."
+                    }
+                }
+            }
+        }
+    }
+}

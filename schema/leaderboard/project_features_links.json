@@ -1,0 +1,34 @@
+{
+    "$id": "https://gros.liacs.nl/schema/leaderboard/project_features_links.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Leaderboard data project features links",
+    "$ref": "#/$defs/project_features_links",
+    "$defs": {
+        "project_features_links": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.+$": {"$ref": "#/$defs/link"}
+                    }
+                }
+            }
+        },
+        "link": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Link to the source system that preferably provides a report that contains the feature's value for the project."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of the source system."
+                }
+            },
+            "required": ["source"]
+        }
+    }
+}

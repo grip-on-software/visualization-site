@@ -1,0 +1,29 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/expressions.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report data expressions",
+    "$ref": "#/$defs/expressions",
+    "$defs": {
+        "expressions": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "properties": {
+                        "expression": {
+                            "type": "string",
+                            "description": "Expression that is used to assign the generated feature."
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Feature used in an assignment of the generated feature."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

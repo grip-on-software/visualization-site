@@ -1,0 +1,22 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/links.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline links data",
+    "$ref": "#/$defs/links",
+    "$defs": {
+        "links": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "object",
+                    "properties": {
+                        "jira_url": {
+                            "type": "string",
+                            "format": "uri"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

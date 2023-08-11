@@ -1,0 +1,17 @@
+{
+    "$id": "https://gros.liacs.nl/schema/heatmap/weather.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Heatmap data weather",
+    "$ref": "#/$defs/weather",
+    "$defs": {
+        "weather": {
+            "type": "object",
+            "patternProperties": {
+                "^\\d\\d\\d\\d-\\d\\d-\\d\\d$": {
+                    "type": "number",
+                    "description": "Temperature in degrees Celcius that was measured on the day."
+                }
+            }
+        }
+    }
+}

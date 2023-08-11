@@ -1,0 +1,50 @@
+{
+    "$id": "https://gros.liacs.nl/schema/bigboat-status/fields.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BigBoat status data fields",
+    "$ref": "#/$defs/fields",
+    "$defs": {
+        "fields": {
+            "type": "object",
+            "properties": {
+                "_latest_date": {
+                    "type": "string",
+                    "oneOf": [
+                        {"format": "date"},
+                        {"format": "date-time"}
+                    ],
+                    "description": "Latest moment that data was collected across the entire organization."
+                }
+            },
+            "patternProperties": {
+                "^[A-Za-z ]+$": {
+                    "type": "object",
+                    "properties": {
+                        "titles": {
+                            "description": "Localization titles for a subgraph of a BigBoat performance status field.",
+                            "$ref": "#/$defs/locale"
+                        },
+                        "descriptions": {
+                            "description": "Localization texts for a subgraph of a BigBoat performance status field.",
+                            "$ref": "#/$defs/locale"
+                        },
+                        "unit": {
+                            "type": "string",
+                            "description": "Units used by the BigBoat performance status field values.",
+                            "enum": ["bytes", "seconds"]
+                        }
+                    }
+                }
+            }
+        },
+        "locale": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z]{2,3}(-.*)?$": {
+                    "type": "string",
+                    "description": "Localization item for a specific language. Valid languages use two-letter ISO 639-1 language codes plus optional BCP 47 subtags, so only a subset of languages is recognized."
+                }
+            }
+        }
+    }
+}

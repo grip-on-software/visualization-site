@@ -1,0 +1,15 @@
+{
+    "$id": "https://gros.liacs.nl/schema/metadata/projects_sources.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sources for projects",
+    "$ref": "#/$defs/projects_sources",
+    "$defs": {
+        "projects_sources": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {"$ref": "project_sources.json#/$defs/project_sources"}
+            }
+        }
+    }
+}
+

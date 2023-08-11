@@ -1,0 +1,6 @@
+{
+    "$id": "https://gros.liacs.nl/schema/bigboat-status/config.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BigBoat status configuration",
+    "$ref": "../visualization-site/config.json#/$defs/config-visualization"
+}

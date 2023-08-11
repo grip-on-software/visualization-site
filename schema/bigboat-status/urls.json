@@ -1,0 +1,18 @@
+{
+    "$id": "https://gros.liacs.nl/schema/bigboat-status/urls.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BigBoat status data URLs",
+    "$ref": "#/$defs/urls",
+    "$defs": {
+        "urls": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to the BigBoat instance for a project."
+                }
+            }
+        }
+    }
+}

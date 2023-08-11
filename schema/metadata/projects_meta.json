@@ -28,6 +28,55 @@
                     "main": {
                         "type": "boolean",
                         "description": "Whether the project is a main project with no parent. When `false`, the project is a child of another."
+                    },
+                    "team": {
+                        "type": "number",
+                        "description": "Indication that the project is the primary project of a team. If this is 0, then another project is the team's main project. For values higher than 1, this also indicates the identifier of the board used by the team as an overview of the project."
+                    },
+                    "component": {
+                        "oneOf": [
+                            {
+                                "type": "boolean",
+                                "const": false
+                            },
+                            {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "include": {
+                                            "type": "string"
+                                        },
+                                        "exclude": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "description": "If the project is not a component of another project, then this is `false`, otherwise the filters used based on component names to generate the component."
+                    },
+                    "project_names": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {
+                                "type": "array",
+                                "minItems": 2,
+                                "items": {"type": "string"}
+                            }
+                        ],
+                        "description": "Identifiers of the projects used t generate the project or team."
+                    },
+                    "num_sprints": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Number of sprints in the project."
+                    },
+                    "future_sprints": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Number of sprints in the future for the project with predictions for features."
                     }
                 },
                 "required": ["name"]

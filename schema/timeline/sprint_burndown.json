@@ -1,0 +1,34 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/sprint_burndow.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline sprint burndown data",
+    "$ref": "#/$defs/sprint_burndown",
+    "$defs": {
+        "sprint_burndown": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Moment when the burndown chart changes."
+                    },
+                    "points": {
+                        "type": "number",
+                        "description": "Difference in story points at the change of the burndown chart."
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "initial", "scope_add", "scope_remove", "points",
+                            "completed", "close"
+                        ],
+                        "description": "Type of change to the burndown chart.\n- initial: Sprint start\n- scope_add: Scope change due to story addition\n- scope_remove: Scope change due to story removal\n- points: Story points change during sprint\n- completed: Story done\n- close: Sprint close"
+                    }
+                },
+                "required": ["date", "points", "type"]
+            }
+        }
+    }
+}

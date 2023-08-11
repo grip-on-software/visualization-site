@@ -1,0 +1,20 @@
+{
+    "$id": "https://gros.liacs.nl/schema/leaderboard/project_features_normalize.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Leaderboard data project features normalization",
+    "$ref": "#/$defs/project_features_normalize",
+    "$defs": {
+        "project_features_normalize": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "null"}
+                    ],
+                    "description": "Feature that can be used to normalize the current feature, or `null` if there is no appropriate normalization feature by default."
+                }
+            }
+        }
+    }
+}

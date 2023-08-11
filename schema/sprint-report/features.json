@@ -1,0 +1,42 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/features.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report data features",
+    "$ref": "#/$defs/features",
+    "$defs": {
+        "features": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features to display by default."
+                },
+                "all": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features that are available to display."
+                },
+                "future": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features that have predictions for future sprints."
+                },
+                "details": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features that have unit-level details on how their were extracted."
+                },
+                "metrics": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features that are based on quality metrics."
+                },
+                "meta": {
+                    "$ref": "#/$defs/feature_list",
+                    "description": "Features that are available as metadata in the report."
+                }
+            },
+            "required": ["default", "all", "details", "meta"]
+        },
+        "feature_list": {
+            "type": "array",
+            "items": {"type": "string"}
+        }
+    }
+}

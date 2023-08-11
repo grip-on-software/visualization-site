@@ -1,0 +1,32 @@
+{
+    "$id": "https://gros.liacs.nl/schema/heatmap/volume.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Heatmap data volume",
+    "$ref": "#/$defs/volume",
+    "$defs": {
+        "volume": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/day_volume"}
+                }
+            }
+        },
+        "day_volume": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Day to which the volume applies."
+                },
+                "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Volume value."
+                }
+            }
+        }
+    }
+}

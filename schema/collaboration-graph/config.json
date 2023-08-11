@@ -1,0 +1,27 @@
+{
+    "$id": "https://gros.liacs.nl/schema/collaboration-graph/config.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Collaboration graph configuration",
+    "$ref": "#/$defs/config",
+    "$defs": {
+        "config": {
+            "allOf": [
+                {"$ref": "../visualization-site/config.json#/$defs/config-visualization"}
+            ],
+            "$comment": "Documentation on configuration items in README.md of gros/collaboration-graph repository",
+            "type": "object",
+            "properties": {
+                "encrypt_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "lower_names": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

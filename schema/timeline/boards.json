@@ -1,0 +1,22 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/boards.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline boards data",
+    "$ref": "#/$defs/boards",
+    "$defs": {
+        "boards": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "oneOf": [
+                        {"type": "null"},
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

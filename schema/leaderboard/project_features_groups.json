@@ -1,0 +1,26 @@
+{
+    "$id": "https://gros.liacs.nl/schema/leaderboard/project_features_groups.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Leaderboard data project features groups",
+    "$ref": "#/$defs/project_features_groups",
+    "$defs": {
+        "project_features_groups": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "project", "metric_history", "metric_options",
+                            "quality_time", "quality", "sonar", "jenkins",
+                            "jira", "vcs", "git", "gitlab", "github", "tfs",
+                            "subversion", "prediction", "normalize"
+                        ],
+                        "description": "Categories to group the project feature in."
+                    }
+                }
+            }
+        }
+    }
+}

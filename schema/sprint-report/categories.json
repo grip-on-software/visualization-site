@@ -1,0 +1,38 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/categories.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report localization data categories",
+    "$ref": "#/$defs/categories",
+    "$defs": {
+        "categories": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z]{2,3}(-.*)?$": {
+                        "type": "string",
+                        "description": "Category name for a specific language. Valid languages use two-letter ISO 639-1 language codes plus optional BCP 47 subtags, so only a subset of languages is recognized."
+                    }
+                },
+                "properties": {
+                    "icon": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {"type": "string"},
+                        "description": "Portions of a FontAwesome icon class that indicates the category."
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Features belonging to the category."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Identifier of the category."
+                    }
+                },
+                "required": ["name", "icon"]
+            }
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "$id": "https://gros.liacs.nl/schema/collaboration-graph/project_members.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Collaboration graph data project members",
+    "$ref": "#/$defs/project_members",
+    "$defs": {
+        "project_members": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/project_member"}
+        },
+        "project_member": {
+            "type": "object",
+            "items": {
+                "source": {
+                    "type": "string",
+                    "description": "(Encrypted) name of the project member."
+                },
+                "target": {
+                    "type": "string",
+                    "description": "Name of the project that the person is a member of."
+                },
+                "internal": {
+                    "type": "boolean",
+                    "description": "Whether the project member has an internal email address."
+                },
+                "support": {
+                    "type": "boolean",
+                    "description": "Whether the project member is (also) a member of a support team."
+                },
+                "num_commits": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Number of commits by the member to the project's code repositories."
+                },
+                "num_issues": {
+                    "type": "integer",
+                    "minimum": "Number of issues from the project's issue tracker that are assigned to the member."
+                },
+                "encryption": {
+                    "type": "integer",
+                    "enum": [0, 1, 2, 3],
+                    "description": "Encryption level applied to the project member's name.\n- 0: No encryption\n- 1: Project-specific encryption\n- 2: Gloabel encryption\n- 3: Project-specific then global encryption"
+                }
+            }
+        }
+    }
+}

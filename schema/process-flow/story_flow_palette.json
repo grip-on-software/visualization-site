@@ -1,0 +1,15 @@
+{
+    "$id": "https://gros.liacs.nl/schema/process-flow/story_flow_palette.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Process flow data story flow palette",
+    "$ref": "#/$defs/story_flow_palette",
+    "$defs": {
+        "story_flow_palette": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^#[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$"
+            }
+        }
+    }
+}

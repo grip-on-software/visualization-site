@@ -1,0 +1,38 @@
+{
+    "$id": "https://gros.liacs.nl/schema/bigboat-status/project.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BigBoat status project data",
+    "$ref": "#/$defs/project",
+    "$defs": {
+        "project": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/status"}
+        },
+        "status": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the metric."
+                },
+                "checked_date": {
+                    "type": "string",
+                    "pattern": "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d",
+                    "description": "Moment when the metric was measured."
+                },
+                "ok": {
+                    "type": "boolean",
+                    "description": "Whether the metric value is acceptable for a stable platform."
+                },
+                "value": {
+                    "type": "number",
+                    "description": "Value of the metric."
+                },
+                "max": {
+                    "type": "number",
+                    "description": "Maximum value that the metric can reach."
+                }
+            }
+        }
+    }
+}

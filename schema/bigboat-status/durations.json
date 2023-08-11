@@ -1,0 +1,20 @@
+{
+    "$id": "https://gros.liacs.nl/schema/bigboat-status/durations.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "BigBoat status data durations",
+    "$ref": "#/$defs/durations",
+    "$defs": {
+        "durations": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "oneOf": [
+                    {"const": "full"},
+                    {"pattern": "\\d+-(second|minute|hour|day|week|month|year)s?"}
+                ],
+                "description": "Duration specifier. Either `full` which indicates the entire range of collection data, or a positive number followed by a duration unit supported by Moment.js."
+            }
+        }
+    }
+}
+

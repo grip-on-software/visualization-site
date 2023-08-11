@@ -1,0 +1,50 @@
+{
+    "$id": "https://gros.liacs.nl/schema/timeline/features.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Timeline features data",
+    "$ref": "#/$defs/features",
+    "$defs": {
+        "features": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "oneOf": [
+                        {"$ref": "#/$defs/missing_data"},
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                "^\\d+$": {
+                                    "oneOf": [
+                                        {"$ref": "#/$defs/missing_data"},
+                                        {
+                                            "type": "object",
+                                            "patternProperties": {
+                                                "^.+$": {
+                                                    "oneOf": [
+                                                        {"$ref": "#/$defs/nan"},
+                                                        {"type": "number"}
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    ]
+                }
+            }
+        },
+        "missing_data": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {"type": "null"}
+        },
+        "nan": {
+            "type": "string",
+            "enum": ["NA", "NaN"]
+        }
+    }
+}

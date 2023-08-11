@@ -1,0 +1,32 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/sprints.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report data sprints",
+    "$ref": "#/$defs/sprints",
+    "$defs": {
+        "sprints": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "number",
+                    "minimum": 1,
+                    "description": "Default number of sprints to show."
+                },
+                "closed": {
+                    "type": "boolean",
+                    "description": "Whether only sprints that have ended are part of the report."
+                },
+                "old": {
+                    "type": "boolean",
+                    "description": "Whether more sprints than the limit are available."
+                },
+                "future": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Number of sprints that are available for predictions."
+                }
+            },
+            "required": ["limit", "closed", "old"]
+        }
+    }
+}

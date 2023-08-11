@@ -1,0 +1,22 @@
+{
+    "$id": "https://gros.liacs.nl/schema/leaderboard/project_features.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Leaderboard data project features",
+    "$ref": "#/$defs/project_features",
+    "$defs": {
+        "project_features": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.+$": {
+                            "type": "number",
+                            "description": "Value of the project's feature."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

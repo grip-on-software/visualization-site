@@ -1,0 +1,44 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/metrics_targets.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report data metric targets",
+    "$ref": "#/$defs/metric_targets",
+    "$defs": {
+        "metric_targets": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "array",
+                    "item": {"$ref": "#/$defs/metric_target"}
+                }
+            }
+        },
+        "metric_target": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "type": "boolean",
+                    "description": "Whether the metric improves if the value increases. `true` if a higher value is better, `false` if a lower value is better."
+                },
+                "perfect": {
+                    "type": "number",
+                    "description": "Perfect value of the metric."
+                },
+                "target": {
+                    "type": "number",
+                    "description": "Target value of the metric."
+                },
+                "low_target": {
+                    "type": "number",
+                    "description": "Low target value of the metric."
+                },
+                "date": {
+                    "type": "string",
+                    "pattern": "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d",
+                    "description": "Moment when the metric targets were changed."
+                }
+            },
+            "required": ["target", "low_target", "date"]
+        }
+    }
+}

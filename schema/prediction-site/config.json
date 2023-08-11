@@ -1,0 +1,88 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/config.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Prediction site configuration",
+    "$ref": "#/$defs/config",
+    "$defs": {
+        "config": {
+            "allOf": [
+                {"$ref": "../visualization-site/config.json#/$defs/config-visualization"}
+            ],
+            "$comment": "Documentation on configuration items in README.md of gros/prediction-site repository",
+            "type": "object",
+            "properties": {
+                "prediction_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "language": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z]{2,3}(-.*)?$"
+                },
+                "organizations": {
+                    "$ref": "../metadata/locale.json#/$defs/locale"
+                },
+                "branches_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "branches_filter": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "combined": {"$ref": "#/$defs/branches_filter"},
+                                "default": {"$ref": "#/$defs/branches_filter"}
+                            }
+                        },
+                        {"$ref": "#/$defs/branches_filter"}
+                    ]
+                },
+                "branches_alter": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "combined": {"$ref": "#/$defs/branches_alter"},
+                                "default": {"$ref": "#/$defs/branches_alter"}
+                            }
+                        },
+                        {"$ref": "#/$defs/branches_alter"}
+                    ]
+                },
+                "branch_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "master_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "files_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "papers_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                },
+                "jira_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "openapi_url": {
+                    "type": "string",
+                    "format": "uri-reference"
+                }
+            }
+        },
+        "branches_filter": {
+            "type": "string",
+            "format": "regex"
+        },
+        "branches_alter": {
+            "type": "string",
+            "format": "regex"
+        }
+    }
+}

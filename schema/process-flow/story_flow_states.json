@@ -1,0 +1,19 @@
+{
+    "$id": "https://gros.liacs.nl/schema/process-flow/story_flow_states.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Process flow data story flow states",
+    "$ref": "#/$defs/story_flow_states",
+    "$defs": {
+        "story_flow_states": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "string",
+                    "enum": [
+                        "open", "progress", "reopened", "resolved", "closed"
+                    ]
+                }
+            }
+        }
+    }
+}
