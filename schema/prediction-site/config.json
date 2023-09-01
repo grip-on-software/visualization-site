@@ -2,9 +2,9 @@
     "$id": "https://gros.liacs.nl/schema/prediction-site/config.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Prediction site configuration",
-    "$ref": "#/$defs/config",
+    "$ref": "#/$defs/config-prediction-site",
     "$defs": {
-        "config": {
+        "config-prediction-site": {
             "allOf": [
                 {"$ref": "../visualization-site/config.json#/$defs/config-visualization"}
             ],

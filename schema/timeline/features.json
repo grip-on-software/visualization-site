@@ -2,9 +2,9 @@
     "$id": "https://gros.liacs.nl/schema/timeline/features.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Timeline features data",
-    "$ref": "#/$defs/features",
+    "$ref": "#/$defs/timeline-features",
     "$defs": {
-        "features": {
+        "timeline-features": {
             "type": "object",
             "patternProperties": {
                 "^.+$": {

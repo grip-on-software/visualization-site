@@ -2,9 +2,9 @@
     "$id": "https://gros.liacs.nl/schema/timeline/types.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Timeline event types data",
-    "$ref": "#/$defs/types",
+    "$ref": "#/$defs/timeline-types",
     "$defs": {
-        "types": {
+        "timeline-types": {
             "type": "array",
             "items": {
                 "type": "object",

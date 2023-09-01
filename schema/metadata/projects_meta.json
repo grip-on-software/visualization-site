@@ -1,85 +1,91 @@
 {
-    "$id": "https://gros.liacs.nl/schema/metadata/projects.json",
+    "$id": "https://gros.liacs.nl/schema/metadata/projects_meta.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Projects metadata",
     "$ref": "#/$defs/projects_meta",
     "$defs": {
         "projects_meta": {
             "type": "array",
+            "items": {"$ref": "#/$defs/project_meta"}
+        },
+        "project_meta": {
+            "type": "object",
+            "description": "Metadata for an individual project.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the project, usually a identifier key from an issue tracker."
+                },
+                "quality_display_name": {
+                    "type": "string",
+                    "description": "Human-readable name of the project from the quality control dashboard."
+                },
+                "recent": {
+                    "type": "boolean",
+                    "description": "Whether the project has recent sprints."
+                },
+                "core": {
+                    "type": "boolean",
+                    "description": "Whether the project is considered to be an actual software development project. When `false`, the project is developed by a support team."
+                },
+                "main": {
+                    "type": "boolean",
+                    "description": "Whether the project is a main project with no parent. When `false`, the project is a child of another."
+                },
+                "team": {
+                    "type": "number",
+                    "description": "Indication that the project is the primary project of a team. If this is 0, then another project is the team's main project. For values higher than 1, this also indicates the identifier of the board used by the team as an overview of the project."
+                },
+                "component": {
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "const": false
+                        },
+                        {"$ref": "#/$defs/component_filters"}
+                    ],
+                    "description": "If the project is not a component of another project, then this is `false`, otherwise the filters used based on component names to generate the component."
+                },
+                "project_names": {
+                    "$ref": "#/$defs/project_names",
+                    "description": "Identifiers of the projects used to generate the project or team."
+                },
+                "num_sprints": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Number of sprints in the project."
+                },
+                "future_sprints": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Number of sprints in the future for the project with predictions for features."
+                }
+            },
+            "required": ["name"]
+        },
+        "project_names": {
+            "oneOf": [
+                {"type": "string"},
+                {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {"type": "string"}
+                }
+            ]
+        },
+        "component_filters": {
+            "type": "array",
+            "minItems": 1,
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Name of the project, usually a identifier key from an issue tracker."
+                    "include": {
+                        "type": "string"
                     },
-                    "quality_display_name": {
-                        "type": "string",
-                        "description": "Human-readable name of the project from the quality control dashboard."
-                    },
-                    "recent": {
-                        "type": "boolean",
-                        "description": "Whether the project has recent sprints."
-                    },
-                    "core": {
-                        "type": "boolean",
-                        "description": "Whether the project is considered to be an actual software development project. When `false`, the project is developed by a support team."
-                    },
-                    "main": {
-                        "type": "boolean",
-                        "description": "Whether the project is a main project with no parent. When `false`, the project is a child of another."
-                    },
-                    "team": {
-                        "type": "number",
-                        "description": "Indication that the project is the primary project of a team. If this is 0, then another project is the team's main project. For values higher than 1, this also indicates the identifier of the board used by the team as an overview of the project."
-                    },
-                    "component": {
-                        "oneOf": [
-                            {
-                                "type": "boolean",
-                                "const": false
-                            },
-                            {
-                                "type": "array",
-                                "minItems": 1,
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "include": {
-                                            "type": "string"
-                                        },
-                                        "exclude": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        ],
-                        "description": "If the project is not a component of another project, then this is `false`, otherwise the filters used based on component names to generate the component."
-                    },
-                    "project_names": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {
-                                "type": "array",
-                                "minItems": 2,
-                                "items": {"type": "string"}
-                            }
-                        ],
-                        "description": "Identifiers of the projects used t generate the project or team."
-                    },
-                    "num_sprints": {
-                        "type": "number",
-                        "minimum": 0,
-                        "description": "Number of sprints in the project."
-                    },
-                    "future_sprints": {
-                        "type": "number",
-                        "minimum": 0,
-                        "description": "Number of sprints in the future for the project with predictions for features."
+                    "exclude": {
+                        "type": "string"
                     }
-                },
-                "required": ["name"]
+                }
             }
         }
     }

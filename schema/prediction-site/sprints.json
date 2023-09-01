@@ -1,11 +1,12 @@
 {
     "$id": "https://gros.liacs.nl/schema/prediction-site/sprints.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Sprint list",
-    "$ref": "#/$defs/sprints",
+    "title": "Prediction sprint list",
+    "$ref": "#/$defs/prediction-sprints",
     "$defs": {
-        "sprints": {
+        "prediction-sprints": {
             "type": "array",
+            "description": "Sprints for which a prediction is available.",
             "items": {
                 "type": "object",
                 "properties": {

@@ -10,12 +10,12 @@
                 "^.+$": {
                     "type": "object",
                     "patternProperties": {
-                        "^.+$": {"$ref": "#/$defs/link"}
+                        "^.+$": {"$ref": "#/$defs/project_features_link"}
                     }
                 }
             }
         },
-        "link": {
+        "project_features_link": {
             "type": "object",
             "properties": {
                 "source": {

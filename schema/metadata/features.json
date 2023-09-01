@@ -8,115 +8,8 @@
         "metadata": {
             "type": "object",
             "properties": {
-                "values": {
-                    "type": "object",
-                    "patternProperties": {
-                        ".*": {
-                            "type": "object",
-                            "properties": {
-                                "type": {
-                                    "type": "string",
-                                    "enum": ["fraction", "duration", "icon"],
-                                    "description": "The format type of a feature."
-                                },
-                                "denominator": {
-                                    "type": "integer",
-                                    "minimum": 1,
-                                    "description": "The maximum denominator to be used when formatting a value of a feature with the `fraction` type."
-                                },
-                                "intervals": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "description": "Interval specification for a feature with the `duration` type. Values of this feature can be formatted by dividing the value by the intervals, until the value is small enough.",
-                                        "properties": {
-                                            "unit": {
-                                                "$ref": "#/$defs/moment_key",
-                                                "description": "The interval unit size. The length of the interval is defined by `num` of this unit."
-                                            },
-                                            "key": {
-                                                "type": "string",
-                                                "enum": ["y", "M", "w", "d", "h", "m", "s"],
-                                                "description": "The shorthand key for the interval unit."
-                                            },
-                                            "num": {
-                                                "type": "integer",
-                                                "minimum": 1,
-                                                "description": "The interval size."
-                                            }
-                                        }
-                                    }
-                                },
-                                "icons": {
-                                    "type": "object",
-                                    "description": "Icons to use in place of a value in order to format it for a feature with the `icon` type.",
-                                    "patternProperties": {
-                                        "^\\d+$": {
-                                            "type": "array",
-                                            "minItems": 2,
-                                            "description": "FontAwesome specification for an icon that represents the value."
-                                        }
-                                    }
-                                }
-                            },
-                            "required": ["type"]
-                        }
-                    }
-                },
-                "measurement": {
-                    "type": "object",
-                    "patternProperties": {
-                        ".*": {
-                            "type": "object",
-                            "properties": {
-                                "unit": {
-                                    "description": "The type of unit that the feature describes. Potentially described in a (recursive) fractional manner where terms have different units.",
-                                    "$ref": "#/$defs/measurement_unit"
-                                },
-                                "dividend": {
-                                    "description": "Feature that is used (in part) in the numerator of a unit fraction in order to end up with this feature.",
-                                    "$ref": "#/$defs/measurement_unit"
-                                },
-                                "divisor": {
-                                    "description": "Feature that is used (in part) in the denominator of a unit fraction in order to end up with this feature.",
-                                    "$ref": "#/$defs/measurement_unit"
-                                },
-                                "superset": {
-                                    "description": "Feature that represents a wider number of the same unit compared to this feature.",
-                                    "type": "string"
-                                },
-                                "moment": {
-                                    "description": "Indicator of when the feature is measured compared to the sprint. `post` means that the value is only complete once the sprint is ended.",
-                                    "oneOf": [
-                                        {
-                                            "type": "array",
-                                            "minItems": 2,
-                                            "maxItems": 2,
-                                            "items": {
-                                                "oneOf": [
-                                                    {"type": "integer"},
-                                                    {"type": "string"}
-                                                ]
-                                            },
-                                            "prefixItems": [
-                                                {"type": "integer"},
-                                                {"type": "string"}
-                                            ]
-                                        },
-                                        {
-                                            "type": "string",
-                                            "enum": ["post"]
-                                        }
-                                    ]
-                                },
-                                "pre": {
-                                    "description": "Feature that indicates a value at the start of a sprint that is related to this feature, and could be used to compare progress during the sprint.",
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                },
+                "values": {"$ref": "#/$defs/values"},
+                "measurement": {"$ref": "#/$defs/measurement"},
                 "preferred": {
                     "type": "object",
                     "patternProperties": {
@@ -126,70 +19,181 @@
                         }
                     }
                 },
-                "prediction": {
+                "prediction": {"$ref": "#/$defs/prediction"}
+            }
+        },
+        "values": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
                     "type": "object",
-                    "patternProperties": {
-                        ".*": {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["fraction", "duration", "icon"],
+                            "description": "The format type of a feature."
+                        },
+                        "denominator": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "The maximum denominator to be used when formatting a value of a feature with the `fraction` type."
+                        },
+                        "intervals": {
                             "type": "array",
-                            "minItems": 1,
-                            "description": "Different methods of predicting the feature.",
                             "items": {
                                 "type": "object",
+                                "description": "Interval specification for a feature with the `duration` type. Values of this feature can be formatted by dividing the value by the intervals, until the value is small enough.",
                                 "properties": {
-                                    "url": {
-                                        "type": "string",
-                                        "description": "Template for a URL to retrieve prediction data values for this feature."
+                                    "unit": {
+                                        "$ref": "#/$defs/moment_key",
+                                        "description": "The interval unit size. The length of the interval is defined by `num` of this unit."
                                     },
-                                    "reference": {
+                                    "key": {
                                         "type": "string",
-                                        "description": "Feature that can be used as a linear regression over sprints to predict the overall change of the feature."
+                                        "enum": ["y", "M", "w", "d", "h", "m", "s"],
+                                        "description": "The shorthand key for the interval unit."
                                     },
-                                    "monte_carlo": {
-                                        "type": "object",
-                                        "description": "Parameters for a Monte Carlo simulation to predict the feature.",
-                                        "properties": {
-                                            "name": {
-                                                "type": "string",
-                                                "description": "Name of the simulation."
-                                            },
-                                            "factors": {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "column": {
-                                                            "type": "string",
-                                                            "description": "Feature to use for the base factor."
-                                                        },
-                                                        "multiplier": {
-                                                            "type": "string",
-                                                            "description": "Feature to use as multiplication of the column feature."
-                                                        },
-                                                        "scalar": {
-                                                            "type": "number",
-                                                            "description": "Weight to apply to this factor."
-                                                        },
-                                                        "prob": {
-                                                            "type": "string",
-                                                            "description": "Probability density function."
-                                                        },
-                                                        "params": {
-                                                            "type": "array",
-                                                            "description": "Parameters for the probability density function.",
-                                                            "items": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "sample": {
-                                                            "type": "boolean",
-                                                            "description": "Whether to use the probability function to select new random data. When this is missing or `false`, the actual data from the column feature is selected instead."
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
+                                    "num": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "description": "The interval size."
                                     }
                                 }
+                            }
+                        },
+                        "icons": {
+                            "type": "object",
+                            "description": "Icons to use in place of a value in order to format it for a feature with the `icon` type.",
+                            "patternProperties": {
+                                "^\\d+$": {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "description": "FontAwesome specification for an icon that represents the value."
+                                }
+                            }
+                        }
+                    },
+                    "required": ["type"]
+                }
+            }
+        },
+        "measurement": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "properties": {
+                        "unit": {
+                            "description": "The type of unit that the feature describes. Potentially described in a (recursive) fractional manner where terms have different units.",
+                            "$ref": "#/$defs/measurement_unit"
+                        },
+                        "dividend": {
+                            "description": "Feature that is used (in part) in the numerator of a unit fraction in order to end up with this feature.",
+                            "$ref": "#/$defs/measurement_unit"
+                        },
+                        "divisor": {
+                            "description": "Feature that is used (in part) in the denominator of a unit fraction in order to end up with this feature.",
+                            "$ref": "#/$defs/measurement_unit"
+                        },
+                        "superset": {
+                            "description": "Feature that represents a wider number of the same unit compared to this feature.",
+                            "type": "string"
+                        },
+                        "moment": {
+                            "description": "Indicator of when the feature is measured compared to the sprint. `post` means that the value is only complete once the sprint is ended.",
+                            "oneOf": [
+                                {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "items": {
+                                        "oneOf": [
+                                            {"type": "integer"},
+                                            {"type": "string"}
+                                        ]
+                                    },
+                                    "prefixItems": [
+                                        {"type": "integer"},
+                                        {"type": "string"}
+                                    ]
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["post"]
+                                }
+                            ]
+                        },
+                        "pre": {
+                            "description": "Feature that indicates a value at the start of a sprint that is related to this feature, and could be used to compare progress during the sprint.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "prediction": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Different methods of predicting the feature.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "url": {
+                                "type": "string",
+                                "description": "Template for a URL to retrieve prediction data values for this feature."
+                            },
+                            "reference": {
+                                "type": "string",
+                                "description": "Feature that can be used as a linear regression over sprints to predict the overall change of the feature."
+                            },
+                            "monte_carlo": {"$ref": "#/$defs/monte_carlo"}
+                        }
+                    }
+                }
+            }
+        },
+        "monte_carlo": {
+            "type": "object",
+            "description": "Parameters for a Monte Carlo simulation to predict the feature.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the simulation."
+                },
+                "factors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "column": {
+                                "type": "string",
+                                "description": "Feature to use for the base factor."
+                            },
+                            "multiplier": {
+                                "type": "string",
+                                "description": "Feature to use as multiplication of the column feature."
+                            },
+                            "scalar": {
+                                "type": "number",
+                                "description": "Weight to apply to this factor."
+                            },
+                            "prob": {
+                                "type": "string",
+                                "description": "Probability density function."
+                            },
+                            "params": {
+                                "type": "array",
+                                "description": "Parameters for the probability density function.",
+                                "items": {
+                                    "type": "number"
+                                }
+                            },
+                            "sample": {
+                                "type": "boolean",
+                                "description": "Whether to use the probability function to select new random data. When this is missing or `false`, the actual data from the column feature is selected instead."
                             }
                         }
                     }

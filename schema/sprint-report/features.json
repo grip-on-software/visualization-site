@@ -1,10 +1,10 @@
 {
     "$id": "https://gros.liacs.nl/schema/sprint-report/features.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Sprint report data features",
-    "$ref": "#/$defs/features",
+    "title": "Sprint report metadata features",
+    "$ref": "#/$defs/sprint-report-features",
     "$defs": {
-        "features": {
+        "sprint-report-features": {
             "type": "object",
             "properties": {
                 "default": {

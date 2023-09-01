@@ -1,10 +1,10 @@
 {
     "$id": "https://gros.liacs.nl/schema/sprint-report/sprints.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Sprint report data sprints",
-    "$ref": "#/$defs/sprints",
+    "title": "Sprint report metadata sprints",
+    "$ref": "#/$defs/sprint-report-sprints",
     "$defs": {
-        "sprints": {
+        "sprint-report-sprints": {
             "type": "object",
             "properties": {
                 "limit": {

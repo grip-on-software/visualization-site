@@ -10,6 +10,7 @@
         },
         "status": {
             "type": "object",
+            "title": "BigBoat metric status",
             "properties": {
                 "name": {
                     "type": "string",
@@ -17,7 +18,7 @@
                 },
                 "checked_date": {
                     "type": "string",
-                    "pattern": "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d",
+                    "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$",
                     "description": "Moment when the metric was measured."
                 },
                 "ok": {

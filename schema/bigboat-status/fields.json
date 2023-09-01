@@ -38,6 +38,7 @@
             }
         },
         "locale": {
+            "title": "BigBoat status field locale",
             "type": "object",
             "patternProperties": {
                 "^[a-zA-Z]{2,3}(-.*)?$": {

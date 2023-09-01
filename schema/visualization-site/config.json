@@ -6,6 +6,7 @@
     "$defs": {
         "config-base": {
             "type": "object",
+            "description": "Configuration common to all visualizations and the hub.",
             "properties": {
                 "visualization_url": {
                     "type": "string",
@@ -19,6 +20,7 @@
                 {"$ref": "#/$defs/config-base"}
             ],
             "type": "object",
+            "description": "Configuration items of the visualization site.",
             "$comment": "Documentation on configuration items in README.md of gros/visualization-site repository",
             "properties": {
                 "prediction_url": {
@@ -67,49 +69,7 @@
                 },
                 "hub_organizations": {
                     "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "organization": {
-                                "type": "string",
-                                "pattern": "^[-_0-9a-zA-Z]+$"
-                            },
-                            "title": {"$ref": "#/$defs/navbar_locale"},
-                            "locale": {"$ref": "#/$defs/navbar_locale"},
-                            "image": {
-                                "type": "string"
-                            },
-                            "width": {
-                                "type": "integer",
-                                "minimum": 0
-                            },
-                            "height": {
-                                "type": "integer",
-                                "minimum": 0
-                            },
-                            "style": {
-                                "type": "string"
-                            },
-                            "url": {
-                                "type": "string",
-                                "format": "uri"
-                            },
-                            "visualization-site": {
-                                "type": "string",
-                                "pattern": "^[-_0-9a-zA-Z]+$"
-                            },
-                            "prediction-site": {
-                                "type": "string",
-                                "pattern": "^[-_0-9a-zA-Z]+$"
-                            },
-                            "visualizations": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
+                    "items": {"$ref": "#/$defs/hub_organization"}
                 },
                 "hub_regex": {
                     "type": "string",
@@ -206,8 +166,53 @@
                 }
             }
         },
+        "hub_organization": {
+            "type": "object",
+            "description": "Organization properties to make a hub available for.",
+            "properties": {
+                "organization": {
+                    "type": "string",
+                    "pattern": "^[-_0-9a-zA-Z]+$"
+                },
+                "title": {"$ref": "#/$defs/navbar_locale"},
+                "locale": {"$ref": "#/$defs/navbar_locale"},
+                "image": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "height": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "style": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "visualization-site": {
+                    "type": "string",
+                    "pattern": "^[-_0-9a-zA-Z]+$"
+                },
+                "prediction-site": {
+                    "type": "string",
+                    "pattern": "^[-_0-9a-zA-Z]+$"
+                },
+                "visualizations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "hub_map": {
             "type": "object",
+            "description": "Mapping from URL parts to branch names.",
             "patternProperties": {
                 "^[_a-z]+$": {
                     "type": "object",
@@ -243,6 +248,7 @@
                 {"$ref": "#/$defs/config-base"}
             ],
             "type": "object",
+            "description": "Base configuration for visualizations.",
             "properties": {
                 "path": {
                     "type": "string"

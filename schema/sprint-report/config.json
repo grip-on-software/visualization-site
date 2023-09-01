@@ -1,0 +1,6 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/config.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report configuration",
+    "$ref": "../visualization-site/config.json#/$defs/config-visualization"
+}

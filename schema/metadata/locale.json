@@ -5,6 +5,7 @@
     "$ref": "#/$defs/locale",
     "$defs": {
         "locale": {
+            "title": "Locales",
             "type": "object",
             "patternProperties": {
                 "^[a-zA-Z]{2,3}(-.*)?$": {

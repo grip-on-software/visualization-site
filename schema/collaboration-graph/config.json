@@ -2,9 +2,9 @@
     "$id": "https://gros.liacs.nl/schema/collaboration-graph/config.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Collaboration graph configuration",
-    "$ref": "#/$defs/config",
+    "$ref": "#/$defs/config-collaboration-graph",
     "$defs": {
-        "config": {
+        "config-collaboration-graph": {
             "allOf": [
                 {"$ref": "../visualization-site/config.json#/$defs/config-visualization"}
             ],
