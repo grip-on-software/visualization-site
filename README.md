@@ -413,6 +413,15 @@ likewise with `httpd.confg` and the generated files in the `httpd` directory
 for the Apache service. Alternatively, a subset of these files may be used, for 
 example to host all under one domain, with additional local configuration.
 
+Documentation based on JSON schema specification files from various GROS 
+repositories can be built with the `doc` directory. This requires installing 
+the `sphinx` and `sphinx-jsonschema` Python modules in the current environment. 
+The file `doc/source/conf.py` contains configuration for the documentation, 
+including paths or URLs to the schema files, which can be altered to use local 
+paths. When run on the Jenkins server to create static documentation, these 
+paths may be defined through the `doc.sh` script which locates the JSON schemas 
+as part of archives and modules available in the current workspace and beyond.
+
 A static production environment can make use of the result of the Bash script 
 `copy.sh` when run on the Jenkins server in order to create a document root 
 directory with the organizational hubs, all the visualizations, JSON schemas, 
