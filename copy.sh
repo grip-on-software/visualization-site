@@ -140,7 +140,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
 
                 # Standalone Swagger
                 COMPOSE_ARGS="-f swagger/docker-compose.yml"
-                docker compose $COMPOSE_ARGS up -d --force-recreate
+                docker compose $COMPOSE_ARGS up -d --wait --force-recreate
                 SWAGGER_CONTAINER=$(docker compose $COMPOSE_ARGS ps -q swagger)
                 if [ -z "$SWAGGER_CONTAINER" ]; then
                     echo "Could not bring up Swagger instances." >&2
