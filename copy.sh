@@ -47,7 +47,7 @@ fi
 ARCHIVE_NAMES="visualization-site prediction data-analysis monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config"
 # Subset of repositories that have openapi.json files in subdirectories and
 # a Jenkins build that archives them, excluding visualization-site.
-OPENAPI_NAMES="data-gathering"
+OPENAPI_NAMES="data-gathering export-exchange"
 # Repositories that are provided as an NPM package under the @gros scope with
 # packaged JSON schemas in them.
 MODULE_NAMES="visualization-ui"
