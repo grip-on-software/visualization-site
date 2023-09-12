@@ -34,8 +34,8 @@ if [ -z "$JENKINS_HOME" ]; then
 fi
 JOBS_PATH="$JENKINS_HOME/jobs"
 TARGET=$(jq -r .jenkins_direct $CONFIG)
-COPY="rsync -au --delete"
-COPY_APPEND="rsync -au"
+COPY="rsync -au --delete --exclude htmlpublisher-wrapper.html"
+COPY_APPEND="rsync -au --exclude htmlpublisher-wrapper.html"
 
 if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
     echo "No target for copy specified"
