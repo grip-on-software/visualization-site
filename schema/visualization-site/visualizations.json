@@ -27,7 +27,7 @@
                 }
             }
         },
-        "visuallization": {
+        "visualization": {
             "type": "object",
             "description": "Visualization available in the hub.",
             "properties": {

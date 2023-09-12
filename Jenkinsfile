@@ -195,11 +195,16 @@ pipeline {
             }
             steps {
                 checkout scm
+                unstash 'module_schema'
+                withPythonEnv('System-CPython-3') {
+                    pysh 'python -m pip install sphinx sphinx-jsonschema'
+                    pysh './doc.sh'
+                }
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, includes: '*.html,*.js,_static/*', keepAll: false, reportDir: 'doc/build/html', reportFiles: 'index.html', reportName: 'Documentation', reportTitles: ''])
                 withCredentials([file(credentialsId: 'visualization-site-config', variable: 'VISUALIZATION_SITE_CONFIGURATION')]) {
                     sh 'cp $VISUALIZATION_SITE_CONFIGURATION config.json'
                     unstash 'visualization_names'
                     unstash 'swagger_config'
-                    unstash 'module_schema'
                     sh './copy.sh'
                 }
             }

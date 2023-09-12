@@ -29,6 +29,7 @@
   ],
   "directories": {
       "dist": "www",
+      "doc": "doc",
       "lib": "lib",
       "res": "res",
       "test": "test"

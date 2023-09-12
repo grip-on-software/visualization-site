@@ -28,6 +28,10 @@ fi
 if [ ! -f "$CONFIG" ]; then
     CONFIG="lib/config.json"
 fi
+if [ -z "$JENKINS_HOME" ]; then
+    echo "This script can only be run in a Jenkins context"
+    exit 1
+fi
 JOBS_PATH="$JENKINS_HOME/jobs"
 TARGET=$(jq -r .jenkins_direct $CONFIG)
 COPY="rsync -au --delete"
@@ -35,6 +39,7 @@ COPY_APPEND="rsync -au"
 
 if [[ "$TARGET" == "" || "$TARGET" == "null" ]]; then
     echo "No target for copy specified"
+    echo "To run copy.sh, set 'jenkins_direct' in $CONFIG to a path"
     exit 0
 fi
 
@@ -131,6 +136,7 @@ for repo in $VISUALIZATION_NAMES $ARCHIVE_NAMES; do
                 cp "$archive/openapi.json" "$TARGET/openapi.json"
                 mkdir -p "$TARGET/schema"
                 $COPY_APPEND "$archive/schema/" "$TARGET/schema/"
+                $COPY_APPEND "$path/htmlreports/Documentation/" "$TARGET/schema/"
 
                 # Standalone Swagger
                 COMPOSE_ARGS="-f swagger/docker-compose.yml"
