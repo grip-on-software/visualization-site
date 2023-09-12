@@ -61,7 +61,7 @@ services:
       - "BASE_URL=/swagger"
       - "SWAGGER_JSON=/docs/openapi.json"
 {{#jenkins_direct}}
-      - "URLS=[{url: \"{{{swagger_openapi_url}}}openapi.json\", name: \"Prediction API\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-controller-openapi.json\", name: \"Data gathering controller API (view only)\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-scraper-agent-openapi.json\", name: \"Data gathering scraper agent API (view only)\"}]"
+      - "URLS=[{url: \"{{{swagger_openapi_url}}}openapi.json\", name: \"Prediction API\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-controller-openapi.json\", name: \"Data gathering controller API (view only)\"}, {url: \"{{{swagger_openapi_url}}}data-gathering-scraper-agent-openapi.json\", name: \"Data gathering scraper agent API (view only)\"}, {url: \"{{{swagger_openapi_url}}}export-exchange-openapi.json\", name: \"Export exchange API (view only)\"}]"
 {{/jenkins_direct}}
 {{#swagger_validator_url}}
       - "VALIDATOR_URL={{{swagger_validator_url}}}"
