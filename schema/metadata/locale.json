@@ -21,6 +21,14 @@
             "description": "Feature descriptions.",
             "$ref": "#/$defs/locale"
         },
+        "long_descriptions": {
+            "description": "Long feature descriptions.",
+            "$ref": "#/$defs/locale"
+        },
+        "predictor": {
+            "description": "Short feature descriptions when used as factors for a prediction of another feature, in order to differentiate prediction strategies.",
+            "$ref": "#/$defs/locale"
+        },
         "tags": {
             "description": "Feature tag names.",
             "$ref": "#/$defs/locale"

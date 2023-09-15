@@ -1,0 +1,12 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/project_feature.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report project feature sprints",
+    "$ref": "#/$defs/sprint-report-project-feature",
+    "$defs": {
+        "sprint-report-project-feature": {
+            "type": "array",
+            "items": {"$ref": "project_features.json#/$defs/sprint-report-feature"}
+        }
+    }
+}

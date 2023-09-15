@@ -15,22 +15,37 @@
                     "description": "Classification or estimation label for the sprint from the model."
                 },
                 "probability": {
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 1.0,
-                    "description": "Reliability of the predicted label for the sprint according to the estimator model."
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Reliability of the predicted label for the sprint according to the estimator model."
+                        },
+                        {"type": "null"}
+                    ]
                 },
                 "risk": {
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 1.0,
-                    "description": "Chance that the sprint will receive a negative classification after all, based on internal activations of the estimator model but with external normalized scale."
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "minimum": 0.0,
+                            "maximum": 1.0,
+                            "description": "Chance that the sprint will receive a negative classification after all, based on internal activations of the estimator model but with external normalized scale."
+                        },
+                        {"type": "null"}
+                    ]
                 },
                 "metrics": {
-                    "type": "object",
-                    "patternProperties": {
-                        ".*": {"type": "number"}
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {"type": "number"}
+                            }
+                        },
+                        {"type": "null"}
+                    ]
                 },
                 "analogies": {
                     "oneOf": [

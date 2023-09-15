@@ -1,0 +1,28 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/source_ids.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report source age",
+    "$ref": "#/$defs/sprint-report-source-age",
+    "$defs": {
+        "sprint-report-source-age": {
+            "type": "object",
+            "patternProperties": {
+                "^(project|metric_history|metric_options|quality_time|quality|sonar|jenkins|jira|vcs|git|gitlab|github|tfs|subversion|prediction)$": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Moment when the latest update took place for the source."
+                        },
+                        "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL of the source, specifically for the project and potentially a direct link to the file that is used as the entry point of the source data."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

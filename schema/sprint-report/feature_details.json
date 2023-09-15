@@ -1,0 +1,6 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/feature_details.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report feature details",
+    "$ref": "details.json#/$defs/sprint-report-feature-details"
+}

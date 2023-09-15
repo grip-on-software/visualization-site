@@ -13,13 +13,14 @@
                         "source": {
                             "type": "string",
                             "format": "uri",
-                            "description": "URL for a source, usually specifically for a sprint and feature, but sometimes broadly for the project."
+                            "description": "URL for the source, usually specifically for a sprint and feature, but sometimes broadly for the project."
                         },
                         "type": {
                             "type": "string",
-                            "description": "The type of source."
+                            "description": "Type of the source."
                         }
-                    }
+                    },
+                    "required": ["source"]
                 }
             }
         }

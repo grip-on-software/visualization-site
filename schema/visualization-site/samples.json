@@ -1,0 +1,17 @@
+{
+    "$id": "https://gros.liacs.nl/schema/visualization-site/samples.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Visualization test schema samples",
+    "$ref": "#/$defs/samples",
+    "$defs": {
+        "samples": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "string",
+                    "description": "Path to schema file that describes the format of the sample file(s) available at the glob path key."
+                }
+            }
+        }
+    }
+}
