@@ -1,6 +1,6 @@
-****************
-Grip on Software
-****************
+*****************************
+Grip on Software data schemas
+*****************************
 
 The following documentation introduces the JSON schema specifications of various
 exchange formats used by the Grip on Software data acquisition pipeline.
@@ -25,3 +25,12 @@ Schemas
    data-analysis
    prediction
    visualization-site
+   visualization-ui
+   bigboat-status
+   collaboration-graph
+   heatmap
+   leaderboard
+   prediction-site
+   process-flow
+   sprint-report
+   timeline

@@ -1,0 +1,34 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/source_ids.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report source identifiers",
+    "$ref": "#/$defs/sprint-report-source-ids",
+    "$defs": {
+        "sprint-report-source-ids": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the source where the source ID is extracted from."
+                            },
+                            "source_id": {
+                                "type": "string",
+                                "description": "Identifier of an artifact available at the source."
+                            },
+                            "source_type": {
+                                "type": "string",
+                                "description": "Type of the source."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

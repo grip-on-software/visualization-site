@@ -1,0 +1,42 @@
+{
+    "$id": "https://gros.liacs.nl/schema/prediction-site/files.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Prediction files",
+    "$ref": "#/$defs/files",
+    "$defs": {
+        "files": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "files": {
+                            "type": "array",
+                            "items": {"$ref": "#/$defs/file"}
+                        }
+                    }
+                }
+            }
+        },
+        "file": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["dir", "file"],
+                    "description": "Kind of the file.\n\n- `dir`: A directory.\n- `file`: A regular file."
+                },
+                "mimetype": {
+                    "type": "string",
+                    "pattern": "^[a-z-]+/[a-z-]+$",
+                    "description": "MIME type of the file."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Filename of the file."
+                }
+            },
+            "required": ["type", "mimetype", "name"]
+        }
+    }
+}

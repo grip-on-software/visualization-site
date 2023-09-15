@@ -473,7 +473,30 @@
                     }
                 }
             }
-        }
+        }{{#files_share_id}},
+        "/files": {
+            "get": {
+                "summary": "Get file list",
+                "description": "Retrieve a list of additional resources made available aside from the prediction data.",
+                "responses": {
+                    "200": {
+                        "description": "Files",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    {{#example_file}}"test": {
+                                        "externalValue": "test/sample/owncloud/list.php"
+                                    }{{/example_file}}
+                                },
+                                "schema": {
+                                    "$ref": "schema/prediction-site/files.json#/$defs/files"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }{{/files_share_id}}
     },
     "security": [{}]
 }

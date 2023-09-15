@@ -40,8 +40,8 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 html_copy_source = False
 html_use_index = False
+html_baseurl = 'https://gros.liacs.nl/schema/'
 html_theme_options = {
-    'canonical_url': 'https://gros.liacs.nl/schema/',
     'body_max_width': '1146px',
     'page_width': '1366px'
 }

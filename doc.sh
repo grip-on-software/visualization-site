@@ -32,8 +32,16 @@ fi
 
 # Repositories that have JSON schemas and a Jenkins build that archives them.
 ARCHIVE_NAMES="visualization-site prediction data-analysis monetdb-import export-exchange deployer data-gathering data-gathering-compose agent-config"
+# Subset of repositories that have nested schema directories.
+NESTED_NAMES="data-gathering"
+# Repositories that are provided as an NPM package under the @gros scope with
+# packaged JSON schemas in them.
 MODULE_NAMES="visualization-ui"
 
+# Defines for sphinx-build to replace schema URLs
+DEFINES=""
+# All the schemafiles
+SCHEMAS=""
 for repo in $ARCHIVE_NAMES; do
     if [ -z "$JENKINS_HOME" ]; then
         schema=""
@@ -71,8 +79,14 @@ for repo in $ARCHIVE_NAMES; do
     fi
 
     if [[ $repo == "visualization-site" ]]; then
-        DEFINES="$DEFINES -D 'preprocess_replacements.|$repo-schema|=$schema/visualization-site' -D 'preprocess_replacements.|visualization-schema|=$schema'" 
+        DEFINES="$DEFINES -D 'preprocess_replacements.|$repo-schema|=$schema/visualization-site' -D 'preprocess_replacements.|visualization-schema|=$schema'"
+        SCHEMAS="$SCHEMAS $schema/*/*.json"
     else
+        if [[ " $NESTED_NAMES " =~ " $repo " ]]; then
+            SCHEMAS="$SCHEMAS $schema/*.json $schema/*/*.json"
+        else
+            SCHEMAS="$SCHEMAS $schema/*.json"
+        fi
         DEFINES="$DEFINES -D 'preprocess_replacements.|$repo-schema|=$schema'"
     fi
 done
@@ -83,8 +97,16 @@ for module in $MODULE_NAMES; do
         exit 1
     fi
     DEFINES="$DEFINES -D 'preprocess_replacements.|$module-schema|=$PWD/node_modules/@gros/$module/schema'"
+    SCHEMAS="$SCHEMAS $PWD/node_modules/@gros/$module/schema/*.json"
 done
 
-echo $DEFINES
+# Validate all schemas
+echo "Performing schema validation"
+check-jsonschema --check-metaschema $SCHEMAS
+
+# Loops over each sample glob path and schema URI in tests/schema-samples.json
+# Then run:
+# check-jsonschema --schemafile $SCHEMA --base-uri $PATH_TO_SCHEMA_DIR $PATHS
+jq -r "to_entries|map(\"check-jsonschema --schemafile file://$PWD/schema/\(.value) --base-uri file://$PWD/schema/\(.value[0:.value | split(\"#\") | .[0] | rindex(\"/\")])/ test/sample/\(.key)\")|.[]" test/schema-samples.json | sh -x -
 
 cd doc && SPHINXOPTS=$DEFINES make $target

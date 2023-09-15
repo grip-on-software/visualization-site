@@ -1,0 +1,15 @@
+{
+    "$id": "https://gros.liacs.nl/schema/leaderboard/project_features_localization.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Leaderboard project features localization",
+    "$ref": "#/$defs/project_features_localization",
+    "$defs": {
+        "project_features_localization": {
+            "type": "object",
+            "properties": {
+                "descriptions": {"$ref": "../metadata/locale.json#/$defs/locale"},
+                "sources": {"$ref": "../metadata/locale.json#/$defs/sources"}
+            }
+        }
+    }
+}

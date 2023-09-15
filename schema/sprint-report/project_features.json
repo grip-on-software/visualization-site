@@ -1,0 +1,50 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/project_features.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report project features",
+    "$ref": "#/$defs/sprint-report-project-features",
+    "$defs": {
+        "sprint-report-project-features": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sprint_name": {
+                        "type": "string",
+                        "description": "Name of the sprint."
+                    }
+                },
+                "patternProperties": {
+                    "^(?!sprint_name$).+$": {"$ref": "#/$defs/sprint-report-feature"}
+                }
+            }
+        },
+        "sprint-report-feature": { 
+            "oneOf": [
+                {"$ref": "#/$defs/sprint-report-feature-number"},
+                {"$ref": "#/$defs/sprint-report-feature-date"},
+                {"$ref": "#/$defs/sprint-report-feature-range"}
+            ]
+        },
+        "sprint-report-feature-number": {
+            "oneOf": [
+                {"type": "number"},
+                {
+                    "type": "string",
+                    "const": "NA"
+                }
+            ]
+        },
+        "sprint-report-feature-date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "sprint-report-feature-range": {
+            "type": "object",
+            "properties": {
+                "min": {"$ref": "#/$defs/sprint-report-feature-number"},
+                "max": {"$ref": "#/$defs/sprint-report-feature-number"}
+            }
+        }
+    }
+}

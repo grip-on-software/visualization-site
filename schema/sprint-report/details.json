@@ -1,0 +1,34 @@
+{
+    "$id": "https://gros.liacs.nl/schema/sprint-report/details.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Sprint report project features details",
+    "$ref": "#/$defs/sprint-report-project-details",
+    "$defs": {
+        "sprint-report-project-details": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {"$ref": "#/$defs/sprint-report-feature-details"}
+            }
+        },
+        "sprint-report-feature-details": {
+            "type": "object",
+            "patternProperties": {
+                "^\\d+$": {"$ref": "#/$defs/sprint-report-sprint-details"}
+            }
+        },
+        "sprint-report-sprint-details": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {"type": "number"},
+                            {"type": "string"}
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
