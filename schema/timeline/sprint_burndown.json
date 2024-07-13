@@ -10,8 +10,7 @@
                 "type": "object",
                 "properties": {
                     "date": {
-                        "type": "string",
-                        "format": "date-time",
+                        "$ref": "#/$defs/burndown_datetime",
                         "description": "Moment when the burndown chart changes."
                     },
                     "points": {
@@ -29,6 +28,11 @@
                 },
                 "required": ["date", "points", "type"]
             }
+        },
+        "burndown_datetime": {
+            "type": "string",
+            "$comment": "Most implementations do not like having `\"format\": \"date-time\"` here as well as the `pattern`, because the former assumes a `T` separator. The pattern allows all four-digit years (1000-9999), all months with leading zeros (01-12), all days with leading zeros (01-31), even if this combination does not exist in that month or year. All two-digit hours, months and seconds with leading zeros and microsecond precision are allowed.",
+            "pattern": "^[1-9][0-9][0-9][0-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) [0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\.[0-9]{6}$"
         }
     }
 }

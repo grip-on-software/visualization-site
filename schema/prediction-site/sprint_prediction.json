@@ -64,11 +64,7 @@
                     "type": "object",
                     "description": "Information about the age of data retrieved from originating systems.",
                     "patternProperties": {
-                        ".*": {
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$"
-                        }
+                        ".*": {"$ref": "#/$defs/datetime"}
                     }
                 }
             }
@@ -115,15 +111,11 @@
                     "description": "Name of the sprint."
                 },
                 "start_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$",
+                    "$ref": "#/$defs/datetime",
                     "description": "The moment that the sprint starts."
                 },
                 "end_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d$",
+                    "$ref": "#/$defs/datetime",
                     "description": "The moment that the sprint ends."
                 },
                 "tags": {
@@ -155,6 +147,11 @@
                     ]
                 }
             }
+        },
+        "datetime": {
+            "type": "string",
+            "$comment": "Most implementations do not like having `\"format\": \"date-time\"` here as well as the `pattern`, because the former assumes a `T` separator. The pattern allows all four-digit years (1000-9999), all months with leading zeros (01-12), all days with leading zeros (01-31), even if this combination does not exist in that month or year. All two-digit hours, months and seconds with leading zeros are allowed.",
+            "pattern": "^[1-9][0-9][0-9][0-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) [0-9][0-9]:[0-9][0-9]:[0-9][0-9]$"
         }
     }
 }

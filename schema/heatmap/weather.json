@@ -7,7 +7,7 @@
         "weather": {
             "type": "object",
             "patternProperties": {
-                "^\\d\\d\\d\\d-\\d\\d-\\d\\d$": {
+                "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$": {
                     "type": "number",
                     "description": "Temperature in degrees Celcius that was measured on the day."
                 }

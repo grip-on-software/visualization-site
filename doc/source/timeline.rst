@@ -7,6 +7,7 @@ data used by the visualization is formatted.
 .. jsonschema:: |visualization-schema|/timeline/boards.json
 .. jsonschema:: |visualization-schema|/timeline/config.json
 .. jsonschema:: |visualization-schema|/timeline/data.json
+   :auto_target: True
 .. jsonschema:: |visualization-schema|/timeline/event.json
    :auto_target: True
 .. jsonschema:: |visualization-schema|/timeline/features.json

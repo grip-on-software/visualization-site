@@ -4,6 +4,7 @@ Data gatherer
 This schema specifies some basic data types used across the data acquisition
 component.
 
+.. jsonschema:: |data-gathering-schema|/exports.json
 .. jsonschema:: |data-gathering-schema|/utils.json
    :auto_target: True
 
@@ -12,8 +13,8 @@ component.
 Data gathering controller
 -------------------------
 
-These schemas specify formats of the controller involved in the data acquisition
-component. The OpenAPI specification for the `data gathering controller API <https://gros.liacs.nl/swagger/?urls.primaryName=Data%20gathering%20controller%20API%20(view%20only)>`_
+These schemas specify formats of the `controller API <https://gros.liacs.nl/data-gathering/api.html#controller-api>`_
+involved in the data acquisition component. The OpenAPI specification for the `data gathering controller API <https://gros.liacs.nl/swagger/?urls.primaryName=Data%20gathering%20controller%20API%20(view%20only)>`_
 makes use of these schemas.
 
 .. jsonschema:: |data-gathering-schema|/controller/access.json
@@ -29,8 +30,9 @@ makes use of these schemas.
 Data gathering scraper
 ----------------------
 
-These schemas specify formats of the agent involved in the data acquisition
-component. The OpenAPI specification for the `data gathering scraper agent API <https://gros.liacs.nl/swagger/?urls.primaryName=Data%20gathering%20scraper%20agent%20API%20(view%20only)>`_
+These schemas specify formats of the `scraper agent web API <https://gros.liacs.nl/data-gathering/api.html#scraper-agent-web-api>`_
+involved in the data acquisition component. The OpenAPI specification for the
+`data gathering scraper agent API <https://gros.liacs.nl/swagger/?urls.primaryName=Data%20gathering%20scraper%20agent%20API%20(view%20only)>`_
 makes use of these schemas.
 
 .. jsonschema:: |data-gathering-schema|/scraper/scrape.json
@@ -81,14 +83,12 @@ are made available for importing into a database.
 .. jsonschema:: |data-gathering-schema|/project/metadata.json
 .. jsonschema:: |data-gathering-schema|/project/sources.json
    :auto_target: True
+.. jsonschema:: |data-gathering-schema|/project/source_ids.json
+   :auto_target: True
 
 .. _quality:
 
-.. jsonschema:: |data-gathering-schema|/quality/compact_history.json
-.. jsonschema:: |data-gathering-schema|/quality/history_update.json
-.. jsonschema:: |data-gathering-schema|/quality/hqlib_targets.json
-.. jsonschema:: |data-gathering-schema|/quality/hqlib_targets_update.json
-.. jsonschema:: |data-gathering-schema|/quality/metric_base_names.json
+.. jsonschema:: |data-gathering-schema|/quality/metric_defaults.json
 .. jsonschema:: |data-gathering-schema|/quality/metric_names.json
    :auto_target: True
 .. jsonschema:: |data-gathering-schema|/quality/metric_targets.json

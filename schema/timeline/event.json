@@ -31,8 +31,7 @@
                         "description": "Name of the sprint in which the event took place."
                     },
                     "date": {
-                        "type": "string",
-                        "format": "date-time",
+                        "$ref": "data.json#/$defs/datetime",
                         "description": "Date and time that the event took place."
                     },
                     "type": {
@@ -40,8 +39,7 @@
                         "description": "Event type."
                     },
                     "end_date": {
-                        "type": "string",
-                        "format": "date-time",
+                        "$ref": "data.json#/$defs/datetime",
                         "description": "Date and time that the event ends."
                     },
                     "board_id": {

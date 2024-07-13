@@ -12,8 +12,7 @@
                     "properties": {
                         "date": {
                             "type": "string",
-                            "format": "date-time",
-                            "description": "Moment when the latest update took place for the source."
+                            "description": "Moment when the latest update took place for the source. This may also be an invalid date if the date could not be retrieved."
                         },
                         "url": {
                             "type": "string",

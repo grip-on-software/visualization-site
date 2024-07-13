@@ -8,7 +8,7 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "pattern": "^full$|^\\d+-(second|minute|hour|day|week|month|year)s?$",
+                "pattern": "^full$|^[0-9]+-(second|minute|hour|day|week|month|year)s?$",
                 "description": "Duration specifier. Either `full` which indicates the entire range of collection data, or a positive number followed by a duration unit supported by Moment.js."
             }
         }

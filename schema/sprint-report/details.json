@@ -13,7 +13,7 @@
         "sprint-report-feature-details": {
             "type": "object",
             "patternProperties": {
-                "^\\d+$": {"$ref": "#/$defs/sprint-report-sprint-details"}
+                "^[0-9]+$": {"$ref": "#/$defs/sprint-report-sprint-details"}
             }
         },
         "sprint-report-sprint-details": {

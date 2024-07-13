@@ -65,7 +65,7 @@
                             "type": "object",
                             "description": "Icons to use in place of a value in order to format it for a feature with the `icon` type.",
                             "patternProperties": {
-                                "^\\d+$": {
+                                "^[0-9]+$": {
                                     "type": "array",
                                     "minItems": 2,
                                     "description": "FontAwesome specification for an icon that represents the value."
