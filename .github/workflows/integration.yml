@@ -1,0 +1,49 @@
+name: grip-on-software/visualizations
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4.0.2
+        with:
+          cache: npm
+      - run: npm install
+      - run: npm run pretest
+      - run: ./run-test.sh
+      - run: npm run nyc-report
+      - run: cp test/coverage/lcov.info repos/prediction-site/test/coverage/lcov.info
+      - name: SonarCloud Scan for prediction site
+        uses: sonarsource/sonarcloud-github-action@v2.1.1
+        env:
+          SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          projectBaseDir: repos/prediction-site
+          args: >
+            -Dproject.settings=repos/prediction-site/sonar-project.properties
+            -Dsonar.projectKey=grip-on-software_prediction-site
+            -Dsonar.projectName="Prediction site"
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v2.1.1
+        env:
+          SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          args: >
+            -Dsonar-sources=lib,`find repos -name lib -maxdepth 2 -type d | paste -s -d, -`
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        if: "${{ success() }}"
+    strategy:
+      matrix:
+        node_js:
+          - '20'
