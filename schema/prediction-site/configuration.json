@@ -83,8 +83,21 @@
                 "stratified": {
                     "description": "Whether the data set was resampled (some sample sprints provided more often) in order to create proportionally balanced subsets with normal distributions of the target label, when provided in batches to the model.",
                     "type": "boolean"
+                },
+                "min_date": {
+                    "$ref": "#/$defs/datetime",
+                    "description": "Earliest date and time of the sprints included in the data set that this model was trained/tested/validated on."
+                },
+                "max_date": {
+                    "$ref": "#/$defs/datetime",
+                    "description": "Latest date and time of the sprints included in the data set that this model was trained/tested/validated on."
                 }
             }
+        },
+        "datetime": {
+            "type": "string",
+            "$comment": "Most implementations do not like having `\"format\": \"date-time\"` here as well as the `pattern`, because the former assumes a `T` separator. The pattern allows all four-digit years (1000-9999), all months with leading zeros (01-12), all days with leading zeros (01-31), even if this combination does not exist in that month or year. All two-digit hours, months and seconds with leading zeros are allowed.",
+            "pattern": "^[1-9][0-9][0-9][0-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) [0-9][0-9]:[0-9][0-9]:[0-9][0-9]$"
         }
     }
 }
