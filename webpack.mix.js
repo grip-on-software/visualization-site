@@ -564,6 +564,9 @@ const htmlConfiguration = _.assign({}, urlConfiguration, messages,
     }
 );
 
+const browserSyncRoutes = {};
+browserSyncRoutes[htmlConfiguration.visualization_url] = 'www';
+
 Mix.paths.setRootPath(__dirname);
 mix.setPublicPath('www/')
     .setResourceRoot(typeof process.env.BRANCH_NAME !== 'undefined' &&
@@ -576,7 +579,10 @@ mix.setPublicPath('www/')
     .sass('res/navbar.scss', 'www/navbar.css')
     .browserSync({
         proxy: false,
-        server: 'www',
+        server: {
+            baseDir: 'www',
+            routes: browserSyncRoutes
+        },
         files: [
             'www/**/*.js',
             'www/**/*.css'
@@ -585,9 +591,7 @@ mix.setPublicPath('www/')
     .webpackConfig({
         output: {
             path: path.resolve('www/'),
-            publicPath: typeof process.env.BRANCH_NAME !== 'undefined' &&
-                process.env.BRANCH_NAME.endsWith('master') ?
-                htmlConfiguration.visualization_url : '.'
+            publicPath: htmlConfiguration.visualization_url
         },
         module: {
             rules: [ {
