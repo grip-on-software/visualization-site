@@ -1,5 +1,6 @@
 {
     "visualization_url": "/",
+    "base_url": "https://gros.liacs.nl",
     "prediction_url": "/prediction/",
     "blog_url": "/blog/",
     "discussion_url": "/discussion/",

@@ -50,8 +50,9 @@ if (process.env.NODE_ENV === 'test') {
     // - Enable owncloud reverse proxy rules for prediction files
     // - Make redirects hide port in redirect for upstream caddy proxy
     // - Enable control host reverse proxy for access/encrypt endpoints
+    configuration.base_url = `http://${configuration.visualization_server}`;
     configuration.visualization_url = new URL(configuration.visualization_url,
-        `http://${configuration.visualization_server}`
+        configuration.base_url
     ).href;
     configuration.jenkins_direct = '';
     configuration.files_share_id = 'test';
@@ -463,6 +464,7 @@ const navbarConfiguration = _.assign({}, delayedUrlConfiguration, {
             )
         })
     ),
+    base_url: configuration.base_url,
     combined: process.env.VISUALIZATION_COMBINED === "true",
     combined_url: combinedUrl,
     visualizations: _.map(visualizations.groups, (group, index) => {

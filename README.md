@@ -101,6 +101,11 @@ otherwise) are known:
   a protocol and domain name, but does not need to in case all the resources 
   are hosted on the same domain. The remainder is a path to the root of the 
   predictions (without any specific paths below it).
+- `base_url`: The absolute URL to the base website where other static resources 
+  are located. This is used to link to the base website in the navigation bar 
+  and to make certain URLs absolute like schema identifiers and canonical URLs. 
+  If it is left empty, then some of those URLs will not have a protocol and 
+  domain name or use the current location as base.
 - `blog_url`: The URL to the blog. This may include a protocol and domain name, 
   but does not need to in case all the resources are hosted on the same domain. 
   The remainder is a path to the root of the blog. If this is empty, then no 
