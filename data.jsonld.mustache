@@ -1,0 +1,91 @@
+{
+    {{#vim-modeline}}"x-vim-modeline":"/* vim: set filetype=json: */",{{/vim-modeline}}"@context": "http://schema.org",
+    "@id": "{{#url}}{{{visualization_url}}}{{/url}}",
+    "@type": "WebApplication",
+    "@language": "{{{language}}}",
+    "inLanguage": [
+{{#other_languages}}
+        "{{{.}}}",
+{{/other_languages}}
+        "{{{language}}}"
+    ],
+    "name": "{{#message}}index-title{{/message}}",
+    "description": "{{#message}}data-description{{/message}}",
+    "browserRequirements": "{{#message}}javascript-error{{/message}}",
+    "applicationCategory": "BusinessApplication",
+    "url": "{{#url}}{{{visualization_url}}}?lang={{{language}}}{{/url}}",
+{{#anonymized}}
+    "offers": {
+        "@type": "Offer",
+        "price": "0"
+    },
+    "isAccessibleForFree": true,
+{{/anonymized}}
+    "screenshot": "{{{base_url}}}/screenshots/dashboard.png",
+{{#discussion_url}}
+    "discussionUrl": "{{#url}}{{{discussion_url}}}{{/url}}",
+{{/discussion_url}}
+    "hasPart": [{{{visualizations}}}],
+    "exampleOfWork": {
+        "@type": "SoftwareSourceCode",
+        "name": "gros/visualization-site",
+        "codeRepository": "https://github.com/grip-on-software/visualization-site.git",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "workExample": [
+{{#organizations}}
+            {
+                "@type": "WebApplication",
+                "name": "{{{organization}}}",
+                "applicationCategory": "BusinessApplication",
+{{#anonymized}}
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0"
+                },
+                "isAccessibleForFree": true,
+{{/anonymized}}
+                "url": "{{#url}}{{{hub_url}}}?lang={{{language}}}{{/url}}"
+            },
+{{/organizations}}
+            {
+                "@type": "WebApplication",
+                "name": "{{#message}}data-combined{{/message}}",
+                "applicationCategory": "BusinessApplication",
+{{#anonymized}}
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0"
+                },
+                "isAccessibleForFree": true,
+{{/anonymized}}
+                "hasPart": {
+                    "@type": "WebApplication",
+                    "@id": "{{#url}}{{{combined_url}}}{{/url}}",
+                    "name": "{{#message}}prediction-title{{/message}}",
+                    "description": "{{#message}}prediction-content{{/message}}",
+                    "inLanguage": [
+{{#other_languages}}
+                        "{{{.}}}",
+{{/other_languages}}
+                        "{{{language}}}"
+                    ],
+                    "browserRequirements": "{{#message}}javascript-error{{/message}}",
+                    "applicationCategory": "BusinessApplication",
+                    "applicationSubCategory": "{{#message}}visualizations-title{{/message}}",
+{{#anonymized}}
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0"
+                    },
+                    "isAccessibleForFree": true,
+{{/anonymized}}
+                    "url": "{{#url}}{{{combined_url}}}?lang={{{language}}}{{/url}}",
+{{#download_url}}
+                    "downloadUrl": "{{#url}}{{{combined_url}}}show/zip{{/url}}",
+{{/download_url}}
+                    "screenshot": "{{{base_url}}}/screenshots/prediction.png"
+                }
+            }
+        ]
+    }
+}

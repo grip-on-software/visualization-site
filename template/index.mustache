@@ -75,6 +75,11 @@
                                         <div class="content">
                                             {{{content}}}
                                         </div>
+                                        <div class="card-overlay-image is-overlay is-clipped">
+                                            <div class="image">
+                                                <img src="{{base_url}}/screenshots/{{id}}.png" alt="" data-message-title="{{id}}-content">
+                                            </div>
+                                        </div>
                                     </div>
                                     <footer class="card-footer">
                                         <a href="{{show}}" data-language="{{language_parameter}}" class="card-footer-item is-wider">{{{message-visualizations-open}}}</a>
@@ -88,12 +93,19 @@
                                         {{/blog}}
                                         {{/blog_url}}
                                         {{#download_url}}
-                                        <a href="{{download}}" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download" data-message-aria-label="visualizations-blog">
+                                        <a href="{{download}}" class="card-footer-item is-hidden-mobile" data-message-title="visualizations-download" data-message-aria-label="visualizations-download">
                                             <span class="icon">
                                                 <i class="fas fa-download"></i>
                                             </span>
                                         </a>
                                         {{/download_url}}
+                                        {{#video}}
+                                        <a href="{{alternate}}" class="card-footer-item" hreflang="en" data-video-id="{{id}}" data-video-chapters="{{^chapters}}no{{/chapters}}" data-message-title="visualizations-video" data-message-aria-label="visualizations-video" target="_blank">
+                                            <span class="icon">
+                                                <i class="fas fa-film"></i>
+                                            </span>
+                                        </a>
+                                        {{/video}}
                                     </footer>
                                 </div>
                             </div>

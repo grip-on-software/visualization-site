@@ -6,7 +6,45 @@
                 {
                     "id": "sprint-report",
                     "icon": ["fas", "book-open"],
-                    "language_parameter": "lang"
+                    "language_parameter": "lang",
+                    "video": {
+                        "id": "2024LH-sprint-report",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT12M01S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_lq8clgb3",
+                        "chapters": [
+                            {
+                                "name": "Table",
+                                "startOffset": 195,
+                                "endOffset": 297
+                            },
+                            {
+                                "name": "Line chart",
+                                "startOffset": 298,
+                                "endOffset": 353
+                            },
+                            {
+                                "name": "Bar chart",
+                                "startOffset": 354,
+                                "endOffset": 400
+                            },
+                            {
+                                "name": "Area chart",
+                                "startOffset": 401,
+                                "endOffset": 446
+                            },
+                            {
+                                "name": "Scatter plot",
+                                "startOffset": 447,
+                                "endOffset": 546
+                            },
+                            {
+                                "name": "Sankey flowchart",
+                                "startOffset": 547,
+                                "endOffset": 721
+                            }
+                        ]
+                    }
                 },
                 {
                     "id": "prediction",
@@ -15,7 +53,13 @@
                     "language_parameter": "lang",
                     "download": "{{{prediction_url}}}show/zip",
                     "nginx": false,
-                    "repo": "prediction-site"
+                    "repo": "prediction-site",
+                    "video": {
+                        "id": "2024LH-prediction",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT2M09S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_ggg2uguq"
+                    }
                 },
                 {
                     "id": "timeline",
@@ -24,12 +68,24 @@
                     "blog": {
                         "fragment": "update-voor-de-tijdlijn",
                         "language": "nl"
+                    },
+                    "video": {
+                        "id": "2024LH-timeline",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT3M38S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_6z9ub6xl"
                     }
                 },
                 {
                     "id": "leaderboard",
                     "icon": ["fas", "trophy"],
-                    "language_parameter": "lang"
+                    "language_parameter": "lang",
+                    "video": {
+                        "id": "2024LH-leaderboard",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT2M01S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_9s965ua4"
+                    }
                 }
             ]
         },
@@ -43,12 +99,24 @@
                     "blog": {
                         "fragment": "netwerk-samenwerking-binnen-ictu",
                         "language": "nl"
+                    },
+                    "video": {
+                        "id": "2024LH-collaboration-graph",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT1M46S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_bouiosrf"
                     }
                 },
                 {
                     "id": "process-flow",
                     "icon": ["fas", "sync"],
-                    "language_parameter": "lang"
+                    "language_parameter": "lang",
+                    "video": {
+                        "id": "2024LH-process-flow",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT1M36S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_1gtnt7ym"
+                    }
                 },
                 {
                     "id": "heatmap",
@@ -57,6 +125,12 @@
                     "blog": {
                         "fragment": "heatmap-van-projectactiviteit",
                         "language": "nl"
+                    },
+                    "video": {
+                        "id": "2024LH-heat-map",
+                        "date": "2024-06-21T17:04:53+02:00",
+                        "duration": "PT1M49S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_yihku75q"
                     }
                 },
                 {
@@ -66,6 +140,12 @@
                     "blog": {
                         "fragment": "big-boat-status-visualisatie",
                         "language": "nl"
+                    },
+                    "video": {
+                        "id": "2024LH-bigboat-status",
+                        "date": "2024-06-21T17:04:00+02:00",
+                        "duration": "PT2M24S",
+                        "alternate": "https://video.leidenuniv.nl/media/t/1_15751wss"
                     }
                 },
                 {

@@ -10,6 +10,7 @@ bundle.js.LICENSE.txt
 caddy/docker-compose.yml
 caddy/ws
 caddy/www
+/data.json
 doc/build/
 doc/env/
 test/docker-compose.yml

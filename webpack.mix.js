@@ -557,6 +557,111 @@ catch (e) {
     throw new Error('Could not render openapi.json.mustache', {cause: e});
 }
 
+// Generate configuration for JSON-LD documents
+const jsonConfiguration = _.assign({}, urlConfiguration, {
+    organization:
+        typeof process.env.VISUALIZATION_ORGANIZATION !== 'undefined' ?
+        process.env.VISUALIZATION_ORGANIZATION : '',
+    combined_url: combinedUrl
+});
+const dataTemplate = fs.readFileSync('data.jsonld.mustache', 'utf8');
+const data = _.map(spec, (language, code) => {
+    const dataLanguage = mustache.render(dataTemplate,
+        _.assign({}, jsonConfiguration, {
+            language: code,
+            other_languages: _.without(_.keys(spec), code),
+            anonymized: process.env.VISUALIZATION_ANONYMIZED === "true",
+            message: function() {
+                return function(text, render) {
+                    return language.messages[render(text)];
+                };
+            },
+            url: function() {
+                return function(text, render) {
+                    return (new URL(render(text), configuration.base_url)).href;
+                };
+            },
+            visualizations: _.map(visualizations.groups, (group, index) => {
+                const items = _.reduce(group.items, (result, item) => {
+                    if (!item.index) {
+                        return result;
+                    }
+                    const url = item.url || `{{{visualization_url}}}${item.id}`;
+                    const visualizationUrl = new URL(mustache.render(url,
+                        urlConfiguration
+                    ), configuration.base_url).href;
+                    const languageParameter = item.language_parameter ?
+                        `?${item.language_parameter}=` : '?';
+                    const download = urlConfiguration.download_url ?
+                        mustache.render(item.download ||
+                            `{{{download_url}}}${item.id}`,
+                            urlConfiguration
+                        ) : '';
+                    const clips = item.video && item.video.chapters ?
+                        _.map(item.video.chapters, chapter => _.assign({
+                            "@type": "Clip",
+                            "url": `${configuration.base_url}/video/${item.video.id}#${chapter.startOffset}`,
+                        }, chapter)) : null;
+                    result.push(`
+        {
+            "@type": "WebApplication",
+            "@id": "${visualizationUrl}",
+            "@language": "${code}",
+            "inLanguage": ${JSON.stringify(_.keys(spec))},
+            "name": "${language.messages[`${item.id}-title`]}",
+            "description": "${language.messages[`${item.id}-content`]}",
+            "browserRequirements": "${language.messages['javascript-error']}",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "${language.messages[`${item.id}-title`]}",
+            "url": "${visualizationUrl}${languageParameter}${code}",
+            ${process.env.VISUALIZATION_ANONYMIZED === "true" ? `"offers": {
+                "@type": "Offer",
+                "price": "0"
+            },
+            "isAccessibleForFree": true,` : ''}
+            ${urlConfiguration.blog_url && item.blog ? `"subjectOf": {
+                "@type": "BlogPosting",
+                "@id": "${urlConfiguration.blog_url}${item.blog.fragment}/",
+                "inLanguage": "${item.blog.language}"
+            },` : ''}
+            ${download !== '' ? `"download_url": "${download}",` : ''}
+            ${item.video ? `"video": {
+                "@type": "VideoObject",
+                "@id": "${configuration.base_url}/video/${item.video.id}.html",
+                "contentUrl": "${configuration.base_url}/video/${item.video.id}.mp4",
+                "name": "${language.messages[`${item.id}-title`]}",
+                "uploadDate": "${item.video.date}",
+                "thumbnailUrl": "${configuration.base_url}/video/${item.video.id}.jpg",
+                "caption": {
+                    "@type": "MediaObject",
+                    "contentUrl": "${configuration.base_url}/video/${item.video.id}.srt",
+                    "encodingFormat": "text/vtt"
+                },
+                ${clips ? `"hasPart": ${JSON.stringify(clips)},` : ''}
+                "encodingFormat": "video/mp4",
+                "inLanguage": "en",
+                "license": "https://www.apache.org/licenses/LICENSE-2.0",
+                "duration": "${item.video.duration}",
+                "sameAs": "${item.video.alternate}"
+            },` : ''}
+            "screenshot": "${configuration.base_url}/screenshots/${item.id}.png"
+        }
+`);
+                    return result;
+                }, []);
+                return items.join(',');
+            }).join(',')
+        })
+    );
+    return `"${code}": ${dataLanguage}`;
+});
+try {
+    fs.writeFileSync('data.json', `{${data.join(',')}}`);
+}
+catch (e) {
+    throw new Error('Could not render data.jsonld.mustache', {cause: e});
+}
+
 // Generage configuration for HTML pages
 const htmlConfiguration = _.assign({}, urlConfiguration, messages,
     visualizations, {
@@ -631,8 +736,9 @@ mix.setPublicPath('www/')
         ],
         resolve: {
             alias: {
+                'config.json$': configAlias,
                 'navbar.spec$': navbar,
-                'config.json$': configAlias
+                'data.jsonld$': path.resolve(__dirname, 'data.json')
             }
         }
     });

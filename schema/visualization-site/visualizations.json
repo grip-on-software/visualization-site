@@ -38,6 +38,7 @@
                 "icon": {
                     "type": "array",
                     "minItems": 2,
+                    "items": {"type": "string"},
                     "description": "FontAwesome specification for an icon that represents the visualization."
                 },
                 "url": {
@@ -60,7 +61,8 @@
                             "type": "string",
                             "description": "Language code for the language the blog post is written in."
                         }
-                    }
+                    },
+                    "required": ["fragment", "language"]
                 },
                 "download": {
                     "type": "string",
@@ -77,8 +79,54 @@
                 "repo": {
                     "type": "string",
                     "description": "Name of the repository where the code for the visualization is stored."
+                },
+                "video": {
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Identifier of the video."
+                        },
+                        "date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Upload date of the video."
+                        },
+                        "duration": {
+                            "type": "string",
+                            "format": "duration",
+                            "description": "Duration of the video."
+                        },
+                        "alternate": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "External location where the video is available."
+                        },
+                        "chapters": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the chapter of the video."
+                                    },
+                                    "startOffset": {
+                                        "type": "number",
+                                        "description": "Number of seconds from the beginning of the video where the chapter starts."
+                                    },
+                                    "endOffset": {
+                                        "type": "number",
+                                        "description": "Number of seconds from the beginning of the video where the chapter ends."
+                                    }
+                                },
+                                "required": ["name", "startOffset"]
+                            }
+                        }
+                    },
+                    "required": ["id", "date", "duration", "alternate"]
                 }
-            }
+            },
+            "required": ["id"]
         }
     }
 }

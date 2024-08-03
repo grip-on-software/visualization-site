@@ -39,6 +39,17 @@
         background-color: #fdfdfd;
     }
 
+    .card-content {
+        position: relative;
+    }
+    .card-overlay-image {
+        transition: opacity .5s ease;
+        opacity: 0;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
     .card-footer {
         margin-top: auto;
     }
