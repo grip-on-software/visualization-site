@@ -23,14 +23,14 @@
 
                     <p class="homepage" data-message="homepage-description">Read an introduction to the research at the <a href="https://gros.liacs.nl" data-message="homepage-link">homepage</a>.</p>
 
-                    <noscript><div class="notification is-danger" data-message="javascript-error">JavaScript must be enabled to use the visualizations.</div></noscript>
+                    <noscript><div class="notification is-danger">{{{javascript-error-message}}}</div></noscript>
 
 {{#anonymized}}
                     <div class="notification is-info is-light">
                         <span class="icon">
                             <i class="fas fa-mask fa-sm"></i>
                         </span>
-                        <span data-message="anonymized">Note that this version of the visualizations only provides anonymized data, meaning that some functionality may be limited or missing.</span>
+                        {{{message-anonymized}}}
                     </div>
 {{/anonymized}}
 
