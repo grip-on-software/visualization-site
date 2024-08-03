@@ -29,6 +29,12 @@ fi
 if [ ! -f "$VISUALIZATION_SITE_CONFIGURATION" ]; then
     VISUALIZATION_SITE_CONFIGURATION="lib/config.json"
 fi
+if [ -z "$BRANCH_NAME" ] && [ ! -z "$GITHUB_REF_NAME" ]; then
+	export BRANCH_NAME="${GITHUB_REF_NAME/\//-}"
+	export BUILD_NUMBER=$GITHUB_RUN_NUMBER
+	export BUILD_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+	export NODE_NAME="$RUNNER_NAME"
+fi
 
 # Comparable integer format for versions - https://stackoverflow.com/a/37939589
 function version() {
@@ -62,6 +68,9 @@ if [ -z "$REPO_ROOT" ]; then
 	REPO_ROOT="repos"
 else
 	has_repo_root=1
+fi
+if [ -z "$PREDICTION_CONFIGURATION" ]; then
+	PREDICTION_CONFIGURATION="$PWD/$REPO_ROOT/prediction-site/lib/config.json"
 fi
 
 if [ -z "$VISUALIZATION_NAMES" ]; then
@@ -233,19 +242,21 @@ if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
 	echo "# Let SonarQube know we have Python tests" > "$tree/lib/test.py"
 fi
 
-if [ -d "$PWD/security" ]; then
-	GIT_DIR="$PWD/security/.git" GIT_WORK_TREE="$PWD/security" git checkout -- security_dependencycheck.sh
-fi
-update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
-sed --in-place="" -e 's/\r$//' ./security/*.sh
-cp test/suppression.xml security/suppression.xml
-VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\/src\\/repos\\/\\1\\/node_modules/g")
-sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 \$VISUALIZATION_MOUNTS -v \$SITE_MOUNT:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --project \"\$PROJECT_NAME\" --disableOssIndex true \\1/" ./security/security_dependencycheck.sh
-PROJECT_NAME="Visualizations" VISUALIZATION_MOUNTS="$VISUALIZATION_MOUNTS" SITE_MOUNT="$BRANCH_NAME-visualization-site-modules" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
-if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
-	tree="$PWD/$REPO_ROOT/prediction-site"
-	mkdir -p -m 0777 "$tree/security"
-	PROJECT_NAME="Prediction site" VISUALIZATION_MOUNTS="" SITE_MOUNT="$BRANCH_NAME-prediction-site-modules" bash ./security/security_dependencycheck.sh "$tree" "$tree/test/owasp-dep"
+if [ ! -z $VISUALIZATION_SECURITY ]; then
+	if [ -d "$PWD/security" ]; then
+		GIT_DIR="$PWD/security/.git" GIT_WORK_TREE="$PWD/security" git checkout -- security_dependencycheck.sh
+	fi
+	update_repo "$PWD/security" "https://github.com/ICTU/security-tooling"
+	sed --in-place="" -e 's/\r$//' ./security/*.sh
+	cp test/suppression.xml security/suppression.xml
+	VISUALIZATION_MOUNTS=$(echo $VISUALIZATION_NAMES | sed "s/\\(\\S*\\)/-v $BRANCH_NAME-\\1-modules:\\/src\\/repos\\/\\1\\/node_modules/g")
+	sed --in-place="" -e "s/\\(:\\/src:z\\)/\\1 \$VISUALIZATION_MOUNTS -v \$SITE_MOUNT:\\/src\\/node_modules/" -e "s/\\(--out \\/report\\)/--exclude \"**\\/public\\/**\" --exclude \"**\\/www\\/**\" --exclude \"**\\/test\\/**\" --exclude \"**\\/security\\/**\" --exclude \"**\\/axe-core\\/**\" --exclude \"**\\/.git\\/**\" --project \"\$PROJECT_NAME\" --disableOssIndex true \\1/" ./security/security_dependencycheck.sh
+	PROJECT_NAME="Visualizations" VISUALIZATION_MOUNTS="$VISUALIZATION_MOUNTS" SITE_MOUNT="$BRANCH_NAME-visualization-site-modules" bash ./security/security_dependencycheck.sh "$PWD" "$PWD/test/owasp-dep"
+	if [ -d "$PWD/$REPO_ROOT/prediction-site" ]; then
+		tree="$PWD/$REPO_ROOT/prediction-site"
+		mkdir -p -m 0777 "$tree/security"
+		PROJECT_NAME="Prediction site" VISUALIZATION_MOUNTS="" SITE_MOUNT="$BRANCH_NAME-prediction-site-modules" bash ./security/security_dependencycheck.sh "$tree" "$tree/test/owasp-dep"
+	fi
 fi
 
 if [ $status -ne 0 ]; then

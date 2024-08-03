@@ -341,10 +341,12 @@ order to take effect.
   when requesting upstream resources for encryption and access checks. By 
   default, this is the `auth_cert` from the configuration, but this can be set 
   to use a different path at the host device than in the Docker test setup.
-- `$PUBLISH_PRODUCTION`: A boolean variable which indicates whether to perform 
-  a copy for potential publication from the current feature branch instead of 
-  only doing so when on a main branch. Note that main branches are skipped in 
-  this case, so the publication may not have organization-specific paths.
+- `$VISUALIZATION_SECURITY` (boolean): Whether to perform dependency checks for 
+  security vulnerabilities using OWASP.
+- `$PUBLISH_PRODUCTION` (boolean): Whether to perform a copy for potential 
+  publication from the current feature branch instead of only doing so when on 
+  a main branch. Note that main branches are skipped in this case, so the 
+  publication may not have organization-specific paths.
 - `$JENKINS_HOME`: Provided by 
   [Jenkins](https://www.jenkins.io/doc/book/managing/system-properties/#jenkins_home) 
   and used by the `copy.sh` script as the root from which to collect artifacts 
@@ -352,11 +354,16 @@ order to take effect.
 - `$BRANCH_NAME`: Provided by [Jenkins Multibranch 
   Pipeline](https://www.jenkins.io/doc/book/pipeline/multibranch/#additional-environment-variables) 
   and used by the test environment in order to separate Docker resources when 
-  building dependencies for visualizations under test.
+  building dependencies for visualizations under test. This is set to a variant 
+  of `$GITHUB_REF_NAME` during [GitHub Actions 
+  workflows](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/variables#default-environment-variables).
 - `$BUILD_NUMBER`, `$BUILD_TAG`, `$BUILD_URL`, `$NODE_NAME`: Provided by 
   [Jenkins](https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#using-environment-variables) 
   and used by the test environment in order to track build context for 
-  reporting and naming purposes.
+  reporting and naming purposes. They are set to similar variables based on 
+  `$GITHUB_RUN_NUMBER`, `$GITHUB_RUN_ID`, `$RUNNER_NAME` and other context 
+  during [GitHub actions 
+  workflows](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/variables#default-environment-variables).
 
 ### Files
 
