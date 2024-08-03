@@ -507,7 +507,7 @@ const navbarConfiguration = _.assign({}, delayedUrlConfiguration, {
 });
 try {
     fs.writeFileSync("navbar.json",
-        mustache.render(fs.readFileSync(`navbar.json.mustache`, 'utf8'),
+        mustache.render(fs.readFileSync('navbar.json.mustache', 'utf8'),
             navbarConfiguration
         )
     );
@@ -548,7 +548,7 @@ const apiConfiguration = _.assign({}, _.mapValues(configuration,
 });
 try {
     fs.writeFileSync("openapi.json",
-        mustache.render(fs.readFileSync(`openapi.json.mustache`, 'utf8'),
+        mustache.render(fs.readFileSync('openapi.json.mustache', 'utf8'),
             apiConfiguration
         )
     );
