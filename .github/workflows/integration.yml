@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v4.0.2
         with:
           cache: npm
+      - run: npm install
       - run: npm run pretest
       - run: ./run-test.sh
       - run: npm run nyc-report
