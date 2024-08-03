@@ -27,6 +27,13 @@
                     "type": "string",
                     "format": "uri-reference"
                 },
+                "base_url": {
+                    "type": "string",
+                    "oneOf": [
+                        {"format": "uri-reference"},
+                        {"const": ""}
+                    ]
+                },
                 "blog_url": {
                     "type": "string",
                     "format": "uri-reference"
