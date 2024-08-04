@@ -73,6 +73,10 @@
                 "openapi_url": {
                     "type": "string",
                     "format": "uri-reference"
+                },
+                "dataset_archive_url": {
+                    "type": "string",
+                    "format": "uri"
                 }
             }
         },
