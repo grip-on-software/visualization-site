@@ -2,6 +2,10 @@
   "name": "@gros/visualization-site",
   "version": "0.0.1",
   "description": "Visualization hub.",
+  "keywords": [
+      "visualization-dashboard",
+      "server-configuration"
+  ],
   "license": "Apache-2.0",
   "author": "Leon Helwerda <l.s.helwerda@liacs.leidenuniv.nl>",
   "files": [
