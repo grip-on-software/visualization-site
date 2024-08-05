@@ -34,7 +34,8 @@
       "*.conf",
       "*.mustache",
       "navbar.json",
-      "openapi.json"
+      "openapi.json",
+      "webpack.mix.js"
   ],
   "directories": {
       "dist": "www",
